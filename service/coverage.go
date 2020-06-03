@@ -20,7 +20,7 @@ func IsReportTypeNotSupportError(err error) bool {
 func NewCoverageReportService(t core.ReportType, data io.Reader) (core.CoverageReportService, error) {
 	switch t {
 	case core.ReportPerl:
-		return perl.NewPerlCoverageReportService(data), nil
+		return perl.NewPerlCoverageReportService(data)
 	default:
 		return nil, errReportTypeNotSupport
 	}

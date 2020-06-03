@@ -10,5 +10,5 @@ type CoverageReport struct {
 }
 
 type CoverageReportService interface {
-	Report(ctx context.Context) *CoverageReport
+	Report(ctx context.Context) (*CoverageReport, error)
 }
