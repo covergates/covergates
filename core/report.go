@@ -6,7 +6,7 @@ import (
 
 type CoverageReport struct {
 	Files             []*File
-	StatementCoverage float32
+	StatementCoverage float64
 }
 
 type CoverageReportService interface {

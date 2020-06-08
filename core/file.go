@@ -2,7 +2,7 @@ package core
 
 type File struct {
 	Name              string
-	StatementCoverage float32
+	StatementCoverage float64
 	StatementHits     []*StatementHit
 }
 

@@ -89,15 +89,15 @@ func NewPerlCoverageReportService(data io.Reader) (*PerlCoverageReportService, e
 	return s, nil
 }
 
-func avgStatementCoverage(files []*core.File) float32 {
+func avgStatementCoverage(files []*core.File) float64 {
 	if len(files) <= 0 {
 		return 0.0
 	}
-	s := float32(0)
+	s := float64(0)
 	for _, file := range files {
 		s += file.StatementCoverage
 	}
-	return s / float32(len(files))
+	return s / float64(len(files))
 }
 
 func (r *PerlCoverageReportService) Report(ctx context.Context) (*core.CoverageReport, error) {

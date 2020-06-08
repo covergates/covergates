@@ -1,6 +1,10 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	// load sqlite driver
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
+)
 
 var (
 	db        *gorm.DB
@@ -9,7 +13,7 @@ var (
 )
 
 func init() {
-
+	tables = append(tables, &Report{})
 }
 
 func migrate() error {
@@ -22,10 +26,11 @@ func migrate() error {
 }
 
 // ConnectDB with gorm
-func ConnectDB(db *gorm.DB) error {
+func ConnectDB(x *gorm.DB) error {
 	if connected {
 		return nil
 	}
+	db = x
 	if err := migrate(); err != nil {
 		return err
 	}

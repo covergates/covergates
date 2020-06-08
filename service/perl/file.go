@@ -41,7 +41,7 @@ func (c *FileCollection) add(file *core.File) {
 	c.collect[file.Name] = append(files, file)
 }
 
-func sumStatementCoverage(hits []*core.StatementHit) float32 {
+func sumStatementCoverage(hits []*core.StatementHit) float64 {
 	if len(hits) <= 0 {
 		return 0.0
 	}
@@ -51,7 +51,7 @@ func sumStatementCoverage(hits []*core.StatementHit) float32 {
 			s++
 		}
 	}
-	return float32(s) / float32(len(hits))
+	return float64(s) / float64(len(hits))
 }
 
 func mergeFiles(files []*core.File) *core.File {
