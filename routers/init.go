@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"github.com/code-devel-cover/CodeCover/core"
 	_ "github.com/code-devel-cover/CodeCover/models"
 	"github.com/code-devel-cover/CodeCover/routers/web"
 	"github.com/gin-contrib/cors"
@@ -20,8 +21,13 @@ import (
 // @host localhost:8080
 // @BasePath /api/v1
 
-func RegisterRoutes(r *gin.Engine) {
+type Routers struct {
+	LoginMiddleware core.LoginMiddleware
+}
+
+func (router *Routers) RegisterRoutes(r *gin.Engine) {
 	r.Use(cors.Default())
-	web.RegisterStaticWebHandlers(r)
+	web.RegisterStaticWeb(r)
+	web.RegisterLogin(r, router.LoginMiddleware)
 	r.NoRoute(web.HandleIndex)
 }

@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/modules"
+	"github.com/code-devel-cover/CodeCover/modules/archive"
 )
 
 var errCoverDatabaseNotFound = errors.New("Coverage database not found")
@@ -53,7 +53,7 @@ func findDigests(files []*zip.File) (map[string]*coverDigest, error) {
 }
 
 func NewPerlCoverageReportService(data io.Reader) (*PerlCoverageReportService, error) {
-	z, err := modules.NewZipReader(data)
+	z, err := archive.NewZipReader(data)
 	if err != nil {
 		return nil, err
 	}

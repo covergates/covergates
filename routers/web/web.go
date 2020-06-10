@@ -6,6 +6,6 @@ func HandleIndex(c *gin.Context) {
 	
 }
 
-func RegisterStaticWebHandlers(r *gin.Engine) {
+func RegisterStaticWeb(r *gin.Engine) {
 
 }
