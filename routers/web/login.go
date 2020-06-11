@@ -1,7 +1,7 @@
 package web
 
 import (
-	"log"
+	"errors"
 	"net/http"
 
 	"github.com/code-devel-cover/CodeCover/core"
@@ -16,22 +16,55 @@ const (
 	keyExpires = "expires"
 )
 
+var errClientNotFound = errors.New("SCM Client not found")
+
 func RegisterLogin(
 	r *gin.Engine,
-	m core.LoginMiddleware,
+	middleware core.LoginMiddleware,
+	clientService core.SCMClientService,
+	userService core.UserService,
+	session core.Session,
 ) {
 	{
 		g := r.Group("/login")
-		g.Any("/github", MiddlewareLogin(core.Github, m), HandleLogin)
+		g.Any("/github",
+			MiddlewareLogin(core.Github, middleware),
+			HandleLogin(
+				core.Github,
+				clientService,
+				userService,
+				session,
+			),
+		)
 	}
 }
 
-func HandleLogin(c *gin.Context) {
-	if !c.GetBool("login") {
-		log.Println("Not login")
-		return
+func HandleLogin(
+	scm core.SCMProvider,
+	clientService core.SCMClientService,
+	userService core.UserService,
+	session core.Session,
+) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		client := clientService.Client(scm)
+		if client == nil {
+			c.Error(errClientNotFound)
+			c.Abort()
+			return
+		}
+		ctx := WithToken(c)
+		user, err := userService.Find(ctx, scm)
+		if err != nil {
+			c.Error(err)
+			c.Abort()
+			return
+		}
+		if err := session.Create(c, user); err != nil {
+			c.Error(err)
+			c.Abort()
+			return
+		}
 	}
-	log.Printf("%s", c.GetString(keyAccess))
 }
 
 func MiddlewareLogin(scm core.SCMProvider, m core.LoginMiddleware) gin.HandlerFunc {

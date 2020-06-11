@@ -21,22 +21,26 @@ type Report struct {
 	Commit   string `gorm:"unique_index:report_id_commit"`
 }
 
+type ReportStore struct {
+	DB core.DatabaseService
+}
+
 // UploadReport create a report to database
 // If the report id and commit is already existed in the table,
 // the report will be updated instead.
-func UploadReport(r *Report) error {
+func (store *ReportStore) UploadReport(r *Report) error {
 	if r.ReportID == "" || r.Commit == "" {
 		return errReportID
 	}
-	session := db.New()
+	session := store.DB.Session()
 	return session.Save(r).Error
 }
 
-func FindReport(r *Report) error {
+func (store *ReportStore) FindReport(r *Report) error {
 	if r.ReportID == "" || r.Commit == "" {
 		return errReportID
 	}
-	session := db.New()
+	session := store.DB.Session()
 	session = session.First(r, &Report{
 		ReportID: r.ReportID,
 		Commit:   r.Commit,

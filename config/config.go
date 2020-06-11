@@ -1,6 +1,8 @@
 package config
 
-import "log"
+import (
+	log "github.com/sirupsen/logrus"
+)
 
 var config *Config
 
@@ -12,8 +14,13 @@ func GetConfig() *Config {
 }
 
 type Config struct {
+	Server Server
 	Gitea  Gitea
 	Github Github
+}
+
+type Server struct {
+	Secret string `default:"secret"`
 }
 
 type Gitea struct {

@@ -9,13 +9,17 @@ type MockCoverReport struct {
 	Name string
 }
 
-func TestUploadReport(t *testing.T) {
-	session := db.New()
+func TestReportStoreUpload(t *testing.T) {
+	ctrl, service := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &ReportStore{
+		DB: service,
+	}
 	m := &Report{
 		ReportID: "1234",
 		Commit:   "1234",
 	}
-	if err := UploadReport(m); err != nil {
+	if err := store.UploadReport(m); err != nil {
 		t.Error(err)
 		return
 	}
@@ -28,10 +32,11 @@ func TestUploadReport(t *testing.T) {
 		return
 	}
 	m.Data = data
-	if err := UploadReport(m); err != nil {
+	if err := store.UploadReport(m); err != nil {
 		t.Error(err)
 		return
 	}
+	session := store.DB.Session()
 	first := &Report{}
 	session = session.Where(&Report{ReportID: "1234", Commit: "1234"}).First(first)
 	if err := session.Error; err != nil {

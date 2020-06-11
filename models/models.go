@@ -7,33 +7,36 @@ import (
 )
 
 var (
-	db        *gorm.DB
-	tables    []interface{}
-	connected bool
+	tables []interface{}
 )
+
+type databaseService struct {
+	db *gorm.DB
+}
+
+func NewDatabaseService(db *gorm.DB) *databaseService {
+	return &databaseService{
+		db: db,
+	}
+}
+
+func (store *databaseService) Session() *gorm.DB {
+	return store.db.New()
+}
+
+func (store *databaseService) Migrate() error {
+	return migrate(store.db)
+}
 
 func init() {
 	tables = append(tables, &Report{})
 }
 
-func migrate() error {
+func migrate(db *gorm.DB) error {
 	for _, table := range tables {
 		if err := db.AutoMigrate(table).Error; err != nil {
 			return err
 		}
 	}
-	return nil
-}
-
-// ConnectDB with gorm
-func ConnectDB(x *gorm.DB) error {
-	if connected {
-		return nil
-	}
-	db = x
-	if err := migrate(); err != nil {
-		return err
-	}
-	connected = true
 	return nil
 }

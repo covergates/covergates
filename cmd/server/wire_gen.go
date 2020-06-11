@@ -7,13 +7,19 @@ package main
 
 import (
 	"github.com/code-devel-cover/CodeCover/config"
+	"github.com/jinzhu/gorm"
 )
 
 // Injectors from wire.go:
 
-func InitializeApplication(config2 *config.Config) (application, error) {
+func InitializeApplication(config2 *config.Config, db *gorm.DB) (application, error) {
 	loginMiddleware := provideLogin(config2)
-	routers := provideRouter(loginMiddleware)
+	scmClientService := provideSCMClientService(config2)
+	databaseService := provideDatabaseService(db)
+	userStore := provideUserStore(databaseService)
+	userService := provideUserService(userStore, scmClientService)
+	session := provideSession()
+	routers := provideRouter(loginMiddleware, scmClientService, userService, session, config2)
 	mainApplication := newApplication(routers)
 	return mainApplication, nil
 }

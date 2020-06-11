@@ -17,8 +17,18 @@ func provideLogin(config *config.Config) core.LoginMiddleware {
 	return login.NewLoginMiddleware(config)
 }
 
-func provideRouter(login core.LoginMiddleware) *routers.Routers {
+func provideRouter(
+	login core.LoginMiddleware,
+	client core.SCMClientService,
+	user core.UserService,
+	session core.Session,
+	config *config.Config,
+) *routers.Routers {
 	return &routers.Routers{
-		LoginMiddleware: login,
+		LoginMiddleware:  login,
+		SCMClientService: client,
+		Session:          session,
+		UserService:      user,
+		Config:           config,
 	}
 }

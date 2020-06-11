@@ -2,12 +2,25 @@ package models
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
 	"testing"
 
+	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/code-devel-cover/CodeCover/mock"
+	"github.com/golang/mock/gomock"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/jinzhu/gorm"
 )
+
+var db *gorm.DB
+
+func getDatabaseService(t *testing.T) (*gomock.Controller, core.DatabaseService) {
+	ctrl := gomock.NewController(t)
+	mockService := mock.NewMockDatabaseService(ctrl)
+	mockService.EXPECT().Session().AnyTimes().Return(db.New())
+	return ctrl, mockService
+}
 
 func TestMain(m *testing.M) {
 	cwd, _ := os.Getwd()
@@ -16,11 +29,12 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 	tempFile.Close()
-	db, err := gorm.Open("sqlite3", tempFile.Name())
+	x, err := gorm.Open("sqlite3", tempFile.Name())
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := ConnectDB(db); err != nil {
+	db = x
+	if err := migrate(db); err != nil {
 		log.Fatal(err)
 	}
 	exit := m.Run()
