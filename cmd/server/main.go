@@ -4,15 +4,21 @@ import (
 	"os"
 
 	"github.com/code-devel-cover/CodeCover/config"
+	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/routers"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+
+	// load sqlite driver
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 func connectDatabase() *gorm.DB {
-	return nil
+	x, _ := gorm.Open("sqlite3", "core.db")
+	return x
+
 }
 
 func Run(c *cli.Context) error {
@@ -21,6 +27,7 @@ func Run(c *cli.Context) error {
 			ClientID:     "a150e893154bafde8a00",
 			ClientSecret: "59a3f97b6e7569d0b6898bc5fb2e84f93e64113d",
 			Server:       "https://github.com",
+			APIServer:    "https://api.github.com",
 		},
 	}
 	db := connectDatabase()
@@ -30,6 +37,7 @@ func Run(c *cli.Context) error {
 	}
 	r := gin.Default()
 	app.routers.RegisterRoutes(r)
+	app.db.Migrate()
 	r.Run(":5900")
 	return nil
 }
@@ -48,12 +56,15 @@ func main() {
 
 type application struct {
 	routers *routers.Routers
+	db      core.DatabaseService
 }
 
 func newApplication(
 	routers *routers.Routers,
+	db core.DatabaseService,
 ) application {
 	return application{
 		routers: routers,
+		db:      db,
 	}
 }

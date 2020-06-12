@@ -20,7 +20,7 @@ func provideSCMClientService(config *config.Config) core.SCMClientService {
 }
 
 func provideUserService(userStore core.UserStore, client core.SCMClientService) core.UserService {
-	return &user.UserService{
+	return &user.Service{
 		UserStore:     userStore,
 		ClientService: client,
 	}

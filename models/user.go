@@ -9,6 +9,7 @@ import (
 type User struct {
 	gorm.Model
 	Login         string `gorm:"unique_index"`
+	Name          string
 	Email         string `gorm:"unique_index"`
 	Active        bool
 	Avater        string
@@ -28,10 +29,60 @@ type UserStore struct {
 	DB core.DatabaseService
 }
 
-// TODO: Return core.User
+func (store *UserStore) Create(scm core.SCMProvider, user *scm.User, token *scm.Token) error {
+	session := store.DB.Session()
+	u := &User{
+		Login:  user.Login,
+		Email:  user.Email,
+		Avater: user.Avatar,
+		Active: true,
+	}
+	switch scm {
+	case core.Github:
+		u.GithubEmail = user.Email
+		u.GithubLogin = user.Login
+		u.GithubToken = token.Token
+		u.GithubRefresh = token.Refresh
+		u.GiteaExpire = token.Expires.Unix()
+	default:
+		return &errNotSupportedSCM{scm}
+	}
+	return session.Create(u).Error
+}
+
 func (store *UserStore) Find(scm core.SCMProvider, user *scm.User) (*core.User, error) {
 	session := store.DB.Session()
+	var condition *User
+	switch scm {
+	case core.Github:
+		condition = &User{
+			GithubLogin: user.Login,
+			GithubEmail: user.Email,
+		}
+	default:
+		return nil, &errNotSupportedSCM{scm: scm}
+	}
 	u := &User{}
-	session.First(u)
-	return nil, nil
+	if err := session.Where(condition).First(u).Error; err != nil {
+		return nil, err
+	}
+	return u.toCoreUser(), nil
+}
+
+func (u *User) toCoreUser() *core.User {
+	return &core.User{
+		Login:         u.Login,
+		Avater:        u.Avater,
+		Email:         u.Email,
+		GiteaLogin:    u.GiteaLogin,
+		GiteaEmail:    u.GiteaEmail,
+		GiteaToken:    u.GiteaToken,
+		GiteaExpire:   u.GiteaExpire,
+		GiteaRefresh:  u.GiteaRefresh,
+		GithubLogin:   u.GithubLogin,
+		GithubEmail:   u.GithubEmail,
+		GithubToken:   u.GithubToken,
+		GithubExpire:  u.GiteaExpire,
+		GithubRefresh: u.GithubRefresh,
+	}
 }

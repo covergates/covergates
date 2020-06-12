@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
@@ -18,25 +19,11 @@ const (
 
 var errClientNotFound = errors.New("SCM Client not found")
 
-func RegisterLogin(
-	r *gin.Engine,
-	middleware core.LoginMiddleware,
-	clientService core.SCMClientService,
-	userService core.UserService,
-	session core.Session,
-) {
-	{
-		g := r.Group("/login")
-		g.Any("/github",
-			MiddlewareLogin(core.Github, middleware),
-			HandleLogin(
-				core.Github,
-				clientService,
-				userService,
-				session,
-			),
-		)
+func createUser(ctx context.Context, service core.UserService, scm core.SCMProvider) (*core.User, error) {
+	if err := service.Create(ctx, scm); err != nil {
+		return nil, err
 	}
+	return service.Find(ctx, scm)
 }
 
 func HandleLogin(
@@ -55,15 +42,18 @@ func HandleLogin(
 		ctx := WithToken(c)
 		user, err := userService.Find(ctx, scm)
 		if err != nil {
+			user, err = createUser(ctx, userService, scm)
+		}
+		if err != nil {
 			c.Error(err)
-			c.Abort()
-			return
+			c.String(400, err.Error())
 		}
 		if err := session.Create(c, user); err != nil {
 			c.Error(err)
-			c.Abort()
+			c.String(400, err.Error())
 			return
 		}
+		c.String(200, "login")
 	}
 }
 

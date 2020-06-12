@@ -16,3 +16,6 @@
 
 # Vscode
 .vscode/
+
+# Database
+core.db

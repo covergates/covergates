@@ -4,6 +4,7 @@ import (
 	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
 	_ "github.com/code-devel-cover/CodeCover/models"
+	"github.com/code-devel-cover/CodeCover/routers/api"
 	"github.com/code-devel-cover/CodeCover/routers/web"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
@@ -32,21 +33,18 @@ type Routers struct {
 	Session          core.Session
 }
 
-func (router *Routers) RegisterRoutes(r *gin.Engine) {
-	store := cookie.NewStore([]byte(router.Config.Server.Secret))
-	r.Use(sessions.Sessions("codecover", store))
-	r.Use(cors.Default())
-	web.RegisterStaticWeb(r)
-	web.RegisterLogin(
-		r,
-		router.LoginMiddleware,
-		router.SCMClientService,
-		router.UserService,
-		router.Session,
-	)
-	web.RegisterLogout(
-		r,
-		router.Session,
-	)
-	r.NoRoute(web.HandleIndex)
+func (r *Routers) RegisterRoutes(e *gin.Engine) {
+	store := cookie.NewStore([]byte(r.Config.Server.Secret))
+	e.Use(sessions.Sessions("codecover", store))
+	e.Use(cors.Default())
+
+	webRoute := &web.WebRouter{
+		LoginMiddleware:  r.LoginMiddleware,
+		SCMClientService: r.SCMClientService,
+		UserService:      r.UserService,
+		Session:          r.Session,
+	}
+	apiRoute := &api.APIRouter{}
+	webRoute.RegisterRoutes(e)
+	apiRoute.RegisterRoutes(e)
 }

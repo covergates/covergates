@@ -2,8 +2,6 @@ package models
 
 import (
 	"github.com/jinzhu/gorm"
-	// load sqlite driver
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 var (
@@ -29,7 +27,7 @@ func (store *databaseService) Migrate() error {
 }
 
 func init() {
-	tables = append(tables, &Report{})
+	tables = append(tables, &Report{}, &User{})
 }
 
 func migrate(db *gorm.DB) error {

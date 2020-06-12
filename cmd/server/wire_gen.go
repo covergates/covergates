@@ -10,6 +10,10 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+import (
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
+)
+
 // Injectors from wire.go:
 
 func InitializeApplication(config2 *config.Config, db *gorm.DB) (application, error) {
@@ -20,6 +24,6 @@ func InitializeApplication(config2 *config.Config, db *gorm.DB) (application, er
 	userService := provideUserService(userStore, scmClientService)
 	session := provideSession()
 	routers := provideRouter(loginMiddleware, scmClientService, userService, session, config2)
-	mainApplication := newApplication(routers)
+	mainApplication := newApplication(routers, databaseService)
 	return mainApplication, nil
 }

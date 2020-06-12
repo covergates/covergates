@@ -17,6 +17,7 @@ func IsReportTypeNotSupportError(err error) bool {
 	return false
 }
 
+// TODO: Change the report service to do nothing constructor
 func NewCoverageReportService(t core.ReportType, data io.Reader) (core.CoverageReportService, error) {
 	switch t {
 	case core.ReportPerl:
