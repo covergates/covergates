@@ -7,17 +7,18 @@ import (
 	"github.com/drone/go-login/login/github"
 )
 
-type loginMiddleware struct {
+type middleware struct {
 	config *config.Config
 }
 
-func NewLoginMiddleware(config *config.Config) *loginMiddleware {
-	return &loginMiddleware{
+// NewMiddleware of login
+func NewMiddleware(config *config.Config) core.LoginMiddleware {
+	return &middleware{
 		config: config,
 	}
 }
 
-func (m *loginMiddleware) Handler(scm core.SCMProvider) login.Middleware {
+func (m *middleware) Handler(scm core.SCMProvider) login.Middleware {
 	var middleware login.Middleware
 	switch scm {
 	case core.Github:

@@ -7,6 +7,6 @@ import (
 )
 
 type SCMClientService interface {
-	Client(scm SCMProvider) *scm.Client
+	Client(scm SCMProvider) (*scm.Client, error)
 	WithUser(ctx context.Context, scm SCMProvider, usr *User) context.Context
 }

@@ -14,21 +14,27 @@ var routerSet = wire.NewSet(
 )
 
 func provideLogin(config *config.Config) core.LoginMiddleware {
-	return login.NewLoginMiddleware(config)
+	return login.NewMiddleware(config)
 }
 
 func provideRouter(
-	login core.LoginMiddleware,
-	client core.SCMClientService,
-	user core.UserService,
 	session core.Session,
 	config *config.Config,
+	login core.LoginMiddleware,
+	// service
+	clientService core.SCMClientService,
+	userService core.UserService,
+	coverageService core.CoverageService,
+	// store
+	reportStore core.ReportStore,
 ) *routers.Routers {
 	return &routers.Routers{
 		LoginMiddleware:  login,
-		SCMClientService: client,
+		SCMClientService: clientService,
 		Session:          session,
-		UserService:      user,
+		UserService:      userService,
 		Config:           config,
+		CoverageService:  coverageService,
+		ReportStore:      reportStore,
 	}
 }

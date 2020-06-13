@@ -1,4 +1,16 @@
 basePath: /api/v1
+definitions:
+  core.Repo:
+    properties:
+      name:
+        type: string
+      reportID:
+        type: string
+      scm:
+        type: SCMProvider
+      url:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -9,5 +21,64 @@ info:
   termsOfService: http://swagger.io/terms/
   title: CodeCover API
   version: "1.0"
-paths: {}
+paths:
+  /report/{id}/{type}:
+    post:
+      parameters:
+      - description: report type
+        in: path
+        name: type
+        required: true
+        type: string
+      - description: report id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: report
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Git commit SHA
+        in: formData
+        name: commit
+        required: true
+        type: string
+      - description: branch ref
+        in: formData
+        name: branch
+        type: string
+      - description: tag ref
+        in: formData
+        name: tag
+        type: string
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: error message
+          schema:
+            type: string
+      summary: Upload coverage report
+      tags:
+      - Report
+  /scm/{scm}/repos:
+    get:
+      parameters:
+      - description: SCM source (github, gitea)
+        in: path
+        name: scm
+        required: true
+        type: string
+      responses:
+        "200":
+          description: repositories
+          schema:
+            items:
+              $ref: '#/definitions/core.Repo'
+            type: array
+      summary: Get repositories from SCM
 swagger: "2.0"

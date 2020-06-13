@@ -3,6 +3,7 @@ package scm
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net/http"
 
 	"github.com/code-devel-cover/CodeCover/config"
@@ -12,6 +13,14 @@ import (
 	"github.com/drone/go-scm/scm/transport/oauth2"
 	log "github.com/sirupsen/logrus"
 )
+
+type errClientNotFound struct {
+	scm core.SCMProvider
+}
+
+func (e *errClientNotFound) Error() string {
+	return fmt.Sprintf("%s client not found", e.scm)
+}
 
 type scmClientService struct {
 	config *config.Config
@@ -47,7 +56,7 @@ func (service *scmClientService) WithUser(
 	return context.WithValue(ctx, scm.TokenKey{}, token)
 }
 
-func (service *scmClientService) Client(s core.SCMProvider) *scm.Client {
+func (service *scmClientService) Client(s core.SCMProvider) (*scm.Client, error) {
 	var client *scm.Client
 	var err error
 	switch s {
@@ -59,9 +68,9 @@ func (service *scmClientService) Client(s core.SCMProvider) *scm.Client {
 				Base:   transport(service.config.Github.SkipVerity),
 			},
 		}
+	default:
+		log.Debug("scm not supported")
+		return nil, &errClientNotFound{s}
 	}
-	if err != nil {
-		log.Fatal(err)
-	}
-	return client
+	return client, err
 }

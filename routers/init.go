@@ -12,25 +12,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//go:generate swag init -g ./init.go -d ./ -o ./docs
-
-// @title CodeCover API
-// @version 1.0
-// @description REST API for CodeCover
-// @termsOfService http://swagger.io/terms/
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host localhost:8080
-// @BasePath /api/v1
-
 type Routers struct {
-	Config           *config.Config
-	LoginMiddleware  core.LoginMiddleware
+	Config          *config.Config
+	Session         core.Session
+	LoginMiddleware core.LoginMiddleware
+	// service
 	SCMClientService core.SCMClientService
 	UserService      core.UserService
-	Session          core.Session
+	CoverageService  core.CoverageService
+	// store
+	ReportStore core.ReportStore
 }
 
 func (r *Routers) RegisterRoutes(e *gin.Engine) {
@@ -39,12 +30,14 @@ func (r *Routers) RegisterRoutes(e *gin.Engine) {
 	e.Use(cors.Default())
 
 	webRoute := &web.WebRouter{
-		LoginMiddleware:  r.LoginMiddleware,
-		SCMClientService: r.SCMClientService,
-		UserService:      r.UserService,
-		Session:          r.Session,
+		LoginMiddleware: r.LoginMiddleware,
+		UserService:     r.UserService,
+		Session:         r.Session,
 	}
-	apiRoute := &api.APIRouter{}
+	apiRoute := &api.APIRouter{
+		CoverageService: r.CoverageService,
+		ReportStore:     r.ReportStore,
+	}
 	webRoute.RegisterRoutes(e)
 	apiRoute.RegisterRoutes(e)
 }

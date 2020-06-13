@@ -13,5 +13,114 @@
     },
     "host": "localhost:8080",
     "basePath": "/api/v1",
-    "paths": {}
+    "paths": {
+        "/report/{id}/{type}": {
+            "post": {
+                "tags": [
+                    "Report"
+                ],
+                "summary": "Upload coverage report",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "report type",
+                        "name": "type",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "report id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "report",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Git commit SHA",
+                        "name": "commit",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "branch ref",
+                        "name": "branch",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "tag ref",
+                        "name": "tag",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/scm/{scm}/repos": {
+            "get": {
+                "summary": "Get repositories from SCM",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM source (github, gitea)",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "repositories",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/core.Repo"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "core.Repo": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "reportID": {
+                    "type": "string"
+                },
+                "scm": {
+                    "type": "SCMProvider"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }

@@ -19,14 +19,31 @@ var errDigestNoFound = errors.New("Digest not found")
 const coverDBName = "cover.14"
 const digiestFolder = "structure"
 
-type PerlCoverageReportService struct {
-	db      *coverDB
-	files   map[string]*zip.File
-	digests map[string]*coverDigest
+type DigestsMap map[string]*coverDigest
+type CoverageService struct{}
+
+func (r *CoverageService) Report(
+	ctx context.Context,
+	data io.Reader,
+) (*core.CoverageReport, error) {
+
+	z, err := archive.NewZipReader(data)
+	if err != nil {
+		return nil, err
+	}
+	db, err := findCoverDB(z)
+	if err != nil {
+		return nil, err
+	}
+	digests, err := findDigests(z.File)
+	if err != nil {
+		return nil, err
+	}
+	return report(db, digests)
 }
 
-func findDigests(files []*zip.File) (map[string]*coverDigest, error) {
-	digests := make(map[string]*coverDigest)
+func findDigests(files []*zip.File) (DigestsMap, error) {
+	digests := make(DigestsMap)
 	for _, file := range files {
 		if file.FileInfo().IsDir() {
 			continue
@@ -52,11 +69,7 @@ func findDigests(files []*zip.File) (map[string]*coverDigest, error) {
 	return digests, nil
 }
 
-func NewPerlCoverageReportService(data io.Reader) (*PerlCoverageReportService, error) {
-	z, err := archive.NewZipReader(data)
-	if err != nil {
-		return nil, err
-	}
+func findCoverDB(z *zip.Reader) (*coverDB, error) {
 	files := make(map[string]*zip.File)
 	for _, file := range z.File {
 		files[file.Name] = file
@@ -78,15 +91,7 @@ func NewPerlCoverageReportService(data io.Reader) (*PerlCoverageReportService, e
 	if err := json.Unmarshal(d, db); err != nil {
 		return nil, err
 	}
-	digests, err := findDigests(z.File)
-	if err != nil {
-		return nil, err
-	}
-	s := &PerlCoverageReportService{
-		db:      db,
-		digests: digests,
-	}
-	return s, nil
+	return db, nil
 }
 
 func avgStatementCoverage(files []*core.File) float64 {
@@ -100,15 +105,15 @@ func avgStatementCoverage(files []*core.File) float64 {
 	return s / float64(len(files))
 }
 
-func (r *PerlCoverageReportService) Report(ctx context.Context) (*core.CoverageReport, error) {
+func report(db *coverDB, digests DigestsMap) (*core.CoverageReport, error) {
 	fileCollection := newFileCollection()
-	for _, run := range r.db.Runs {
+	for _, run := range db.Runs {
 		for name, count := range run.Counts {
 			key, ok := run.Digests[name]
 			if !ok {
 				return nil, errDigestNoFound
 			}
-			digest, ok := r.digests[key]
+			digest, ok := digests[key]
 			if !ok {
 				return nil, errDigestNoFound
 			}

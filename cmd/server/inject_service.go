@@ -6,6 +6,7 @@ import (
 	"github.com/code-devel-cover/CodeCover/modules/scm"
 	"github.com/code-devel-cover/CodeCover/modules/session"
 	"github.com/code-devel-cover/CodeCover/modules/user"
+	"github.com/code-devel-cover/CodeCover/service/coverage"
 	"github.com/google/wire"
 )
 
@@ -13,6 +14,7 @@ var serviceSet = wire.NewSet(
 	provideSCMClientService,
 	provideUserService,
 	provideSession,
+	provideCoverageService,
 )
 
 func provideSCMClientService(config *config.Config) core.SCMClientService {
@@ -28,4 +30,8 @@ func provideUserService(userStore core.UserStore, client core.SCMClientService) 
 
 func provideSession() core.Session {
 	return &session.Session{}
+}
+
+func provideCoverageService() core.CoverageService {
+	return &coverage.CoverageService{}
 }

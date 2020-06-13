@@ -15,7 +15,10 @@ type Service struct {
 
 // Create new user with SCM user
 func (u *Service) Create(ctx context.Context, s core.SCMProvider) error {
-	client := u.ClientService.Client(s)
+	client, err := u.ClientService.Client(s)
+	if err != nil {
+		return err
+	}
 	source := oauth2.ContextTokenSource()
 	token, err := source.Token(ctx)
 	if err != nil {
@@ -30,7 +33,10 @@ func (u *Service) Create(ctx context.Context, s core.SCMProvider) error {
 
 // Find user with given SCM token from the contex
 func (u *Service) Find(ctx context.Context, s core.SCMProvider) (*core.User, error) {
-	client := u.ClientService.Client(s)
+	client, err := u.ClientService.Client(s)
+	if err != nil {
+		return nil, err
+	}
 	user, _, err := client.Users.Find(ctx)
 	if err != nil {
 		return nil, err

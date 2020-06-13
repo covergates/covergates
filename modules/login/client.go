@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// BasicClient for SCM
 func BasicClient(insecure bool) *http.Client {
 	client := &http.Client{
 		Transport: &http.Transport{

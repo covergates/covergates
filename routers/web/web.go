@@ -4,11 +4,11 @@ import (
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/gin-gonic/gin"
 )
+
 type WebRouter struct {
-	LoginMiddleware  core.LoginMiddleware
-	SCMClientService core.SCMClientService
-	UserService      core.UserService
-	Session          core.Session
+	LoginMiddleware core.LoginMiddleware
+	UserService     core.UserService
+	Session         core.Session
 }
 
 func (r *WebRouter) RegisterRoutes(e *gin.Engine) {
@@ -18,7 +18,6 @@ func (r *WebRouter) RegisterRoutes(e *gin.Engine) {
 			MiddlewareLogin(core.Github, r.LoginMiddleware),
 			HandleLogin(
 				core.Github,
-				r.SCMClientService,
 				r.UserService,
 				r.Session,
 			),

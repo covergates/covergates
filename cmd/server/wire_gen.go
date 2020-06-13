@@ -17,13 +17,15 @@ import (
 // Injectors from wire.go:
 
 func InitializeApplication(config2 *config.Config, db *gorm.DB) (application, error) {
+	session := provideSession()
 	loginMiddleware := provideLogin(config2)
 	scmClientService := provideSCMClientService(config2)
 	databaseService := provideDatabaseService(db)
 	userStore := provideUserStore(databaseService)
 	userService := provideUserService(userStore, scmClientService)
-	session := provideSession()
-	routers := provideRouter(loginMiddleware, scmClientService, userService, session, config2)
+	coverageService := provideCoverageService()
+	reportStore := provideReportStore(databaseService)
+	routers := provideRouter(session, config2, loginMiddleware, scmClientService, userService, coverageService, reportStore)
 	mainApplication := newApplication(routers, databaseService)
 	return mainApplication, nil
 }

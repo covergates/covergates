@@ -2,7 +2,6 @@ package web
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	"github.com/code-devel-cover/CodeCover/core"
@@ -17,8 +16,6 @@ const (
 	keyExpires = "expires"
 )
 
-var errClientNotFound = errors.New("SCM Client not found")
-
 func createUser(ctx context.Context, service core.UserService, scm core.SCMProvider) (*core.User, error) {
 	if err := service.Create(ctx, scm); err != nil {
 		return nil, err
@@ -28,17 +25,10 @@ func createUser(ctx context.Context, service core.UserService, scm core.SCMProvi
 
 func HandleLogin(
 	scm core.SCMProvider,
-	clientService core.SCMClientService,
 	userService core.UserService,
 	session core.Session,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		client := clientService.Client(scm)
-		if client == nil {
-			c.Error(errClientNotFound)
-			c.Abort()
-			return
-		}
 		ctx := WithToken(c)
 		user, err := userService.Find(ctx, scm)
 		if err != nil {

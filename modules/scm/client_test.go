@@ -19,7 +19,11 @@ func TestSCMClientGithub(t *testing.T) {
 	service := *&scmClientService{
 		config: config,
 	}
-	client := service.Client(core.Github)
+	client, err := service.Client(core.Github)
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	ctx := context.Background()
 	content, _, err := client.Contents.Find(ctx, "blueworrybear/livelogs", "README.md", "master")
 	if err != nil {

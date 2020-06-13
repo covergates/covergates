@@ -3,6 +3,8 @@ package models
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/code-devel-cover/CodeCover/core"
 )
 
 type MockCoverReport struct {
@@ -15,24 +17,23 @@ func TestReportStoreUpload(t *testing.T) {
 	store := &ReportStore{
 		DB: service,
 	}
-	m := &Report{
+	m := &core.Report{
 		ReportID: "1234",
 		Commit:   "1234",
 	}
-	if err := store.UploadReport(m); err != nil {
+	if err := store.Upload(m); err != nil {
 		t.Error(err)
 		return
 	}
-	r := &MockCoverReport{
-		Name: "mock",
+	r := &core.CoverageReport{
+		Files: []*core.File{
+			{
+				Name: "mock",
+			},
+		},
 	}
-	data, err := json.Marshal(r)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	m.Data = data
-	if err := store.UploadReport(m); err != nil {
+	m.Coverage = r
+	if err := store.Upload(m); err != nil {
 		t.Error(err)
 		return
 	}
@@ -43,12 +44,12 @@ func TestReportStoreUpload(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	r = &MockCoverReport{}
+	r = &core.CoverageReport{}
 	if err := json.Unmarshal(first.Data, r); err != nil {
 		t.Error(err)
 		return
 	}
-	if r.Name != "mock" {
+	if len(r.Files) <= 0 || r.Files[0].Name != "mock" {
 		t.Fail()
 	}
 	var count int
