@@ -19,4 +19,5 @@
 
 # Database
 core.db
-cover_db.zip
+*.zip
+!**/testdata/*.zip

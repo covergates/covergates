@@ -3,11 +3,13 @@ package perl
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestPerlCoverageService(t *testing.T) {
-	f, err := os.Open("../../cover_db.zip")
+	file := filepath.Join("testdata", "cover_db.zip")
+	f, err := os.Open(file)
 	if err != nil {
 		t.Error(err)
 		return
