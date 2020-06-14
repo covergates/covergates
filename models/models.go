@@ -27,7 +27,11 @@ func (store *databaseService) Migrate() error {
 }
 
 func init() {
-	tables = append(tables, &Report{}, &User{})
+	tables = append(tables,
+		&Report{},
+		&User{},
+		&Repo{},
+	)
 }
 
 func migrate(db *gorm.DB) error {

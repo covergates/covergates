@@ -22,6 +22,14 @@ func (r *WebRouter) RegisterRoutes(e *gin.Engine) {
 				r.Session,
 			),
 		)
+		g.Any("/gitea",
+			MiddlewareLogin(core.Gitea, r.LoginMiddleware),
+			HandleLogin(
+				core.Gitea,
+				r.UserService,
+				r.Session,
+			),
+		)
 	}
 	e.Any("/logout", handleLogout(r.Session))
 	e.NoRoute(HandleIndex)

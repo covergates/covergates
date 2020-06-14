@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/drone/go-scm/scm"
 	"github.com/jinzhu/gorm"
@@ -43,6 +45,12 @@ func (store *UserStore) Create(scm core.SCMProvider, user *scm.User, token *scm.
 		u.GithubLogin = user.Login
 		u.GithubToken = token.Token
 		u.GithubRefresh = token.Refresh
+		u.GithubExpire = token.Expires.Unix()
+	case core.Gitea:
+		u.GiteaEmail = user.Email
+		u.GiteaLogin = user.Login
+		u.GiteaToken = token.Token
+		u.GiteaRefresh = token.Refresh
 		u.GiteaExpire = token.Expires.Unix()
 	default:
 		return &errNotSupportedSCM{scm}
@@ -58,6 +66,11 @@ func (store *UserStore) Find(scm core.SCMProvider, user *scm.User) (*core.User, 
 		condition = &User{
 			GithubLogin: user.Login,
 			GithubEmail: user.Email,
+		}
+	case core.Gitea:
+		condition = &User{
+			GiteaLogin: user.Login,
+			GiteaEmail: user.Email,
 		}
 	default:
 		return nil, &errNotSupportedSCM{scm: scm}
@@ -77,12 +90,12 @@ func (u *User) toCoreUser() *core.User {
 		GiteaLogin:    u.GiteaLogin,
 		GiteaEmail:    u.GiteaEmail,
 		GiteaToken:    u.GiteaToken,
-		GiteaExpire:   u.GiteaExpire,
+		GiteaExpire:   time.Unix(u.GiteaExpire, 0),
 		GiteaRefresh:  u.GiteaRefresh,
 		GithubLogin:   u.GithubLogin,
 		GithubEmail:   u.GithubEmail,
 		GithubToken:   u.GithubToken,
-		GithubExpire:  u.GiteaExpire,
+		GithubExpire:  time.Unix(u.GithubExpire, 0),
 		GithubRefresh: u.GithubRefresh,
 	}
 }

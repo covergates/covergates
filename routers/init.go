@@ -18,10 +18,12 @@ type Routers struct {
 	LoginMiddleware core.LoginMiddleware
 	// service
 	SCMClientService core.SCMClientService
+	RepoService      core.RepoService
 	UserService      core.UserService
 	CoverageService  core.CoverageService
 	// store
 	ReportStore core.ReportStore
+	RepoStore   core.RepoStore
 }
 
 func (r *Routers) RegisterRoutes(e *gin.Engine) {
@@ -35,8 +37,12 @@ func (r *Routers) RegisterRoutes(e *gin.Engine) {
 		Session:         r.Session,
 	}
 	apiRoute := &api.APIRouter{
+		Config:          r.Config,
+		Session:         r.Session,
 		CoverageService: r.CoverageService,
+		RepoService:     r.RepoService,
 		ReportStore:     r.ReportStore,
+		RepoStore:       r.RepoStore,
 	}
 	webRoute.RegisterRoutes(e)
 	apiRoute.RegisterRoutes(e)

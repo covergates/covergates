@@ -29,6 +29,111 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/repo": {
+            "post": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "Create new repository for code coverage",
+                "parameters": [
+                    {
+                        "description": "repository to create",
+                        "name": "repo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Created repository",
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
+                        }
+                    }
+                }
+            }
+        },
+        "/repo/{scm}/{namespace}/{name}": {
+            "get": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "find repository",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
+                        }
+                    }
+                }
+            }
+        },
+        "/repo/{scm}/{namespace}/{name}/report": {
+            "patch": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "renew repository report id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "updated repository",
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
+                        }
+                    }
+                }
+            }
+        },
         "/report/{id}/{type}": {
             "post": {
                 "tags": [
@@ -95,6 +200,9 @@ var doc = `{
         },
         "/scm/{scm}/repos": {
             "get": {
+                "tags": [
+                    "SCM"
+                ],
                 "summary": "Get repositories from SCM",
                 "parameters": [
                     {
@@ -123,7 +231,13 @@ var doc = `{
         "core.Repo": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "nameSpace": {
                     "type": "string"
                 },
                 "reportID": {

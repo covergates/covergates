@@ -11,6 +11,7 @@ var storeSet = wire.NewSet(
 	provideDatabaseService,
 	provideUserStore,
 	provideReportStore,
+	provideRepoStore,
 )
 
 func provideDatabaseService(db *gorm.DB) core.DatabaseService {
@@ -25,6 +26,12 @@ func provideUserStore(db core.DatabaseService) core.UserStore {
 
 func provideReportStore(db core.DatabaseService) core.ReportStore {
 	return &models.ReportStore{
+		DB: db,
+	}
+}
+
+func provideRepoStore(db core.DatabaseService) core.RepoStore {
+	return &models.RepoStore{
 		DB: db,
 	}
 }

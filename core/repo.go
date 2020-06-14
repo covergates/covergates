@@ -6,10 +6,12 @@ import "context"
 
 // Repo defined a repository structure
 type Repo struct {
-	URL      string
-	ReportID string
-	Name     string
-	SCM      SCMProvider
+	ID        uint
+	URL       string
+	ReportID  string
+	NameSpace string
+	Name      string
+	SCM       SCMProvider
 }
 
 // RepoService provides operations with SCM
@@ -21,6 +23,8 @@ type RepoService interface {
 
 // RepoStore repository in storage
 type RepoStore interface {
-	Create(scm SCMProvider, url, name string) error
+	Create(repo *Repo) error
 	Update(repo *Repo) error
+	Find(repo *Repo) (*Repo, error)
+	Finds(urls ...string) ([]*Repo, error)
 }

@@ -19,8 +19,6 @@ func (service *Service) NewReportID(repo *core.Repo) string {
 	return guid.String()
 }
 
-// TODO: Need to add test case
-
 // List repositories from SCM
 func (service *Service) List(
 	ctx context.Context,
@@ -39,9 +37,10 @@ func (service *Service) List(
 	repositories := make([]*core.Repo, len(result))
 	for i, r := range result {
 		repositories[i] = &core.Repo{
-			Name: r.Namespace,
-			URL:  r.Link,
-			SCM:  s,
+			NameSpace: r.Namespace,
+			Name:      r.Name,
+			URL:       r.Link,
+			SCM:       s,
 		}
 	}
 	return repositories, nil

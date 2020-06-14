@@ -1,10 +1,16 @@
 package api
 
 import (
+	"net/url"
+
+	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/code-devel-cover/CodeCover/routers/api/repo"
 	"github.com/code-devel-cover/CodeCover/routers/api/report"
+	"github.com/code-devel-cover/CodeCover/routers/api/request"
+	"github.com/code-devel-cover/CodeCover/routers/api/scm"
 	"github.com/code-devel-cover/CodeCover/routers/api/user"
-	_ "github.com/code-devel-cover/CodeCover/routers/docs"
+	"github.com/code-devel-cover/CodeCover/routers/docs"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -24,11 +30,26 @@ import (
 // @BasePath /api/v1
 
 type APIRouter struct {
+	Config  *config.Config
+	Session core.Session
+	// service
 	CoverageService core.CoverageService
-	ReportStore     core.ReportStore
+	RepoService     core.RepoService
+	// store
+	ReportStore core.ReportStore
+	RepoStore   core.RepoStore
+}
+
+func host(addr string) string {
+	u, err := url.Parse(addr)
+	if err != nil {
+		return addr
+	}
+	return u.Host
 }
 
 func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
+	docs.SwaggerInfo.Host = host(r.Config.Server.Addr)
 	e.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	g := e.Group("/api/v1")
 	{
@@ -41,5 +62,17 @@ func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
 			r.CoverageService,
 			r.ReportStore,
 		))
+	}
+	{
+		g := g.Group("/repo")
+		g.Use(request.CheckLogin(r.Session))
+		g.POST("/", repo.HandleCreate(r.RepoStore))
+		g.GET("/:scm/:namespace/:name", repo.HandleGet(r.RepoStore))
+		g.PATCH("/:scm/:namespace/:name/report", repo.HandleReportIDRenew(r.RepoStore, r.RepoService))
+	}
+	{
+		g := g.Group("/scm")
+		g.Use(request.CheckLogin(r.Session))
+		g.GET("/:scm/repos", scm.HandleListSCM(r.RepoService))
 	}
 }

@@ -87,17 +87,51 @@ func (m *MockRepoStore) EXPECT() *MockRepoStoreMockRecorder {
 }
 
 // Create mocks base method
-func (m *MockRepoStore) Create(arg0 core.SCMProvider, arg1, arg2 string) error {
+func (m *MockRepoStore) Create(arg0 *core.Repo) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "Create", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create
-func (mr *MockRepoStoreMockRecorder) Create(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockRepoStoreMockRecorder) Create(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockRepoStore)(nil).Create), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockRepoStore)(nil).Create), arg0)
+}
+
+// Find mocks base method
+func (m *MockRepoStore) Find(arg0 *core.Repo) (*core.Repo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Find", arg0)
+	ret0, _ := ret[0].(*core.Repo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Find indicates an expected call of Find
+func (mr *MockRepoStoreMockRecorder) Find(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockRepoStore)(nil).Find), arg0)
+}
+
+// Finds mocks base method
+func (m *MockRepoStore) Finds(arg0 ...string) ([]*core.Repo, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{}
+	for _, a := range arg0 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Finds", varargs...)
+	ret0, _ := ret[0].([]*core.Repo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Finds indicates an expected call of Finds
+func (mr *MockRepoStoreMockRecorder) Finds(arg0 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Finds", reflect.TypeOf((*MockRepoStore)(nil).Finds), arg0...)
 }
 
 // Update mocks base method

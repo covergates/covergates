@@ -2,7 +2,11 @@ basePath: /api/v1
 definitions:
   core.Repo:
     properties:
+      id:
+        type: integer
       name:
+        type: string
+      nameSpace:
         type: string
       reportID:
         type: string
@@ -22,6 +26,75 @@ info:
   title: CodeCover API
   version: "1.0"
 paths:
+  /repo:
+    post:
+      parameters:
+      - description: repository to create
+        in: body
+        name: repo
+        required: true
+        schema:
+          $ref: '#/definitions/core.Repo'
+      responses:
+        "200":
+          description: Created repository
+          schema:
+            $ref: '#/definitions/core.Repo'
+      summary: Create new repository for code coverage
+      tags:
+      - Repository
+  /repo/{scm}/{namespace}/{name}:
+    get:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.Repo'
+      summary: find repository
+      tags:
+      - Repository
+  /repo/{scm}/{namespace}/{name}/report:
+    patch:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: updated repository
+          schema:
+            $ref: '#/definitions/core.Repo'
+      summary: renew repository report id
+      tags:
+      - Repository
   /report/{id}/{type}:
     post:
       parameters:
@@ -81,4 +154,6 @@ paths:
               $ref: '#/definitions/core.Repo'
             type: array
       summary: Get repositories from SCM
+      tags:
+      - SCM
 swagger: "2.0"

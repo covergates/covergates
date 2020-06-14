@@ -7,6 +7,7 @@ import (
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/drone/go-login/login"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -35,11 +36,11 @@ func HandleLogin(
 			user, err = createUser(ctx, userService, scm)
 		}
 		if err != nil {
-			c.Error(err)
+			log.Error(err)
 			c.String(400, err.Error())
 		}
 		if err := session.Create(c, user); err != nil {
-			c.Error(err)
+			log.Error(err)
 			c.String(400, err.Error())
 			return
 		}

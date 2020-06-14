@@ -25,6 +25,7 @@ require (
 	github.com/swaggo/swag v1.6.7
 	github.com/urfave/cli v1.20.0
 	github.com/urfave/cli/v2 v2.2.0 // indirect
+	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
 	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect

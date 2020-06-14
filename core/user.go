@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -17,12 +18,12 @@ type User struct {
 	GiteaEmail    string
 	GiteaToken    string
 	GiteaRefresh  string
-	GiteaExpire   int64
+	GiteaExpire   time.Time
 	GithubLogin   string
 	GithubEmail   string
 	GithubToken   string
 	GithubRefresh string
-	GithubExpire  int64
+	GithubExpire  time.Time
 }
 
 // UserService defines operations with SCM

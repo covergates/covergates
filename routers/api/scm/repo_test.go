@@ -45,7 +45,7 @@ func TestList(t *testing.T) {
 	r.Use(func(c *gin.Context) {
 		request.WithUser(c, user)
 	})
-	r.GET("/scm/:scm/repos", HandleList(repoService))
+	r.GET("/scm/:scm/repos", HandleListSCM(repoService))
 	req, _ := http.NewRequest("GET", "/scm/github/repos", nil)
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()
@@ -69,7 +69,7 @@ func TestList(t *testing.T) {
 	})
 	// test no login
 	r = setRouter(repoService)
-	r.GET("/scm/:scm/repos", HandleList(repoService))
+	r.GET("/scm/:scm/repos", HandleListSCM(repoService))
 	req, _ = http.NewRequest("GET", "/scm/github/repos", nil)
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()

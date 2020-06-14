@@ -5,10 +5,12 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/gitea"
 	"github.com/drone/go-scm/scm/driver/github"
 	"github.com/drone/go-scm/scm/transport/oauth2"
 	log "github.com/sirupsen/logrus"
@@ -52,6 +54,14 @@ func (service *scmClientService) WithUser(
 		token = &scm.Token{
 			Token: usr.GithubToken,
 		}
+	case core.Gitea:
+		token = &scm.Token{
+			Token:   usr.GiteaToken,
+			Refresh: usr.GiteaRefresh,
+			Expires: usr.GiteaExpire,
+		}
+	default:
+		log.Warningf("%s is not supported", s)
 	}
 	return context.WithValue(ctx, scm.TokenKey{}, token)
 }
@@ -66,6 +76,19 @@ func (service *scmClientService) Client(s core.SCMProvider) (*scm.Client, error)
 			Transport: &oauth2.Transport{
 				Source: oauth2.ContextTokenSource(),
 				Base:   transport(service.config.Github.SkipVerity),
+			},
+		}
+	case core.Gitea:
+		client, err = gitea.New(service.config.Gitea.Server)
+		client.Client = &http.Client{
+			Transport: &oauth2.Transport{
+				Scheme: oauth2.SchemeBearer,
+				Source: &oauth2.Refresher{
+					ClientID:     service.config.Gitea.ClientID,
+					ClientSecret: service.config.Gitea.ClientSecret,
+					Endpoint:     strings.TrimPrefix(service.config.Gitea.Server, "/") + "/login/oauth/access_token",
+					Source:       oauth2.ContextTokenSource(),
+				},
 			},
 		}
 	default:

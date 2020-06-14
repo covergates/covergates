@@ -1,18 +1,5 @@
 package config
 
-import (
-	log "github.com/sirupsen/logrus"
-)
-
-var config *Config
-
-func GetConfig() *Config {
-	if config == nil {
-		log.Fatal("Config not initialize")
-	}
-	return config
-}
-
 type Config struct {
 	Server Server
 	Gitea  Gitea
@@ -21,6 +8,7 @@ type Config struct {
 
 type Server struct {
 	Secret string `default:"secret"`
+	Addr   string
 }
 
 type Gitea struct {

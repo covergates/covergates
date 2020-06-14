@@ -20,12 +20,13 @@ func InitializeApplication(config2 *config.Config, db *gorm.DB) (application, er
 	session := provideSession()
 	loginMiddleware := provideLogin(config2)
 	scmClientService := provideSCMClientService(config2)
+	repoService := provideRepoService(scmClientService)
 	databaseService := provideDatabaseService(db)
 	userStore := provideUserStore(databaseService)
 	userService := provideUserService(userStore, scmClientService)
 	coverageService := provideCoverageService()
 	reportStore := provideReportStore(databaseService)
-	routers := provideRouter(session, config2, loginMiddleware, scmClientService, userService, coverageService, reportStore)
+	routers := provideRouter(session, config2, loginMiddleware, scmClientService, repoService, userService, coverageService, reportStore)
 	mainApplication := newApplication(routers, databaseService)
 	return mainApplication, nil
 }

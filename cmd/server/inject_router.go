@@ -23,6 +23,7 @@ func provideRouter(
 	login core.LoginMiddleware,
 	// service
 	clientService core.SCMClientService,
+	repoService core.RepoService,
 	userService core.UserService,
 	coverageService core.CoverageService,
 	// store
@@ -33,6 +34,7 @@ func provideRouter(
 		SCMClientService: clientService,
 		Session:          session,
 		UserService:      userService,
+		RepoService:      repoService,
 		Config:           config,
 		CoverageService:  coverageService,
 		ReportStore:      reportStore,
