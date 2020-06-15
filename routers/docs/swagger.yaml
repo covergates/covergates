@@ -2,6 +2,8 @@ basePath: /api/v1
 definitions:
   core.Repo:
     properties:
+      branch:
+        type: string
       id:
         type: integer
       name:
@@ -14,6 +16,21 @@ definitions:
         type: SCMProvider
       url:
         type: string
+    type: object
+  core.Report:
+    properties:
+      branch:
+        type: string
+      commit:
+        type: string
+      coverage:
+        type: CoverageReport
+      reportID:
+        type: string
+      tag:
+        type: string
+      type:
+        type: ReportType
     type: object
 host: localhost:8080
 info:
@@ -66,7 +83,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/core.Repo'
-      summary: find repository
+      summary: get repository
       tags:
       - Repository
   /repo/{scm}/{namespace}/{name}/report:
@@ -95,7 +112,27 @@ paths:
       summary: renew repository report id
       tags:
       - Repository
-  /report/{id}/{type}:
+  /reports/{id}:
+    get:
+      parameters:
+      - description: report id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: get latest report
+        in: query
+        name: latest
+        type: boolean
+      responses:
+        "200":
+          description: coverage report
+          schema:
+            $ref: '#/definitions/core.Report'
+      summary: get reports for the report id
+      tags:
+      - Report
+  /reports/{id}/{type}:
     post:
       parameters:
       - description: report type
@@ -136,6 +173,26 @@ paths:
           schema:
             type: string
       summary: Upload coverage report
+      tags:
+      - Report
+  /reports/{id}/repo:
+    get:
+      parameters:
+      - description: report id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: repository
+          schema:
+            $ref: '#/definitions/core.Repo'
+        "400":
+          description: error message
+          schema:
+            type: string
+      summary: get repository of the report id
       tags:
       - Report
   /scm/{scm}/repos:

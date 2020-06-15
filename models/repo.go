@@ -14,8 +14,9 @@ type Repo struct {
 	gorm.Model
 	URL       string `gorm:"unique_index;not null"`
 	ReportID  string
-	NameSpace string `gorm:"index;not null`
+	NameSpace string `gorm:"index;not null"`
 	Name      string `gorm:"index;not null"`
+	Branch    string
 	SCM       string `gorm:"index;not null"`
 }
 
@@ -31,6 +32,7 @@ func (repo *Repo) ToCoreRepo() *core.Repo {
 		NameSpace: repo.NameSpace,
 		ReportID:  repo.ReportID,
 		SCM:       core.SCMProvider(repo.SCM),
+		Branch:    repo.Branch,
 		URL:       repo.URL,
 	}
 }
@@ -46,6 +48,7 @@ func (store *RepoStore) Create(repo *core.Repo) error {
 		NameSpace: repo.NameSpace,
 		Name:      repo.Name,
 		SCM:       string(repo.SCM),
+		Branch:    repo.Branch,
 	}
 	return session.Create(r).Error
 }
@@ -64,7 +67,7 @@ func (store *RepoStore) Update(repo *core.Repo) error {
 func (store *RepoStore) Find(repo *core.Repo) (*core.Repo, error) {
 	session := store.DB.Session()
 	r := &Repo{}
-	if err := session.Where(query(repo)).First(r).Error; err != nil {
+	if err := session.Where(repo).First(r).Error; err != nil {
 		return nil, err
 	}
 	return r.ToCoreRepo(), nil
@@ -84,26 +87,7 @@ func (store *RepoStore) Finds(urls ...string) ([]*core.Repo, error) {
 	return coreRepositories, nil
 }
 
-func query(repo *core.Repo) *Repo {
-	r := &Repo{}
-	if repo.ID > 0 {
-		r.ID = repo.ID
-	}
-	if repo.Name != "" {
-		r.Name = repo.Name
-	}
-	if repo.NameSpace != "" {
-		r.NameSpace = repo.NameSpace
-	}
-	if repo.SCM != "" {
-		r.SCM = string(repo.SCM)
-	}
-	if repo.URL != "" {
-		r.URL = repo.URL
-	}
-	return r
-}
-
 func copyRepo(dst *Repo, src *core.Repo) {
 	dst.ReportID = src.ReportID
+	dst.Branch = src.Branch
 }

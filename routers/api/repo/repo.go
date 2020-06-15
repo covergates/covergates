@@ -36,18 +36,23 @@ func HandleCreate(store core.RepoStore) gin.HandlerFunc {
 // @Param name path string true "name"
 // @Success 200 {object} core.Repo "updated repository"
 // @Router /repo/{scm}/{namespace}/{name}/report [patch]
-func HandleReportIDRenew(store core.RepoStore, service core.RepoService) gin.HandlerFunc {
+func HandleReportIDRenew(store core.RepoStore, service core.SCMService) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		scm := core.SCMProvider(c.Param("scm"))
 		repo, err := store.Find(&core.Repo{
 			Name:      c.Param("name"),
 			NameSpace: c.Param("namespace"),
-			SCM:       core.SCMProvider(c.Param("scm")),
+			SCM:       scm,
 		})
 		if err != nil {
 			c.String(500, err.Error())
 			return
 		}
-		repo.ReportID = service.NewReportID(repo)
+		client, err := service.Client(scm)
+		if err != nil {
+			c.String(500, err.Error())
+		}
+		repo.ReportID = client.Repositories().NewReportID(repo)
 		if err := store.Update(repo); err != nil {
 			c.String(500, err.Error())
 			return

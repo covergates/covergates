@@ -1,8 +1,6 @@
 package core
 
-import "context"
-
-//go:generate mockgen -package mock -destination ../mock/repo_mock.go . RepoService,RepoStore
+//go:generate mockgen -package mock -destination ../mock/repo_mock.go . RepoStore
 
 // Repo defined a repository structure
 type Repo struct {
@@ -11,14 +9,8 @@ type Repo struct {
 	ReportID  string
 	NameSpace string
 	Name      string
+	Branch    string
 	SCM       SCMProvider
-}
-
-// RepoService provides operations with SCM
-type RepoService interface {
-	NewReportID(repo *Repo) string
-	// List repositories from SCM context
-	List(ctx context.Context, scm SCMProvider, user *User) ([]*Repo, error)
 }
 
 // RepoStore repository in storage

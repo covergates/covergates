@@ -16,7 +16,7 @@ import (
 // @Param tag formData string false "tag ref"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "error message"
-// @Router /report/{id}/{type} [post]
+// @Router /reports/{id}/{type} [post]
 func HandleUpload(service core.CoverageService, store core.ReportStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		reportID := c.Param("id")
@@ -54,4 +54,47 @@ func HandleUpload(service core.CoverageService, store core.ReportStore) gin.Hand
 		}
 		c.String(200, "ok")
 	}
+}
+
+// HandleRepo for report id
+// @Summary get repository of the report id
+// @Tags Report
+// @Param id path string true "report id"
+// @Success 200 {object} core.Repo "repository"
+// @Failure 400 {string} string "error message"
+// @Router /reports/{id}/repo [get]
+func HandleRepo(store core.RepoStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		repo, err := store.Find(&core.Repo{
+			ReportID: c.Param("id"),
+		})
+		if err != nil {
+			c.JSON(404, &core.Repo{})
+			return
+		}
+		c.JSON(200, repo)
+	}
+}
+
+// HandleGet for the report id
+// @Summary get reports for the report id
+// @Tags Report
+// @Param id path string true "report id"
+// @Param latest query bool false "get latest report"
+// @Success 200 {object} core.Report "coverage report"
+// @Router /reports/{id} [get]
+func HandleGet(store core.ReportStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+	}
+}
+
+func getLatest(store core.ReportStore, reportID string) (*core.Report, error) {
+	// store.Find(reportID
+	return nil, nil
+}
+
+// TODO:implements get all reports
+func getAll(store core.ReportStore) ([]*core.Report, error) {
+	return nil, nil
 }

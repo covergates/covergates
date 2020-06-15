@@ -19,14 +19,12 @@ import (
 func InitializeApplication(config2 *config.Config, db *gorm.DB) (application, error) {
 	session := provideSession()
 	loginMiddleware := provideLogin(config2)
-	scmClientService := provideSCMClientService(config2)
-	repoService := provideRepoService(scmClientService)
 	databaseService := provideDatabaseService(db)
 	userStore := provideUserStore(databaseService)
-	userService := provideUserService(userStore, scmClientService)
+	scmService := provideSCMService(config2, userStore)
 	coverageService := provideCoverageService()
 	reportStore := provideReportStore(databaseService)
-	routers := provideRouter(session, config2, loginMiddleware, scmClientService, repoService, userService, coverageService, reportStore)
+	routers := provideRouter(session, config2, loginMiddleware, scmService, coverageService, reportStore)
 	mainApplication := newApplication(routers, databaseService)
 	return mainApplication, nil
 }

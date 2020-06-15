@@ -16,7 +16,7 @@ var errUserNotFound = errors.New("user not found")
 // @Param scm path string true "SCM source (github, gitea)"
 // @Success 200 {object} []core.Repo "repositories"
 // @Router /scm/{scm}/repos [get]
-func HandleListSCM(service core.RepoService) gin.HandlerFunc {
+func HandleListSCM(service core.SCMService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		scm := core.SCMProvider(c.Param("scm"))
 		user, ok := request.UserFrom(c)
@@ -25,7 +25,12 @@ func HandleListSCM(service core.RepoService) gin.HandlerFunc {
 			return
 		}
 		ctx := c.Request.Context()
-		repositories, err := service.List(ctx, scm, user)
+		client, err := service.Client(scm)
+		if err != nil {
+			c.JSON(500, err)
+			return
+		}
+		repositories, err := client.Repositories().List(ctx, user)
 		if err != nil {
 			c.JSON(500, err)
 			return

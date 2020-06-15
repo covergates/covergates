@@ -31,21 +31,26 @@ func TestList(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	user := &core.User{Login: "user"}
+
+	scmService := mock.NewMockSCMService(ctrl)
+	client := mock.NewMockClient(ctrl)
 	repoService := mock.NewMockRepoService(ctrl)
-	repoService.EXPECT().List(
-		gomock.Any(),
-		core.Github,
-		user,
-	).Return([]*core.Repo{
-		{
-			Name: "repo1",
+	scmService.EXPECT().Client(gomock.Eq(core.Github)).Return(client, nil)
+	client.EXPECT().Repositories().Return(repoService)
+	repoService.EXPECT().List(gomock.Any(), gomock.Eq(user)).Return(
+		[]*core.Repo{
+			{
+				Name: "repo1",
+			},
 		},
-	}, nil)
+		nil,
+	)
+
 	r := setRouter(repoService)
 	r.Use(func(c *gin.Context) {
 		request.WithUser(c, user)
 	})
-	r.GET("/scm/:scm/repos", HandleListSCM(repoService))
+	r.GET("/scm/:scm/repos", HandleListSCM(scmService))
 	req, _ := http.NewRequest("GET", "/scm/github/repos", nil)
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()
@@ -69,7 +74,7 @@ func TestList(t *testing.T) {
 	})
 	// test no login
 	r = setRouter(repoService)
-	r.GET("/scm/:scm/repos", HandleListSCM(repoService))
+	r.GET("/scm/:scm/repos", HandleListSCM(scmService))
 	req, _ = http.NewRequest("GET", "/scm/github/repos", nil)
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()

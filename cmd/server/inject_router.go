@@ -22,21 +22,17 @@ func provideRouter(
 	config *config.Config,
 	login core.LoginMiddleware,
 	// service
-	clientService core.SCMClientService,
-	repoService core.RepoService,
-	userService core.UserService,
+	scmService core.SCMService,
 	coverageService core.CoverageService,
 	// store
 	reportStore core.ReportStore,
 ) *routers.Routers {
 	return &routers.Routers{
-		LoginMiddleware:  login,
-		SCMClientService: clientService,
-		Session:          session,
-		UserService:      userService,
-		RepoService:      repoService,
-		Config:           config,
-		CoverageService:  coverageService,
-		ReportStore:      reportStore,
+		LoginMiddleware: login,
+		SCMService:      scmService,
+		Session:         session,
+		Config:          config,
+		CoverageService: coverageService,
+		ReportStore:     reportStore,
 	}
 }

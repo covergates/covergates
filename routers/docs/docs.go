@@ -61,7 +61,7 @@ var doc = `{
                 "tags": [
                     "Repository"
                 ],
-                "summary": "find repository",
+                "summary": "get repository",
                 "parameters": [
                     {
                         "type": "string",
@@ -134,7 +134,69 @@ var doc = `{
                 }
             }
         },
-        "/report/{id}/{type}": {
+        "/reports/{id}": {
+            "get": {
+                "tags": [
+                    "Report"
+                ],
+                "summary": "get reports for the report id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "report id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "get latest report",
+                        "name": "latest",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "coverage report",
+                        "schema": {
+                            "$ref": "#/definitions/core.Report"
+                        }
+                    }
+                }
+            }
+        },
+        "/reports/{id}/repo": {
+            "get": {
+                "tags": [
+                    "Report"
+                ],
+                "summary": "get repository of the report id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "report id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "repository",
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/reports/{id}/{type}": {
             "post": {
                 "tags": [
                     "Report"
@@ -231,6 +293,9 @@ var doc = `{
         "core.Repo": {
             "type": "object",
             "properties": {
+                "branch": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -248,6 +313,29 @@ var doc = `{
                 },
                 "url": {
                     "type": "string"
+                }
+            }
+        },
+        "core.Report": {
+            "type": "object",
+            "properties": {
+                "branch": {
+                    "type": "string"
+                },
+                "commit": {
+                    "type": "string"
+                },
+                "coverage": {
+                    "type": "CoverageReport"
+                },
+                "reportID": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "ReportType"
                 }
             }
         }

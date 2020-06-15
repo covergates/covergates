@@ -11,17 +11,14 @@ import (
 )
 
 // FIXME: Change testing repository
-func TestSCMClientGithub(t *testing.T) {
+func TestGithubClient(t *testing.T) {
 	config := &config.Config{
 		Github: config.Github{
 			Server:    "https://github.com",
 			APIServer: "https://api.github.com",
 		},
 	}
-	service := &scmClientService{
-		config: config,
-	}
-	client, err := service.Client(core.Github)
+	client, err := scmClient(core.Github, config)
 	if err != nil {
 		t.Error(err)
 		return
@@ -40,17 +37,14 @@ func TestSCMClientGithub(t *testing.T) {
 	}
 }
 
-func TestSCMClientGitea(t *testing.T) {
+func TestGiteaClient(t *testing.T) {
 	config := &config.Config{
 		Gitea: config.Gitea{
 			Server:     "http://localhost:3000",
 			SkipVerity: true,
 		},
 	}
-	service := &scmClientService{
-		config: config,
-	}
-	client, err := service.Client(core.Gitea)
+	client, err := scmClient(core.Github, config)
 	if err != nil {
 		t.Error(err)
 		return

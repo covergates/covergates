@@ -7,7 +7,7 @@ import (
 
 type WebRouter struct {
 	LoginMiddleware core.LoginMiddleware
-	UserService     core.UserService
+	SCMService      core.SCMService
 	Session         core.Session
 }
 
@@ -18,7 +18,7 @@ func (r *WebRouter) RegisterRoutes(e *gin.Engine) {
 			MiddlewareLogin(core.Github, r.LoginMiddleware),
 			HandleLogin(
 				core.Github,
-				r.UserService,
+				r.SCMService,
 				r.Session,
 			),
 		)
@@ -26,7 +26,7 @@ func (r *WebRouter) RegisterRoutes(e *gin.Engine) {
 			MiddlewareLogin(core.Gitea, r.LoginMiddleware),
 			HandleLogin(
 				core.Gitea,
-				r.UserService,
+				r.SCMService,
 				r.Session,
 			),
 		)

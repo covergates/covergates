@@ -1,7 +1,6 @@
 package web
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/code-devel-cover/CodeCover/core"
@@ -17,23 +16,24 @@ const (
 	keyExpires = "expires"
 )
 
-func createUser(ctx context.Context, service core.UserService, scm core.SCMProvider) (*core.User, error) {
-	if err := service.Create(ctx, scm); err != nil {
-		return nil, err
-	}
-	return service.Find(ctx, scm)
-}
-
 func HandleLogin(
 	scm core.SCMProvider,
-	userService core.UserService,
+	scmService core.SCMService,
 	session core.Session,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx := WithToken(c)
-		user, err := userService.Find(ctx, scm)
+		if !c.GetBool(keyLogin) {
+			return
+		}
+		client, err := scmService.Client(scm)
 		if err != nil {
-			user, err = createUser(ctx, userService, scm)
+			c.String(500, err.Error())
+			return
+		}
+		ctx := c.Request.Context()
+		user, err := client.Users().Find(ctx, TokenFrom(c))
+		if err != nil {
+			user, err = client.Users().Create(ctx, TokenFrom(c))
 		}
 		if err != nil {
 			log.Error(err)

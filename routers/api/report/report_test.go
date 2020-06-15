@@ -2,10 +2,13 @@ package report
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/code-devel-cover/CodeCover/core"
@@ -82,6 +85,35 @@ func TestUpload(t *testing.T) {
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()
 		if rst.StatusCode != 400 {
+			t.Fail()
+		}
+	})
+}
+
+func TestGetRepo(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	store := mock.NewMockRepoStore(ctrl)
+	repo := &core.Repo{
+		ReportID: "1234",
+	}
+	store.EXPECT().Find(gomock.Eq(&core.Repo{
+		ReportID: "1234",
+	})).Return(repo, nil)
+
+	r := gin.Default()
+	r.GET("/report/:id/repo", HandleRepo(store))
+	req, _ := http.NewRequest("GET", "/report/1234/repo", nil)
+	testRequest(r, req, func(w *httptest.ResponseRecorder) {
+		rst := w.Result()
+		if rst.StatusCode != 200 {
+			t.Fail()
+		}
+		defer rst.Body.Close()
+		data, _ := ioutil.ReadAll(rst.Body)
+		rtnRepo := &core.Repo{}
+		json.Unmarshal(data, rtnRepo)
+		if !reflect.DeepEqual(repo, rtnRepo) {
 			t.Fail()
 		}
 	})

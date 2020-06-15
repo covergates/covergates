@@ -34,7 +34,7 @@ type APIRouter struct {
 	Session core.Session
 	// service
 	CoverageService core.CoverageService
-	RepoService     core.RepoService
+	SCMService      core.SCMService
 	// store
 	ReportStore core.ReportStore
 	RepoStore   core.RepoStore
@@ -68,11 +68,11 @@ func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
 		g.Use(request.CheckLogin(r.Session))
 		g.POST("/", repo.HandleCreate(r.RepoStore))
 		g.GET("/:scm/:namespace/:name", repo.HandleGet(r.RepoStore))
-		g.PATCH("/:scm/:namespace/:name/report", repo.HandleReportIDRenew(r.RepoStore, r.RepoService))
+		g.PATCH("/:scm/:namespace/:name/report", repo.HandleReportIDRenew(r.RepoStore, r.SCMService))
 	}
 	{
 		g := g.Group("/scm")
 		g.Use(request.CheckLogin(r.Session))
-		g.GET("/:scm/repos", scm.HandleListSCM(r.RepoService))
+		g.GET("/:scm/repos", scm.HandleListSCM(r.SCMService))
 	}
 }

@@ -1,13 +1,12 @@
 package core
 
 import (
-	"context"
 	"time"
 
 	"github.com/drone/go-scm/scm"
 )
 
-//go:generate mockgen -package mock -destination ../mock/user_mock.go . UserService,UserStore
+//go:generate mockgen -package mock -destination ../mock/user_mock.go . UserStore
 
 // User is a user of the service
 type User struct {
@@ -24,12 +23,6 @@ type User struct {
 	GithubToken   string
 	GithubRefresh string
 	GithubExpire  time.Time
-}
-
-// UserService defines operations with SCM
-type UserService interface {
-	Create(ctx context.Context, scm SCMProvider) error
-	Find(ctx context.Context, scm SCMProvider) (*User, error)
 }
 
 // UserStore the user data to storage
