@@ -31,5 +31,6 @@ type CoverageService interface {
 // ReportStore the report in storage
 type ReportStore interface {
 	Upload(r *Report) error
-	Find(reportID, commit string) (*Report, error)
+	Find(r *Report) (*Report, error)
+	Finds(r *Report) ([]*Report, error)
 }

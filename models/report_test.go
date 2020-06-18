@@ -58,3 +58,34 @@ func TestReportStoreUpload(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestReportFind(t *testing.T) {
+	ctrl, service := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &ReportStore{DB: service}
+	session := service.Session()
+	session.Create(&Report{
+		Branch:   "master",
+		ReportID: "report1",
+		Commit:   "commit1",
+	})
+
+	session.Create(&Report{
+		Branch:   "master",
+		ReportID: "report1",
+		Commit:   "commit2",
+	})
+
+	report := &core.Report{
+		Branch:   "master",
+		ReportID: "report1",
+	}
+
+	rst, err := store.Find(report)
+	if err != nil {
+		t.Error(err)
+	}
+	if rst.Commit != "commit2" {
+		t.Fail()
+	}
+}

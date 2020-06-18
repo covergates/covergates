@@ -72,6 +72,20 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
 }
 
+// Git mocks base method
+func (m *MockClient) Git() core.GitService {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Git")
+	ret0, _ := ret[0].(core.GitService)
+	return ret0
+}
+
+// Git indicates an expected call of Git
+func (mr *MockClientMockRecorder) Git() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Git", reflect.TypeOf((*MockClient)(nil).Git))
+}
+
 // Repositories mocks base method
 func (m *MockClient) Repositories() core.RepoService {
 	m.ctrl.T.Helper()

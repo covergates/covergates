@@ -33,7 +33,7 @@ func NewCoverageDiffTreeMap(old, new *core.CoverageReport) *CoverageDiffTreeMap 
 	}
 }
 
-func (c *CoverageDiffTreeMap) Render(w io.WriteCloser) error {
+func (c *CoverageDiffTreeMap) Render(w io.Writer) error {
 	colors := make([]string, 0)
 	labels := make([]string, 0)
 	data := make([]interface{}, 0)

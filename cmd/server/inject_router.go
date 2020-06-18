@@ -24,15 +24,17 @@ func provideRouter(
 	// service
 	scmService core.SCMService,
 	coverageService core.CoverageService,
+	chartService core.ChartService,
 	// store
 	reportStore core.ReportStore,
 ) *routers.Routers {
 	return &routers.Routers{
+		Config:          config,
+		Session:         session,
 		LoginMiddleware: login,
 		SCMService:      scmService,
-		Session:         session,
-		Config:          config,
 		CoverageService: coverageService,
+		ChartService:    chartService,
 		ReportStore:     reportStore,
 	}
 }

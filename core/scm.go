@@ -38,5 +38,5 @@ type UserService interface {
 }
 
 type GitService interface {
-	FindCommit(ctx context.Context, repo *Repo) string
+	FindCommit(ctx context.Context, user *User, repo *Repo) string
 }

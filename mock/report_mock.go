@@ -36,18 +36,33 @@ func (m *MockReportStore) EXPECT() *MockReportStoreMockRecorder {
 }
 
 // Find mocks base method
-func (m *MockReportStore) Find(arg0, arg1 string) (*core.Report, error) {
+func (m *MockReportStore) Find(arg0 *core.Report) (*core.Report, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", arg0, arg1)
+	ret := m.ctrl.Call(m, "Find", arg0)
 	ret0, _ := ret[0].(*core.Report)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Find indicates an expected call of Find
-func (mr *MockReportStoreMockRecorder) Find(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockReportStoreMockRecorder) Find(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockReportStore)(nil).Find), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockReportStore)(nil).Find), arg0)
+}
+
+// Finds mocks base method
+func (m *MockReportStore) Finds(arg0 *core.Report) ([]*core.Report, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Finds", arg0)
+	ret0, _ := ret[0].([]*core.Report)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Finds indicates an expected call of Finds
+func (mr *MockReportStoreMockRecorder) Finds(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Finds", reflect.TypeOf((*MockReportStore)(nil).Finds), arg0)
 }
 
 // Upload mocks base method

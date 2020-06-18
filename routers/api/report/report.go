@@ -1,8 +1,11 @@
 package report
 
 import (
+	"bytes"
+
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 // HandleUpload report
@@ -76,25 +79,98 @@ func HandleRepo(store core.RepoStore) gin.HandlerFunc {
 	}
 }
 
+type getOptions struct {
+	Latest bool `form:"latest"`
+}
+
 // HandleGet for the report id
 // @Summary get reports for the report id
 // @Tags Report
 // @Param id path string true "report id"
-// @Param latest query bool false "get latest report"
+// @Param latest query bool false "get latest report in main branch"
 // @Success 200 {object} core.Report "coverage report"
 // @Router /reports/{id} [get]
-func HandleGet(store core.ReportStore) gin.HandlerFunc {
+func HandleGet(reportStore core.ReportStore, repoStore core.RepoStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		reportID := c.Param("id")
+		option := &getOptions{}
+		if err := c.BindQuery(option); err != nil {
+			log.Error(err)
+			c.JSON(400, []*core.Report{})
+			return
+		}
+		if option.Latest {
+			report, err := getLatest(reportStore, repoStore, reportID)
+			if err != nil {
+				c.JSON(400, []*core.Report{})
+			} else {
+				c.JSON(200, []*core.Report{report})
+			}
+		} else {
+			reports, err := getAll(reportStore, reportID)
+			if err != nil {
+				c.JSON(400, []*core.Report{})
+			} else {
+				c.JSON(200, reports)
+			}
+		}
+		return
 	}
 }
 
-func getLatest(store core.ReportStore, reportID string) (*core.Report, error) {
-	// store.Find(reportID
-	return nil, nil
+// HandleGetTreeMap for coverage difference with main branch
+// @Summary Get coverage difference treemap with main branch
+// @Tags Report
+// @Produce image/svg+xml
+// @Param id path string true "report id"
+// @param commit path string true "commit sha"
+// @Success 200 {object} string "treemap svg"
+// @Router /reports/{id}/{commit}/treemap [get]
+func HandleGetTreeMap(
+	reportStore core.ReportStore,
+	repoStore core.RepoStore,
+	chartService core.ChartService,
+) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		reportID := c.Param("id")
+		commit := c.Param("commit")
+		new, err := reportStore.Find(&core.Report{
+			ReportID: reportID,
+			Commit:   commit,
+		})
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		old, err := getLatest(reportStore, repoStore, reportID)
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		chart := chartService.CoverageDiffTreeMap(old.Coverage, new.Coverage)
+		buffer := bytes.NewBuffer([]byte{})
+		if err := chart.Render(buffer); err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		c.Data(200, "image/svg+xml", buffer.Bytes())
+		return
+	}
 }
 
-// TODO:implements get all reports
-func getAll(store core.ReportStore) ([]*core.Report, error) {
-	return nil, nil
+func getLatest(reportStore core.ReportStore, repoStore core.RepoStore, reportID string) (*core.Report, error) {
+	repo, err := repoStore.Find(&core.Repo{ReportID: reportID})
+	if err != nil {
+		return nil, err
+	}
+	return reportStore.Find(&core.Report{
+		ReportID: reportID,
+		Branch:   repo.Branch,
+	})
+}
+
+func getAll(store core.ReportStore, reportID string) ([]*core.Report, error) {
+	return store.Finds(&core.Report{
+		ReportID: reportID,
+	})
 }

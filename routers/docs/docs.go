@@ -150,7 +150,7 @@ var doc = `{
                     },
                     {
                         "type": "boolean",
-                        "description": "get latest report",
+                        "description": "get latest report in main branch",
                         "name": "latest",
                         "in": "query"
                     }
@@ -189,6 +189,41 @@ var doc = `{
                     },
                     "400": {
                         "description": "error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/reports/{id}/{commit}/treemap": {
+            "get": {
+                "produces": [
+                    "image/svg+xml"
+                ],
+                "tags": [
+                    "Report"
+                ],
+                "summary": "Get coverage difference treemap with main branch",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "report id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "commit sha",
+                        "name": "commit",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "treemap svg",
                         "schema": {
                             "type": "string"
                         }

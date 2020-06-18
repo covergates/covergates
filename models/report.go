@@ -42,20 +42,27 @@ func (store *ReportStore) Upload(r *core.Report) error {
 	return session.Save(report).Error
 }
 
-func (store *ReportStore) Find(reportID, commit string) (*core.Report, error) {
-	if reportID == "" || commit == "" {
-		return nil, errReportID
-	}
-	r := &Report{}
+func (store *ReportStore) Find(r *core.Report) (*core.Report, error) {
 	session := store.DB.Session()
-	session = session.First(r, &Report{
-		ReportID: reportID,
-		Commit:   commit,
-	})
+	rst := &Report{}
+	session = session.Order("created_at desc").First(rst, query(r))
 	if err := session.Error; err != nil {
 		return nil, err
 	}
-	return r.ToCoreReport(), nil
+	return rst.ToCoreReport(), nil
+}
+
+func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
+	session := store.DB.Session()
+	var rst []*Report
+	if err := session.Find(&rst, query(r)).Error; err != nil {
+		return nil, err
+	}
+	reports := make([]*core.Report, len(rst))
+	for i, report := range rst {
+		reports[i] = report.ToCoreReport()
+	}
+	return reports, nil
 }
 
 func (r *Report) CoverageReport() (*core.CoverageReport, error) {
@@ -78,6 +85,16 @@ func (r *Report) ToCoreReport() *core.Report {
 		Type:     core.ReportType(r.Type),
 	}
 	return report
+}
+
+func query(r *core.Report) *Report {
+	return &Report{
+		Branch:   r.Branch,
+		Commit:   r.Commit,
+		ReportID: r.ReportID,
+		Tag:      r.Tag,
+		Type:     string(r.Type),
+	}
 }
 
 func copyReport(dst *Report, src *core.Report) {

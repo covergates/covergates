@@ -120,7 +120,7 @@ paths:
         name: id
         required: true
         type: string
-      - description: get latest report
+      - description: get latest report in main branch
         in: query
         name: latest
         type: boolean
@@ -130,6 +130,29 @@ paths:
           schema:
             $ref: '#/definitions/core.Report'
       summary: get reports for the report id
+      tags:
+      - Report
+  /reports/{id}/{commit}/treemap:
+    get:
+      parameters:
+      - description: report id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: commit sha
+        in: path
+        name: commit
+        required: true
+        type: string
+      produces:
+      - image/svg+xml
+      responses:
+        "200":
+          description: treemap svg
+          schema:
+            type: string
+      summary: Get coverage difference treemap with main branch
       tags:
       - Report
   /reports/{id}/{type}:

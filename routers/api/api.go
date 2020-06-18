@@ -34,6 +34,7 @@ type APIRouter struct {
 	Session core.Session
 	// service
 	CoverageService core.CoverageService
+	ChartService    core.ChartService
 	SCMService      core.SCMService
 	// store
 	ReportStore core.ReportStore
@@ -48,6 +49,7 @@ func host(addr string) string {
 	return u.Host
 }
 
+// RegisterRoutes for API
 func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
 	docs.SwaggerInfo.Host = host(r.Config.Server.Addr)
 	e.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -57,10 +59,16 @@ func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
 		g.POST("", user.HandleCreate())
 	}
 	{
-		g := g.Group("/report")
+		g := g.Group("/reports")
 		g.POST("/:id/:type", report.HandleUpload(
 			r.CoverageService,
 			r.ReportStore,
+		))
+		g.GET("/:id", report.HandleGet(r.ReportStore, r.RepoStore))
+		g.GET("/:id/:commit/treemap", report.HandleGetTreeMap(
+			r.ReportStore,
+			r.RepoStore,
+			r.ChartService,
 		))
 	}
 	{

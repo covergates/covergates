@@ -13,8 +13,9 @@ type gitService struct {
 	scmClient *scm.Client
 }
 
-func (service *gitService) FindCommit(ctx context.Context, repo *core.Repo) string {
+func (service *gitService) FindCommit(ctx context.Context, user *core.User, repo *core.Repo) string {
 	client := service.scmClient
+	ctx = withUser(ctx, service.scm, user)
 	ref, _, err := client.Git.FindBranch(
 		ctx,
 		fmt.Sprintf("%s/%s", repo.NameSpace, repo.Name),

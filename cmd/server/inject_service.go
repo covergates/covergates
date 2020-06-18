@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/code-devel-cover/CodeCover/modules/charts"
 	"github.com/code-devel-cover/CodeCover/modules/scm"
 	"github.com/code-devel-cover/CodeCover/modules/session"
 	"github.com/code-devel-cover/CodeCover/service/coverage"
@@ -13,6 +14,7 @@ var serviceSet = wire.NewSet(
 	provideSCMService,
 	provideSession,
 	provideCoverageService,
+	provideChartService,
 )
 
 func provideSCMService(config *config.Config, userStore core.UserStore) core.SCMService {
@@ -28,4 +30,8 @@ func provideSession() core.Session {
 
 func provideCoverageService() core.CoverageService {
 	return &coverage.CoverageService{}
+}
+
+func provideChartService() core.ChartService {
+	return &charts.ChartService{}
 }
