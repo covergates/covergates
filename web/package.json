@@ -7,7 +7,8 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "docs": "jsdoc -c jsdoc.json"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -42,6 +43,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
     "geckodriver": "^1.19.1",
+    "jsdoc": "^3.6.4",
     "sass": "^1.26.8",
     "sass-loader": "^8.0.2",
     "typescript": "~3.9.3",
