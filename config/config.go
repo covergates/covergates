@@ -9,6 +9,7 @@ type Config struct {
 type Server struct {
 	Secret string `default:"secret"`
 	Addr   string
+	Base   string
 }
 
 type Gitea struct {

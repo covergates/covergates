@@ -56,6 +56,7 @@ func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
 	g := e.Group("/api/v1")
 	{
 		g := g.Group("/user")
+		g.GET("", request.CheckLogin(r.Session), user.HandleGet())
 		g.POST("", user.HandleCreate())
 	}
 	{

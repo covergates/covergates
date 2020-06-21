@@ -25,6 +25,7 @@ func Run(c *cli.Context) error {
 	config := &config.Config{
 		Server: config.Server{
 			Addr: "http://localhost:5900",
+			Base: "",
 		},
 		Github: config.Github{
 			ClientID:     "a150e893154bafde8a00",

@@ -31,6 +31,7 @@ func (r *Routers) RegisterRoutes(e *gin.Engine) {
 	e.Use(cors.Default())
 
 	webRoute := &web.WebRouter{
+		Config:          r.Config,
 		LoginMiddleware: r.LoginMiddleware,
 		SCMService:      r.SCMService,
 		Session:         r.Session,

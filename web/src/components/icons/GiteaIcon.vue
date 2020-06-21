@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <img :src="require('@/assets/icons/gitea.svg')" />
-  </div>
+  <object :data="require('@/assets/icons/gitea.svg')" type="image/svg+xml"></object>
 </template>
 
 <docs>

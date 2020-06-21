@@ -25,7 +25,7 @@ const routes: Array<RouteConfig> = [
 
 const router = new VueRouter({
   mode: 'history',
-  base: process.env.BASE_URL,
+  base: process.env.NODE_ENV === 'production' ? VUE_BASE : process.env.BASE_URL,
   routes
 });
 

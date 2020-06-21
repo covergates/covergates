@@ -1,7 +1,22 @@
 package web
 
-import "github.com/gin-gonic/gin"
+import (
+	"bytes"
+	"html/template"
+	"io/ioutil"
 
-func HandleIndex(c *gin.Context) {
+	"github.com/code-devel-cover/CodeCover/config"
+	"github.com/code-devel-cover/CodeCover/web"
+	"github.com/gin-gonic/gin"
+)
 
+func HandleIndex(config *config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		buffer := bytes.NewBuffer([]byte{})
+		html := web.MustLookup("/index.html")
+		t, _ := template.New("index").Parse(string(html))
+		t.Execute(buffer, config.Server.Base)
+		data, _ := ioutil.ReadAll(buffer)
+		c.Data(200, "text/html; charset=UTF-8", data)
+	}
 }

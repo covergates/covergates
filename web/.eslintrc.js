@@ -16,7 +16,8 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-extra-semi': 'off',
     'space-before-function-paren': ['error', 'never'],
-    semi: ['error', 'always']
+    'semi': ['error', 'always'],
+    '@typescript-eslint/camelcase': ['error', { 'allow': ['__webpack_public_path__'] }]
   },
   overrides: [
     {

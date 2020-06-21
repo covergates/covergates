@@ -32,6 +32,13 @@ definitions:
       type:
         type: ReportType
     type: object
+  user.User:
+    properties:
+      email:
+        type: string
+      login:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -236,4 +243,18 @@ paths:
       summary: Get repositories from SCM
       tags:
       - SCM
+  /user:
+    get:
+      responses:
+        "200":
+          description: user
+          schema:
+            $ref: '#/definitions/user.User'
+        "404":
+          description: error
+          schema:
+            type: string
+      summary: Get login user
+      tags:
+      - User
 swagger: "2.0"
