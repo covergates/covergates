@@ -50,75 +50,6 @@ info:
   title: CodeCover API
   version: "1.0"
 paths:
-  /repo:
-    post:
-      parameters:
-      - description: repository to create
-        in: body
-        name: repo
-        required: true
-        schema:
-          $ref: '#/definitions/core.Repo'
-      responses:
-        "200":
-          description: Created repository
-          schema:
-            $ref: '#/definitions/core.Repo'
-      summary: Create new repository for code coverage
-      tags:
-      - Repository
-  /repo/{scm}/{namespace}/{name}:
-    get:
-      parameters:
-      - description: SCM
-        in: path
-        name: scm
-        required: true
-        type: string
-      - description: Namespace
-        in: path
-        name: namespace
-        required: true
-        type: string
-      - description: name
-        in: path
-        name: name
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/core.Repo'
-      summary: get repository
-      tags:
-      - Repository
-  /repo/{scm}/{namespace}/{name}/report:
-    patch:
-      parameters:
-      - description: SCM
-        in: path
-        name: scm
-        required: true
-        type: string
-      - description: Namespace
-        in: path
-        name: namespace
-        required: true
-        type: string
-      - description: name
-        in: path
-        name: name
-        required: true
-        type: string
-      responses:
-        "200":
-          description: updated repository
-          schema:
-            $ref: '#/definitions/core.Repo'
-      summary: renew repository report id
-      tags:
-      - Repository
   /reports/{id}:
     get:
       parameters:
@@ -225,6 +156,93 @@ paths:
       summary: get repository of the report id
       tags:
       - Report
+  /repos:
+    post:
+      parameters:
+      - description: repository to create
+        in: body
+        name: repo
+        required: true
+        schema:
+          $ref: '#/definitions/core.Repo'
+      responses:
+        "200":
+          description: Created repository
+          schema:
+            $ref: '#/definitions/core.Repo'
+      summary: Create new repository for code coverage
+      tags:
+      - Repository
+  /repos/{scm}:
+    get:
+      parameters:
+      - description: SCM source (github, gitea)
+        in: path
+        name: scm
+        required: true
+        type: string
+      responses:
+        "200":
+          description: repositories
+          schema:
+            items:
+              $ref: '#/definitions/core.Repo'
+            type: array
+      summary: List repositories
+      tags:
+      - Repository
+  /repos/{scm}/{namespace}/{name}:
+    get:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.Repo'
+      summary: get repository
+      tags:
+      - Repository
+  /repos/{scm}/{namespace}/{name}/report:
+    patch:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: updated repository
+          schema:
+            $ref: '#/definitions/core.Repo'
+      summary: renew repository report id
+      tags:
+      - Repository
   /scm/{scm}/repos:
     get:
       parameters:

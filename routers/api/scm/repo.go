@@ -27,12 +27,14 @@ func HandleListSCM(service core.SCMService) gin.HandlerFunc {
 		ctx := c.Request.Context()
 		client, err := service.Client(scm)
 		if err != nil {
-			c.JSON(500, err)
+			c.Error(err)
+			c.JSON(500, []*core.Repo{})
 			return
 		}
 		repositories, err := client.Repositories().List(ctx, user)
 		if err != nil {
-			c.JSON(500, err)
+			c.Error(err)
+			c.JSON(500, []*core.Repo{})
 			return
 		}
 		c.JSON(200, repositories)

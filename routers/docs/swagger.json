@@ -14,111 +14,6 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
-        "/repo": {
-            "post": {
-                "tags": [
-                    "Repository"
-                ],
-                "summary": "Create new repository for code coverage",
-                "parameters": [
-                    {
-                        "description": "repository to create",
-                        "name": "repo",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/core.Repo"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Created repository",
-                        "schema": {
-                            "$ref": "#/definitions/core.Repo"
-                        }
-                    }
-                }
-            }
-        },
-        "/repo/{scm}/{namespace}/{name}": {
-            "get": {
-                "tags": [
-                    "Repository"
-                ],
-                "summary": "get repository",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "SCM",
-                        "name": "scm",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Namespace",
-                        "name": "namespace",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "name",
-                        "name": "name",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/core.Repo"
-                        }
-                    }
-                }
-            }
-        },
-        "/repo/{scm}/{namespace}/{name}/report": {
-            "patch": {
-                "tags": [
-                    "Repository"
-                ],
-                "summary": "renew repository report id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "SCM",
-                        "name": "scm",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Namespace",
-                        "name": "namespace",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "name",
-                        "name": "name",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "updated repository",
-                        "schema": {
-                            "$ref": "#/definitions/core.Repo"
-                        }
-                    }
-                }
-            }
-        },
         "/reports/{id}": {
             "get": {
                 "tags": [
@@ -275,6 +170,139 @@
                         "description": "error message",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/repos": {
+            "post": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "Create new repository for code coverage",
+                "parameters": [
+                    {
+                        "description": "repository to create",
+                        "name": "repo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Created repository",
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
+                        }
+                    }
+                }
+            }
+        },
+        "/repos/{scm}": {
+            "get": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "List repositories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM source (github, gitea)",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "repositories",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/core.Repo"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/repos/{scm}/{namespace}/{name}": {
+            "get": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "get repository",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
+                        }
+                    }
+                }
+            }
+        },
+        "/repos/{scm}/{namespace}/{name}/report": {
+            "patch": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "renew repository report id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "updated repository",
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
                         }
                     }
                 }

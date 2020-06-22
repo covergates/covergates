@@ -24,7 +24,7 @@ func connectDatabase() *gorm.DB {
 func Run(c *cli.Context) error {
 	config := &config.Config{
 		Server: config.Server{
-			Addr: "http://localhost:5900",
+			Addr: "http://34.70.126.184:3000",
 			Base: "",
 		},
 		Github: config.Github{
@@ -48,7 +48,7 @@ func Run(c *cli.Context) error {
 	r := gin.Default()
 	app.routers.RegisterRoutes(r)
 	app.db.Migrate()
-	r.Run(":5900")
+	r.Run(":3000")
 	return nil
 }
 

@@ -27,6 +27,7 @@ func provideRouter(
 	chartService core.ChartService,
 	// store
 	reportStore core.ReportStore,
+	repoStore core.RepoStore,
 ) *routers.Routers {
 	return &routers.Routers{
 		Config:          config,
@@ -36,5 +37,6 @@ func provideRouter(
 		CoverageService: coverageService,
 		ChartService:    chartService,
 		ReportStore:     reportStore,
+		RepoStore:       repoStore,
 	}
 }

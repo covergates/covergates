@@ -2,6 +2,7 @@ package repo
 
 import (
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,7 +13,7 @@ import (
 // @Tags Repository
 // @Param repo body core.Repo true "repository to create"
 // @Success 200 {object} core.Repo "Created repository"
-// @Router /repo [post]
+// @Router /repos [post]
 func HandleCreate(store core.RepoStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		repo := &core.Repo{}
@@ -35,7 +36,7 @@ func HandleCreate(store core.RepoStore) gin.HandlerFunc {
 // @Param namespace path string true "Namespace"
 // @Param name path string true "name"
 // @Success 200 {object} core.Repo "updated repository"
-// @Router /repo/{scm}/{namespace}/{name}/report [patch]
+// @Router /repos/{scm}/{namespace}/{name}/report [patch]
 func HandleReportIDRenew(store core.RepoStore, service core.SCMService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		scm := core.SCMProvider(c.Param("scm"))
@@ -69,7 +70,7 @@ func HandleReportIDRenew(store core.RepoStore, service core.SCMService) gin.Hand
 // @Param namespace path string true "Namespace"
 // @Param name path string true "name"
 // @Success 200 {object} core.Repo found repository
-// @Router /repo/{scm}/{namespace}/{name} [get]
+// @Router /repos/{scm}/{namespace}/{name} [get]
 func HandleGet(store core.RepoStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		repo, err := store.Find(&core.Repo{
@@ -82,5 +83,50 @@ func HandleGet(store core.RepoStore) gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, repo)
+	}
+}
+
+// HandleListSCM repositories
+// @Summary List repositories
+// @Tags Repository
+// @Param scm path string true "SCM source (github, gitea)"
+// @Success 200 {object} []core.Repo "repositories"
+// @Router /repos/{scm} [get]
+func HandleListSCM(service core.SCMService, store core.RepoStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		scm := core.SCMProvider(c.Param("scm"))
+		user, ok := request.UserFrom(c)
+		if !ok {
+			c.JSON(401, []*core.Repo{})
+			return
+		}
+		ctx := c.Request.Context()
+		client, err := service.Client(scm)
+		if err != nil {
+			c.Error(err)
+			c.JSON(500, []*core.Repo{})
+			return
+		}
+		repositories, err := client.Repositories().List(ctx, user)
+		urls := make([]string, len(repositories))
+		for i, repo := range repositories {
+			urls[i] = repo.URL
+		}
+		storeRepositories, err := store.Finds(urls...)
+		if err != nil {
+			c.JSON(200, repositories)
+			return
+		}
+		reportsMap := make(map[string]string)
+		for _, repo := range storeRepositories {
+			reportsMap[repo.URL] = repo.ReportID
+		}
+		for _, repo := range repositories {
+			report, ok := reportsMap[repo.URL]
+			if ok {
+				repo.ReportID = report
+			}
+		}
+		c.JSON(200, repositories)
 	}
 }

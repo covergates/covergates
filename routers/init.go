@@ -41,6 +41,7 @@ func (r *Routers) RegisterRoutes(e *gin.Engine) {
 		Session:         r.Session,
 		CoverageService: r.CoverageService,
 		ChartService:    r.ChartService,
+		SCMService:      r.SCMService,
 		ReportStore:     r.ReportStore,
 		RepoStore:       r.RepoStore,
 	}
