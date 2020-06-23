@@ -1,7 +1,8 @@
 .DS_Store
 node_modules
 /dist
-/styleguide
+/styleguide/dist
+!/styleguide/*.ts
 
 /tests/e2e/reports/
 selenium-debug.log

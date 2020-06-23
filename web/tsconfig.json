@@ -32,8 +32,10 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
+    "styleguide/*.ts",
     "tests/**/*.ts",
-    "tests/**/*.tsx", "src/components/__examples__/RepoItem.js"
+    "tests/**/*.tsx",
+    "src/components/__examples__/RepoItem.js"
   ],
   "exclude": [
     "node_modules"
