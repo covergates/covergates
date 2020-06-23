@@ -1,5 +1,5 @@
 declare interface User {
-  login?: string
-  email?: string
-  error?: string
+  login?: string;
+  email?: string;
+  error?: string;
 }

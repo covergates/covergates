@@ -53,7 +53,7 @@ export default class Login extends Vue {
   ];
 
   mounted() {
-    console.log(this.$store.state.user);
+    console.log(this.$store.state.user.email);
   }
 }
 </script>

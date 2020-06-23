@@ -12,5 +12,6 @@ module.exports = {
   // webpackConfig: {
   //   // custom config goes here
   // },
+  // serverPort: 8081,
   exampleMode: 'expand'
 };

@@ -5,10 +5,15 @@ import store from './store';
 import vuetify from './plugins/vuetify';
 import { AxiosPlugin } from '@/plugins/http';
 import { ActionTypes } from './store/actions';
+import { makeServer } from './server';
 
 __webpack_public_path__ = process.env.NODE_ENV === 'production' ? `${VUE_BASE}/` : process.env.BASE_URL;
 
 Vue.use(AxiosPlugin);
+
+if (process.env.NODE_ENV === 'development') {
+  makeServer();
+}
 
 Vue.config.productionTip = false;
 store.dispatch(ActionTypes.FETCH_USER).then(() => {

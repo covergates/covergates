@@ -11,10 +11,6 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "typeRoots": [
-      "node_modules/@types",
-      "node_modules/vuetify/types",
-    ],
     "types": [
       "webpack-env",
       "jest",
@@ -37,7 +33,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx", "src/components/__examples__/RepoItem.js"
   ],
   "exclude": [
     "node_modules"

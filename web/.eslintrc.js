@@ -28,6 +28,9 @@ module.exports = {
       env: {
         jest: true
       }
+    },{
+      files: ['vue.config.js'],
+      rules: {'@typescript-eslint/no-var-requires': 'off'}
     }
   ]
 };
