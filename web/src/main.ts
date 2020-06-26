@@ -1,10 +1,9 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
-import store from './store';
+import store, { Actions } from '@/store';
 import vuetify from './plugins/vuetify';
 import { AxiosPlugin } from '@/plugins/http';
-import { ActionTypes } from './store/actions';
 import { makeServer } from './server';
 
 __webpack_public_path__ = process.env.NODE_ENV === 'production' ? `${VUE_BASE}/` : process.env.BASE_URL;
@@ -16,7 +15,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 Vue.config.productionTip = false;
-store.dispatch(ActionTypes.FETCH_USER).then(() => {
+store.dispatch(Actions.FETCH_USER).then(() => {
   new Vue({
     router,
     store,
@@ -24,3 +23,5 @@ store.dispatch(ActionTypes.FETCH_USER).then(() => {
     render: h => h(App)
   }).$mount('#app');
 });
+
+export default store;

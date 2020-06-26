@@ -1,8 +1,12 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import * as actions from './actions';
-import { mutations } from './mutations';
-
+import UserModule, {
+  Actions as UserActions,
+  Mutations as UserMutations
+} from './modules/user';
+import RepoModule, {
+  Actions as RepoActions
+} from './modules/repository';
 Vue.use(Vuex);
 
 function getBaseURL(): string {
@@ -13,19 +17,46 @@ function getBaseURL(): string {
   return base;
 }
 
-const user: User = {};
-
-export const state = {
-  base: getBaseURL(),
-  user: user
+/**
+ * Enum for Vux Mutations
+ */
+export const Mutations = {
+  ...UserMutations
 };
 
-export type State = typeof state
+/**
+ * Enum for Vuex Actions
+ * @readonly
+ * @enum
+ */
+export const Actions = {
+  ...UserActions,
+  ...RepoActions
+};
 
-export default new Vuex.Store<State>({
-  state: state,
-  mutations: mutations(),
-  actions: actions.actions<State>(),
+/**
+ * State of the the Vux, includes the state from modules.
+ * Modules should declare it's own state to this interface.
+ */
+export interface State {
+  base: string;
+}
+
+const rootState = {
+  base: getBaseURL()
+};
+
+/**
+ * RootState is the state that belongs the root store,
+ * excludes state from modules.
+ */
+export type RootState = typeof rootState;
+export default new Vuex.Store<RootState>({
+  state: rootState,
+  mutations: {},
+  actions: {},
   modules: {
+    user: UserModule,
+    repository: RepoModule
   }
 });

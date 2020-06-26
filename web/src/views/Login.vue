@@ -29,7 +29,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
+import Vue from '@/vue';
 
 interface LoginSCM {
   name: string;
@@ -53,7 +54,7 @@ export default class Login extends Vue {
   ];
 
   mounted() {
-    console.log(this.$store.state.user.email);
+    console.log(this.$store.state.user.current);
   }
 }
 </script>

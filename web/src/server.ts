@@ -52,16 +52,45 @@ function seeds(server: Server<Registry<Models, {}>>): void {
 
 function routes(this: Server<Registry<Models, {}>>): void {
   this.namespace = '/api/v1';
+  // user
   this.get('/user', schema => {
     const user = schema.first('user');
     return user !== null ? user.attrs : {};
   });
+  // repository
   this.get('/repos/:scm', schema => {
-    return schema.all('repository');
+    return schema.all('repository').models;
+  });
+  // report
+  this.get('/reports/:id', (_, request) => {
+    const report: Report = {
+      commit: '123456',
+      reportID: `report${request.params.id}`,
+      coverage: {
+        Files: [
+          {
+            Name: 'main.pl',
+            StatementCoverage: 0.8,
+            StatementHits: [
+              {
+                LineNumber: 1,
+                Hits: 1
+              },
+              {
+                LineNumber: 2,
+                Hits: 1
+              }
+            ]
+          }
+        ],
+        StatementCoverage: 0.8
+      }
+    };
+    return report;
   });
 }
 
-class MockServer extends Server<Registry<Models, {}>> {
+export class MockServer extends Server<Registry<Models, {}>> {
   constructor(environment = 'development') {
     super({
       environment,

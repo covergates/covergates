@@ -99,6 +99,7 @@ func HandleGet(reportStore core.ReportStore, repoStore core.RepoStore) gin.Handl
 			c.JSON(400, []*core.Report{})
 			return
 		}
+		// TODO: support multiple type (language) reports in one repository
 		if option.Latest {
 			report, err := getLatest(reportStore, repoStore, reportID)
 			if err != nil {
