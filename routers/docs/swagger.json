@@ -269,6 +269,54 @@
                 }
             }
         },
+        "/repos/{scm}/{namespace}/{name}/files": {
+            "get": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "List all files in repository",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "specify git ref, default main branch",
+                        "name": "ref",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "files",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/repos/{scm}/{namespace}/{name}/report": {
             "patch": {
                 "tags": [

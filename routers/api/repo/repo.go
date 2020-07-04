@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"fmt"
+
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
@@ -128,5 +130,50 @@ func HandleListSCM(service core.SCMService, store core.RepoStore) gin.HandlerFun
 			}
 		}
 		c.JSON(200, repositories)
+	}
+}
+
+// HandleGetFiles from the repository
+// @Summary List all files in repository
+// @Tags Repository
+// @Param scm path string true "SCM"
+// @Param namespace path string true "Namespace"
+// @Param name path string true "name"
+// @Param ref query string false "specify git ref, default main branch"
+// @Success 200 {object} []string "files"
+// @Router /repos/{scm}/{namespace}/{name}/files [get]
+func HandleGetFiles(service core.SCMService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		scm := core.SCMProvider(c.Param("scm"))
+		repoName := fmt.Sprintf("%s/%s", c.Param("namespace"), c.Param("name"))
+		user, ok := request.UserFrom(c)
+		ctx := c.Request.Context()
+		if !ok {
+			c.JSON(401, []string{})
+			return
+		}
+		client, err := service.Client(scm)
+		if err != nil {
+			c.Error(err)
+			c.JSON(500, []string{})
+			return
+		}
+		ref := c.Query("ref")
+		if ref == "" {
+			repo, err := client.Repositories().Find(ctx, user, repoName)
+			if err != nil {
+				c.Error(err)
+				c.JSON(500, []string{})
+				return
+			}
+			ref = repo.Branch
+		}
+		files, err := client.Contents().ListAllFiles(ctx, user, repoName, ref)
+		if err != nil {
+			c.Error(err)
+			c.JSON(500, []string{})
+			return
+		}
+		c.JSON(200, files)
 	}
 }

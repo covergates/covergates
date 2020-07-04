@@ -32,3 +32,10 @@ func (c *client) Git() core.GitService {
 		scmClient: c.scmClient,
 	}
 }
+
+func (c *client) Contents() core.ContentService {
+	return &contentService{
+		scm:    c.scm,
+		client: c.scmClient,
+	}
+}

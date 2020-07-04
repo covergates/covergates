@@ -21,6 +21,7 @@ type Client interface {
 	Repositories() RepoService
 	Users() UserService
 	Git() GitService
+	Contents() ContentService
 }
 
 // RepoService provides operations with SCM
@@ -39,4 +40,8 @@ type UserService interface {
 
 type GitService interface {
 	FindCommit(ctx context.Context, user *User, repo *Repo) string
+}
+
+type ContentService interface {
+	ListAllFiles(ctx context.Context, user *User, repo, ref string) ([]string, error)
 }
