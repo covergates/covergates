@@ -5,8 +5,13 @@ import UserModule, {
   Mutations as UserMutations
 } from './modules/user';
 import RepoModule, {
-  Actions as RepoActions
+  Actions as RepoActions,
+  Mutations as RepoMutations
 } from './modules/repository';
+import ReportModule, {
+  Actions as ReportActions,
+  Mutations as ReportMutations
+} from './modules/report';
 Vue.use(Vuex);
 
 function getBaseURL(): string {
@@ -21,7 +26,9 @@ function getBaseURL(): string {
  * Enum for Vux Mutations
  */
 export const Mutations = {
-  ...UserMutations
+  ...UserMutations,
+  ...RepoMutations,
+  ...ReportMutations
 };
 
 /**
@@ -31,7 +38,8 @@ export const Mutations = {
  */
 export const Actions = {
   ...UserActions,
-  ...RepoActions
+  ...RepoActions,
+  ...ReportActions
 };
 
 /**
@@ -51,12 +59,14 @@ const rootState = {
  * excludes state from modules.
  */
 export type RootState = typeof rootState;
-export default new Vuex.Store<RootState>({
+export const storeConfig = {
   state: rootState,
   mutations: {},
   actions: {},
   modules: {
     user: UserModule,
-    repository: RepoModule
+    repository: RepoModule,
+    report: ReportModule
   }
-});
+};
+export default new Vuex.Store<RootState>(storeConfig);

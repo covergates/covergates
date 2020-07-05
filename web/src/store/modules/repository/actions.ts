@@ -1,7 +1,7 @@
 import { ActionContext } from 'vuex';
-import { RootState } from '@/store';
-import { RepoState, Mutations } from '.';
 import Axios from 'axios';
+import { RepoState, Mutations } from '.';
+import { RootState } from '@/store';
 
 const errUndefinedCurrentRepo = new Error('current repository is undefined');
 

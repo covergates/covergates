@@ -24,7 +24,8 @@ export type ReportState = {
 
 const module: Module<ReportState, RootState> = {
   state: {
-    loading: false
+    loading: false,
+    current: undefined
   },
   actions: {
     [Actions.FETCH_REPORT_CURRENT]: fetchCurrentReport
@@ -35,5 +36,11 @@ const module: Module<ReportState, RootState> = {
     [Mutations.SET_REPORT_CURRENT]: setCurrent
   }
 };
+
+declare module '@/store' {
+  interface State {
+    report: ReportState;
+  }
+}
 
 export default module;

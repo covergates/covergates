@@ -21,7 +21,7 @@ const RepositoryFactory = Factory.extend({
   ReportID(i: number) {
     return `report${i}`;
   },
-  NameSapce(i: number) {
+  NameSpace(i: number) {
     return `org${i}`;
   },
   Name(i: number) {

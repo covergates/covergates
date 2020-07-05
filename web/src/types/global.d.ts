@@ -28,7 +28,7 @@ declare interface SourceFile {
 
 declare interface Coverage {
   Files?: SourceFile[];
-  StatementCoverage?: number;
+  StatementCoverage: number | 0;
 }
 
 declare interface Report {

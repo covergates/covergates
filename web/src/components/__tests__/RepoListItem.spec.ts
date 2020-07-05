@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
-import RepoListItem from '@/components/RepoListItem.vue';
 import Vuetify from 'vuetify';
+import RepoListItem from '@/components/RepoListItem.vue';
 
 Vue.use(Vuetify);
 

@@ -1,5 +1,4 @@
 import { Module } from 'vuex';
-import { RootState } from '@/store';
 import {
   updateList,
   startLoading,
@@ -11,6 +10,7 @@ import {
   updateRepositoryCurrent,
   updateRepositoryReportID
 } from './actions';
+import { RootState } from '@/store';
 
 export enum Mutations {
   UPDATE_REPOSITORY_LIST = 'UPDATE_REPOSITORY_LIST',
@@ -34,6 +34,7 @@ export type RepoState = {
 const module: Module<RepoState, RootState> = {
   state: {
     loading: false,
+    current: undefined,
     list: []
   },
   mutations: {
