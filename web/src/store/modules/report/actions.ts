@@ -1,7 +1,7 @@
 import { ActionContext } from 'vuex';
-import { RootState } from '@/store';
-import { ReportState, Mutations } from '.';
 import Axios from 'axios';
+import { ReportState, Mutations } from '.';
+import { RootState } from '@/store';
 
 export function fetchCurrentReport<S extends ReportState, R extends RootState>(context: ActionContext<S, R>, reportID: string): Promise<void> {
   return new Promise((resolve) => {

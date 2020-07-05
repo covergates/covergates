@@ -1,7 +1,7 @@
 import { Module } from 'vuex';
-import { RootState } from '@/store';
 import { fetchUser } from './actions';
 import { UpdateUser } from './mutations';
+import { RootState } from '@/store';
 
 export enum Actions {
   FETCH_USER = 'FETCH_USER'

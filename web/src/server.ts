@@ -61,6 +61,17 @@ function routes(this: Server<Registry<Models, {}>>): void {
   this.get('/repos/:scm', schema => {
     return schema.all('repository').models;
   });
+  this.get('/repos/:scm/:namespace/:name/files', () => {
+    const files = [];
+    for (let i = 0; i < 10; i++) {
+      files.push(`file${i}`);
+    }
+    return files;
+  });
+  this.get('/repos/:scm/:namespace/:name', (schema, request) => {
+    const repo = schema.findBy('repository', { Name: request.params.name });
+    return repo !== null ? repo.attrs : {};
+  });
   // report
   this.get('/reports/:id', (_, request) => {
     const report: Report = {

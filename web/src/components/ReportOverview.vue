@@ -51,7 +51,7 @@ export default class ReportOverview extends Vue {
   get coverage(): number {
     const report = this.$store.state.report.current;
     if (report !== undefined && report.coverage !== undefined) {
-      return report.coverage.StatementCoverage;
+      return report.coverage.StatementCoverage * 100;
     }
     return 0;
   }
@@ -63,7 +63,9 @@ export default class ReportOverview extends Vue {
     const scm = repo.SCM;
     const name = `${repo.NameSpace}/${repo.Name}`;
     this.$http
-      .get<string[]>(`${this.$store.state.base}/api/v1/${scm}/${name}/files`)
+      .get<string[]>(
+        `${this.$store.state.base}/api/v1/repos/${scm}/${name}/files`
+      )
       .then(response => {
         this.filesCount = response.data.length;
       })

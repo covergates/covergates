@@ -1,11 +1,11 @@
 import { Module } from 'vuex';
-import { RootState } from '@/store';
 import { fetchCurrentReport } from './actions';
 import {
   setCurrent,
   startLoading,
   stopLoading
 } from './mutations';
+import { RootState } from '@/store';
 
 export enum Mutations {
   SET_REPORT_CURRENT = 'SET_REPORT_CURRENT',

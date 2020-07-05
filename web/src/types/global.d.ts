@@ -13,6 +13,7 @@ declare interface Repository {
   NameSpace: string;
   Name: string;
   Branch: string;
+  Files?: string[];
 }
 
 declare interface StatementHit {
