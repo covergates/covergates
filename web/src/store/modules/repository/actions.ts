@@ -21,29 +21,27 @@ function fetchSCMRepositories(context: ActionContext<RepoState, RootState>, scm:
 function fetchRepository(base: string, scm: string, namespace: string, name: string): Promise<Repository> {
   return new Promise((resolve, reject) => {
     let repository: Repository;
-    let error: Error;
     Axios.get<Repository>(
-      `${base}/api/v1/${scm}/${namespace}/${name}`
+      `${base}/api/v1/repos/${scm}/${namespace}/${name}`
     ).then((response) => {
       repository = response.data;
-      return Axios.get<string[]>(`${base}/api/v1/${scm}/${namespace}/${name}/files`);
+      return Axios.get<string[]>(`${base}/api/v1/repos/${scm}/${namespace}/${name}/files`);
     }).then((response) => {
       repository.Files = response.data;
-    }).catch((error) => {
-      console.warn(error);
-      if (error.response) {
-        error = new Error(error.response.data);
-      } else if (error.message) {
-        error = new Error(error.message);
+    }).catch((reason) => {
+      let error: Error;
+      if (reason.response) {
+        error = new Error(reason.response.data);
+      } else if (reason.message) {
+        error = new Error(reason.message);
       } else {
         error = new Error('Unknown Error');
       }
-    }).finally(() => {
-      if (repository) {
-        resolve(repository);
-      } else {
+      if (!repository) {
         reject(error);
       }
+    }).finally(() => {
+      resolve(repository);
     });
   });
 }
@@ -70,17 +68,16 @@ export function updateRepositoryCurrent<S extends RepoState, R extends RootState
       reject(errUndefinedCurrentRepo);
     }
     const repo = context.state.current;
-    Axios.get<Repository>(
-      `${context.rootState.base}/api/v1/${repo?.SCM}/${repo?.NameSpace}/${repo?.Name}`
-    ).then((response) => {
-      context.commit(Mutations.SET_REPOSITORY_CURRENT, response.data);
-    }).catch((error) => {
-      // TODO: add error mutation
-      reject(error);
-    }).finally(() => {
-      context.commit(Mutations.STOP_REPOSITORY_LOADING);
-      resolve();
-    });
+    const { SCM, Name, NameSpace } = (repo as Repository);
+    fetchRepository(context.rootState.base, SCM, NameSpace, Name)
+      .then((response) => {
+        context.commit(Mutations.SET_REPOSITORY_CURRENT, response);
+      }).catch(error => {
+        reject(error);
+      }).finally(() => {
+        context.commit(Mutations.STOP_REPOSITORY_LOADING);
+        resolve();
+      });
   });
 }
 
@@ -114,20 +111,12 @@ export function changeCurrentRepository<S extends RepoState, R extends RootState
   return new Promise((resolve) => {
     context.commit(Mutations.START_REPOSITORY_LOADING);
     context.commit(Mutations.SET_REPOSITORY_ERROR);
-    Axios.get(`${context.rootState.base}/api/v1/repos/${params.scm}/${params.namespace}/${params.name}`)
-      .then(response => {
-        context.commit(Mutations.SET_REPOSITORY_CURRENT, response.data);
-      })
-      .catch((error) => {
-        if (error.response) {
-          context.commit(Mutations.SET_REPOSITORY_ERROR, new Error(error.response.data));
-        } else if (error.message) {
-          context.commit(Mutations.SET_REPOSITORY_ERROR, new Error(error.message));
-        } else {
-          context.commit(Mutations.SET_REPOSITORY_ERROR, new Error('Unknown error'));
-        }
-      })
-      .finally(() => {
+    fetchRepository(context.rootState.base, params.scm, params.namespace, params.name)
+      .then((response) => {
+        context.commit(Mutations.SET_REPOSITORY_CURRENT, response);
+      }).catch(error => {
+        context.commit(Mutations.SET_REPOSITORY_ERROR, error);
+      }).finally(() => {
         context.commit(Mutations.STOP_REPOSITORY_LOADING);
         resolve();
       });

@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import ICountUp from 'vue-countup-v2';
 import Vue from '@/vue';
 
@@ -33,21 +33,6 @@ import Vue from '@/vue';
   }
 })
 export default class ReportOverview extends Vue {
-  filesCount = 0;
-
-  @Watch('repository', { immediate: true })
-  onRepositoryChange() {
-    this.updateFileCount(this.repository);
-  }
-
-  mounted() {
-    this.updateFileCount(this.repository);
-  }
-
-  get repository(): Repository | undefined {
-    return this.$store.state.repository.current;
-  }
-
   get coverage(): number {
     const report = this.$store.state.report.current;
     if (report !== undefined && report.coverage !== undefined) {
@@ -56,23 +41,12 @@ export default class ReportOverview extends Vue {
     return 0;
   }
 
-  updateFileCount(repo: Repository | undefined) {
-    if (repo === undefined) {
-      return;
+  get filesCount(): number {
+    const repo = this.$store.state.repository.current;
+    if (repo && repo.Files) {
+      return repo.Files.length;
     }
-    const scm = repo.SCM;
-    const name = `${repo.NameSpace}/${repo.Name}`;
-    this.$http
-      .get<string[]>(
-        `${this.$store.state.base}/api/v1/repos/${scm}/${name}/files`
-      )
-      .then(response => {
-        this.filesCount = response.data.length;
-      })
-      .catch(error => {
-        console.warn(error);
-        this.filesCount = 0;
-      });
+    return 0;
   }
 }
 </script>

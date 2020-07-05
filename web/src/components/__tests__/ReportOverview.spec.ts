@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import axios from 'axios';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { createLocalVue, shallowMount, Wrapper } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import { cloneDeep } from 'lodash';
 import Vuetify from 'vuetify';
@@ -24,22 +24,20 @@ describe('ReportOverview.vue', () => {
 
   localVue.use(Vuetify);
   it('update file count when current repository is set', async () => {
-    const mockAxios = axios as jest.Mocked<typeof axios>;
-    mockAxios.get.mockResolvedValue({ data: ['a', 'b', 'c'] });
     const wrapper = shallowMount(ReportOverview, {
       localVue,
       vuetify,
       store
-    });
+    }) as Wrapper<ReportOverview & { filesCount: number }>;
     expect(wrapper.vm.$store.state.repository.current).toBeUndefined();
-    expect(wrapper.vm.$data.filesCount).toEqual(0);
+    expect(wrapper.vm.filesCount).toEqual(0);
     wrapper.vm.$store.commit(Mutations.SET_REPOSITORY_CURRENT, {
       Name: 'repo',
       NameSpace: 'org',
-      SCM: 'github'
+      SCM: 'github',
+      Files: ['a', 'b', 'c']
     } as Repository);
     await flushPromises();
-    expect(mockAxios.get).toBeCalled();
-    expect(wrapper.vm.$data.filesCount).toEqual(3);
+    expect(wrapper.vm.filesCount).toEqual(3);
   });
 });

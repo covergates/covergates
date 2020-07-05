@@ -24,6 +24,7 @@ const routes: Array<RouteConfig> = [
         name: 'Report',
         component: () => import('@/views/Report.vue'),
         beforeEnter: (to, from, next) => {
+          console.log(to);
           store.dispatch(Actions.CHANGE_CURRENT_REPOSITORY, to.params)
             .then(() => {
               if ((store.state as State).repository.current) {
@@ -39,6 +40,11 @@ const routes: Array<RouteConfig> = [
             path: '',
             name: 'report-overview',
             component: () => import('@/components/ReportOverview.vue')
+          },
+          {
+            path: 'code',
+            name: 'report-code',
+            component: () => import('@/components/ReportCode.vue')
           }
         ]
       }

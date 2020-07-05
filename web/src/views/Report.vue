@@ -1,13 +1,9 @@
 <template>
   <div>
-    <v-tabs v-model="tab">
-      <v-tab v-for="tab in tabs" :key="tab.key" :append="true" :to="tab.link">{{tab.key}}</v-tab>
+    <v-tabs>
+      <v-tab v-for="tab in tabs" :key="tab.key" :to="tab.link">{{tab.key}}</v-tab>
     </v-tabs>
-    <v-tabs-items v-model="tab">
-      <v-tab-item v-for="tab in tabs" :key="tab.key">
-        <router-view></router-view>
-      </v-tab-item>
-    </v-tabs-items>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -20,11 +16,18 @@ import ReportOverview from '@/components/ReportOverview.vue';
   components: { ReportOverview }
 })
 export default class Report extends Vue {
-  tab = null;
   tabs = [
     {
       key: 'Overview',
-      link: ''
+      link: {
+        name: 'report-overview'
+      }
+    },
+    {
+      key: 'Code',
+      link: {
+        name: 'report-code'
+      }
     }
   ];
 }
