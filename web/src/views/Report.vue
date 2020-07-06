@@ -1,10 +1,12 @@
 <template>
-  <div>
+  <v-container>
     <v-tabs>
       <v-tab v-for="tab in tabs" :key="tab.key" :to="tab.link">{{tab.key}}</v-tab>
     </v-tabs>
-    <router-view></router-view>
-  </div>
+    <div class="router-container">
+      <router-view></router-view>
+    </div>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -32,3 +34,9 @@ export default class Report extends Vue {
   ];
 }
 </script>
+
+<style lang="scss" scoped>
+.router-container {
+  height: calc(100% - 48px);
+}
+</style>

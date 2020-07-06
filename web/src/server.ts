@@ -66,6 +66,8 @@ function routes(this: Server<Registry<Models, {}>>): void {
     for (let i = 0; i < 10; i++) {
       files.push(`file${i}`);
     }
+    files.push('dir/file.pl');
+    files.push('main.pl');
     return files;
   });
   this.get('/repos/:scm/:namespace/:name', (schema, request) => {

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="container">
     <v-banner single-line>
       <span class="text-h4">Files</span>
     </v-banner>
@@ -54,12 +54,15 @@ export default class ReportOverview extends Vue {
 <style lang="scss" scoped>
 @import '@/assets/styles/variables';
 
-.content {
-  padding: 20px;
-}
-
-.count-up {
-  color: $content-color;
+.container {
+  overflow-y: auto;
+  max-height: 100%;
+  .content {
+    padding: 20px;
+  }
+  .count-up {
+    color: $content-color;
+  }
 }
 </style>
 

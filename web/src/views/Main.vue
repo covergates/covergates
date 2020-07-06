@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="app">
     <v-app-bar app color="primary" dark clipped-left>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-spacer></v-spacer>
@@ -7,7 +7,7 @@
     <v-navigation-drawer v-model="drawer" clipped app></v-navigation-drawer>
 
     <v-main>
-      <v-container fluid>
+      <v-container class="container" fluid>
         <router-view></router-view>
       </v-container>
     </v-main>
@@ -24,4 +24,12 @@ export default class Main extends Vue {
 </script>
 
 <style>
+.app {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.container {
+  height: calc(100vh - 64px);
+}
 </style>

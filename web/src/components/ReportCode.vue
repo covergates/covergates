@@ -1,5 +1,11 @@
 <template>
-  <div>code</div>
+  <v-container class="container">
+    <v-data-table :items="fileInfos" item-key="name" :headers="headers" :fixed-header="true">
+      <template v-slot:item.name="{ item }">
+        <router-link :append="true" :to="item.name">{{item.name}}</router-link>
+      </template>
+    </v-data-table>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -13,6 +19,18 @@ type FileInfo = {
 
 @Component
 export default class ReportCode extends Vue {
+  headers = [
+    {
+      text: 'File Path',
+      align: 'start',
+      value: 'name'
+    },
+    {
+      text: 'Coverage',
+      value: 'coverage'
+    }
+  ];
+
   get fileInfos(): FileInfo[] {
     const repo = this.$store.state.repository.current;
     const report = this.$store.state.report.current;
@@ -46,3 +64,10 @@ export default class ReportCode extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.container {
+  overflow-y: auto;
+  max-height: 100%;
+}
+</style>

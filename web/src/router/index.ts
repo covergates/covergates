@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
+import { fetchReportSource, fetchCurrentRepository } from './fetchers';
 import store, { Actions, State } from '@/store';
 
 Vue.use(VueRouter);
@@ -23,18 +24,7 @@ const routes: Array<RouteConfig> = [
         path: '/report/:scm/:namespace/:name',
         name: 'Report',
         component: () => import('@/views/Report.vue'),
-        beforeEnter: (to, from, next) => {
-          console.log(to);
-          store.dispatch(Actions.CHANGE_CURRENT_REPOSITORY, to.params)
-            .then(() => {
-              if ((store.state as State).repository.current) {
-                store.dispatch(
-                  Actions.FETCH_REPORT_CURRENT,
-                  (store.state as State).repository.current?.ReportID);
-              }
-            });
-          next();
-        },
+        beforeEnter: fetchCurrentRepository(store),
         children: [
           {
             path: '',
@@ -45,6 +35,12 @@ const routes: Array<RouteConfig> = [
             path: 'code',
             name: 'report-code',
             component: () => import('@/components/ReportCode.vue')
+          },
+          {
+            path: 'code/:path+',
+            name: 'report-source',
+            component: () => import('@/components/ReportSource.vue'),
+            beforeEnter: fetchReportSource(store)
           }
         ]
       }
