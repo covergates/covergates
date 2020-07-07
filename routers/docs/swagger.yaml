@@ -217,6 +217,41 @@ paths:
       summary: get repository
       tags:
       - Repository
+  /repos/{scm}/{namespace}/{name}/content/{path}:
+    get:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: file path
+        in: path
+        name: path
+        required: true
+        type: string
+      - description: specify git ref, default main branch
+        in: query
+        name: ref
+        type: string
+      responses:
+        "200":
+          description: file content
+          schema:
+            type: string
+      summary: Get a file content
+      tags:
+      - Repository
   /repos/{scm}/{namespace}/{name}/files:
     get:
       parameters:

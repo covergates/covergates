@@ -44,4 +44,5 @@ type GitService interface {
 
 type ContentService interface {
 	ListAllFiles(ctx context.Context, user *User, repo, ref string) ([]string, error)
+	Find(ctx context.Context, user *User, repo, path, ref string) ([]byte, error)
 }

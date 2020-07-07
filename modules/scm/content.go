@@ -25,7 +25,7 @@ func (service *contentService) ListAllFiles(
 	files := make([]string, 0)
 	seen := make(map[string]bool)
 	for len(paths) > 0 {
-		path, paths = paths[0], paths[1:len(paths)]
+		path, paths = paths[0], paths[1:]
 		contents, _, err := client.Contents.List(ctx, repo, path, ref, scm.ListOptions{})
 		if err != nil {
 			return []string{}, err
@@ -40,4 +40,11 @@ func (service *contentService) ListAllFiles(
 		}
 	}
 	return files, nil
+}
+
+func (service *contentService) Find(ctx context.Context, user *core.User, repo, path, ref string) ([]byte, error) {
+	client := service.client
+	ctx = withUser(ctx, service.scm, user)
+	content, _, err := client.Contents.Find(ctx, repo, path, ref)
+	return content.Data, err
 }

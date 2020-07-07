@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/routers/api/request"
@@ -158,15 +159,11 @@ func HandleGetFiles(service core.SCMService) gin.HandlerFunc {
 			c.JSON(500, []string{})
 			return
 		}
-		ref := c.Query("ref")
-		if ref == "" {
-			repo, err := client.Repositories().Find(ctx, user, repoName)
-			if err != nil {
-				c.Error(err)
-				c.JSON(500, []string{})
-				return
-			}
-			ref = repo.Branch
+		ref, err := getRef(c, client, user)
+		if err != nil {
+			c.Error(err)
+			c.JSON(500, []string{})
+			return
 		}
 		files, err := client.Contents().ListAllFiles(ctx, user, repoName, ref)
 		if err != nil {
@@ -176,4 +173,55 @@ func HandleGetFiles(service core.SCMService) gin.HandlerFunc {
 		}
 		c.JSON(200, files)
 	}
+}
+
+// HandleGetFileContent for a file from repository
+// @Summary Get a file content
+// @Tags Repository
+// @Param scm path string true "SCM"
+// @Param namespace path string true "Namespace"
+// @Param name path string true "name"
+// @Param path path string true "file path"
+// @Param ref query string false "specify git ref, default main branch"
+// @Success 200 {string} string "file content"
+// @Router /repos/{scm}/{namespace}/{name}/content/{path} [get]
+func HandleGetFileContent(service core.SCMService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		scm := core.SCMProvider(c.Param("scm"))
+		repoName := fmt.Sprintf("%s/%s", c.Param("namespace"), c.Param("name"))
+		filePath := strings.TrimLeft(c.Param("path"), "/")
+		user, ok := request.UserFrom(c)
+		ctx := c.Request.Context()
+		if !ok {
+			c.String(401, "")
+			return
+		}
+		client, err := service.Client(scm)
+		if err != nil {
+			c.Error(err)
+			c.String(500, "")
+			return
+		}
+		ref, err := getRef(c, client, user)
+		if err != nil {
+			c.Error(err)
+			c.String(500, "")
+			return
+		}
+		content, err := client.Contents().Find(ctx, user, repoName, filePath, ref)
+		c.Data(200, "text/plain", content)
+	}
+}
+
+func getRef(c *gin.Context, client core.Client, user *core.User) (string, error) {
+	repoName := fmt.Sprintf("%s/%s", c.Param("namespace"), c.Param("name"))
+	ref := c.Query("ref")
+	if ref == "" {
+		repo, err := client.Repositories().Find(c.Request.Context(), user, repoName)
+		if err != nil {
+			return "", err
+		}
+		ref = repo.Branch
+	}
+	return ref, nil
 }

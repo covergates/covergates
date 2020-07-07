@@ -31,3 +31,21 @@ func TestContentGithubListAllFiles(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestContentGithubFind(t *testing.T) {
+	user := &core.User{
+		GithubToken: os.Getenv("GITHUB_SECRET"),
+	}
+	service := &contentService{
+		client: getClient(),
+		scm:    core.Github,
+	}
+	content, err := service.Find(context.Background(), user, "blueworrybear/livelogs", "go.mod", "master")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if string(content) == "" {
+		t.Fail()
+	}
+}

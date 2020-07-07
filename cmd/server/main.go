@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/code-devel-cover/CodeCover/config"
@@ -24,7 +25,7 @@ func connectDatabase() *gorm.DB {
 func Run(c *cli.Context) error {
 	config := &config.Config{
 		Server: config.Server{
-			Addr: "http://34.70.126.184:3000",
+			Addr: "http://localhost:5900",
 			Base: "",
 		},
 		Github: config.Github{
@@ -48,7 +49,7 @@ func Run(c *cli.Context) error {
 	r := gin.Default()
 	app.routers.RegisterRoutes(r)
 	app.db.Migrate()
-	r.Run(":3000")
+	r.Run(fmt.Sprintf(":%s", config.Server.Port()))
 	return nil
 }
 

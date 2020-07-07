@@ -24,7 +24,8 @@ func (e *errClientNotFound) Error() string {
 	return fmt.Sprintf("%s client not found", e.scm)
 }
 
-type SCMService struct {
+// Service of SCM
+type Service struct {
 	Config    *config.Config
 	UserStore core.UserStore
 }
@@ -61,7 +62,8 @@ func withUser(
 	return context.WithValue(ctx, scm.TokenKey{}, token)
 }
 
-func (service *SCMService) Client(s core.SCMProvider) (core.Client, error) {
+// Client to access SCM API
+func (service *Service) Client(s core.SCMProvider) (core.Client, error) {
 	scmClient, err := scmClient(s, service.Config)
 	if err != nil {
 		return nil, err

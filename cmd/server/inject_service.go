@@ -18,7 +18,7 @@ var serviceSet = wire.NewSet(
 )
 
 func provideSCMService(config *config.Config, userStore core.UserStore) core.SCMService {
-	return &scm.SCMService{
+	return &scm.Service{
 		Config:    config,
 		UserStore: userStore,
 	}

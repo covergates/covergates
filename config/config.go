@@ -1,5 +1,7 @@
 package config
 
+import "net/url"
+
 type Config struct {
 	Server Server
 	Gitea  Gitea
@@ -27,4 +29,12 @@ type Github struct {
 	ClientSecret string
 	SkipVerity   bool
 	Scope        []string `default:"repo,repo:status,user:email,read:org"`
+}
+
+func (server Server) Port() string {
+	u, err := url.Parse(server.Addr)
+	if err != nil {
+		return ""
+	}
+	return u.Port()
 }

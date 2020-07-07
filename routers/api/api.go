@@ -80,6 +80,7 @@ func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
 		g.GET("/:scm/:namespace/:name", repo.HandleGet(r.RepoStore))
 		g.PATCH("/:scm/:namespace/:name/report", repo.HandleReportIDRenew(r.RepoStore, r.SCMService))
 		g.GET("/:scm/:namespace/:name/files", repo.HandleGetFiles(r.SCMService))
+		g.GET("/:scm/:namespace/:name/content/*path", repo.HandleGetFileContent(r.SCMService))
 	}
 	{
 		g := g.Group("/scm")

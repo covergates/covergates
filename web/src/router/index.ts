@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import { fetchReportSource, fetchCurrentRepository } from './fetchers';
-import store, { Actions, State } from '@/store';
+import store from '@/store';
 
 Vue.use(VueRouter);
 
