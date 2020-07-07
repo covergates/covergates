@@ -1,4 +1,4 @@
-import { Server, Registry, Model, Factory } from 'miragejs';
+import { Server, Registry, Model, Factory, Response } from 'miragejs';
 
 const User = Model.extend({
   login: '',
@@ -70,6 +70,11 @@ function routes(this: Server<Registry<Models, {}>>): void {
     files.push('main.pl');
     return files;
   });
+
+  this.get('/repos/:scm/:namesapce/:name/content/*path', () => {
+    return new Response(200, undefined, 'print "hello";\n\n');
+  });
+
   this.get('/repos/:scm/:namespace/:name', (schema, request) => {
     const repo = schema.findBy('repository', { Name: request.params.name });
     return repo !== null ? repo.attrs : {};

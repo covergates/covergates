@@ -11,3 +11,7 @@ export function startLoading(state: ReportState): void {
 export function stopLoading(state: ReportState): void {
   state.loading = false;
 }
+
+export function setSource(state: ReportState, source: string): void {
+  state.source = source;
+}

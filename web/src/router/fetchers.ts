@@ -18,9 +18,9 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
   };
 }
 
-// TODO: implement fetch source code
 export function fetchReportSource(store: Store<RootState>): RouteHandler {
   return (to, from, next) => {
+    store.dispatch(Actions.FETCH_REPORT_SOURCE, to);
     next();
   };
 }
