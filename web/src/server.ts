@@ -72,7 +72,12 @@ function routes(this: Server<Registry<Models, {}>>): void {
   });
 
   this.get('/repos/:scm/:namesapce/:name/content/*path', () => {
-    return new Response(200, undefined, 'print "hello";\n\n');
+    return new Response(200, undefined, `print "hello";
+my $s = "test";
+if ($s =~ /^t/) {
+\tprint 'match\\n';
+}
+    `);
   });
 
   this.get('/repos/:scm/:namespace/:name', (schema, request) => {
