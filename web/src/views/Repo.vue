@@ -1,11 +1,17 @@
 <template>
-  <v-container>
-    <v-row align="center" justify="center">
-      <v-col cols="6">
-        <repo-list v-if="!loading" :repos="repositories"></repo-list>
-      </v-col>
-    </v-row>
-  </v-container>
+  <perfect-scrollbar class="page-container">
+    <v-container>
+      <v-row align="center" justify="center" class="fill-height">
+        <v-col class="subtitle-1 text-center" cols="12" v-show="loading">Getting Repositories</v-col>
+        <v-col cols="6" v-show="loading">
+          <v-progress-linear indeterminate rounded height="6"></v-progress-linear>
+        </v-col>
+        <v-col cols="6" v-show="!loading">
+          <repo-list v-if="!loading" :repos="repositories"></repo-list>
+        </v-col>
+      </v-row>
+    </v-container>
+  </perfect-scrollbar>
 </template>
 
 <script lang="ts">
@@ -33,3 +39,10 @@ export default class Repo extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.page-container {
+  overflow-y: auto;
+  height: 100%;
+}
+</style>

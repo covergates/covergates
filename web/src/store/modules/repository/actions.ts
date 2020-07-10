@@ -27,6 +27,7 @@ function fetchRepository(base: string, scm: string, namespace: string, name: str
       repository = response.data;
       return Axios.get<string[]>(`${base}/api/v1/repos/${scm}/${namespace}/${name}/files`);
     }).then((response) => {
+      // TODO: need to handle repository empty error
       repository.Files = response.data;
     }).catch((reason) => {
       let error: Error;

@@ -7,7 +7,7 @@
     <v-navigation-drawer v-model="drawer" clipped app></v-navigation-drawer>
 
     <v-main>
-      <v-container class="container" fluid>
+      <v-container class="container pa-0" fluid>
         <router-view></router-view>
       </v-container>
     </v-main>

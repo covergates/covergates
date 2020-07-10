@@ -6,13 +6,14 @@ import { makeServer } from './server';
 import store, { Actions } from '@/store';
 import { AxiosPlugin } from '@/plugins/http';
 import { HighlightPlugin } from '@/plugins/highlight';
+import '@/plugins/scrollbar';
 
 __webpack_public_path__ = process.env.NODE_ENV === 'production' ? `${VUE_BASE}/` : process.env.BASE_URL;
 
 Vue.use(AxiosPlugin);
 Vue.use(HighlightPlugin);
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development' && process.env.VUE_APP_MOCK_SERVER === 'true') {
   makeServer();
 }
 

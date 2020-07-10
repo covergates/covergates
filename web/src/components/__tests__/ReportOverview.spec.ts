@@ -14,6 +14,7 @@ Vue.use(Vuetify);
 Vue.use(AxiosPlugin);
 
 describe('ReportOverview.vue', () => {
+  console.warn = jest.fn();
   const localVue = createLocalVue();
   let vuetify: typeof Vuetify;
   let store: Store<RootState>;

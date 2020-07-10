@@ -48,6 +48,7 @@ function seeds(server: Server<Registry<Models, {}>>): void {
     email: 'blueworrybear@gmail.com'
   });
   server.createList('repository', 5);
+  server.create('repository', { ReportID: '' });
 }
 
 function routes(this: Server<Registry<Models, {}>>): void {
@@ -82,6 +83,9 @@ if ($s =~ /^t/) {
 
   this.get('/repos/:scm/:namespace/:name', (schema, request) => {
     const repo = schema.findBy('repository', { Name: request.params.name });
+    if (repo?.ReportID === '') {
+      return new Response(404);
+    }
     return repo !== null ? repo.attrs : {};
   });
   // report

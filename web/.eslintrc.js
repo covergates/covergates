@@ -33,6 +33,9 @@ module.exports = {
       ],
       env: {
         jest: true
+      },
+      rules: {
+        'import/order': 'off'
       }
     }, {
       files: ['vue.config.js', 'styleguide.config.js'],
