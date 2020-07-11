@@ -131,9 +131,13 @@ export default class RepoListItem extends Vue {
       const { SCM: scm, NameSpace: namespace, Name: name } = this.repo;
       this.createRepositoryIfNotExists()
         .then(() => {
-          return this.$http.patch(
-            `${this.base}/api/v1/repos/${scm}/${namespace}/${name}/report`
-          );
+          return this.$http
+            .patch(
+              `${this.base}/api/v1/repos/${scm}/${namespace}/${name}/report`
+            )
+            .then(() => {
+              this.activated = true;
+            });
         })
         .catch(reason => {
           this.showError(this.$httpError(reason).message);

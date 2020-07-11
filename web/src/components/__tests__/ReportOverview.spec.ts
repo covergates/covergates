@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import axios from 'axios';
 import { createLocalVue, shallowMount, Wrapper } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import { cloneDeep } from 'lodash';

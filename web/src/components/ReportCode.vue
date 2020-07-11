@@ -1,5 +1,5 @@
 <template>
-  <v-container class="container">
+  <v-container>
     <v-data-table :items="fileInfos" item-key="name" :headers="headers" :fixed-header="true">
       <template v-slot:item.name="{ item }">
         <router-link :append="true" :to="item.name">{{item.name}}</router-link>
@@ -66,8 +66,4 @@ export default class ReportCode extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.container {
-  overflow-y: auto;
-  max-height: 100%;
-}
 </style>

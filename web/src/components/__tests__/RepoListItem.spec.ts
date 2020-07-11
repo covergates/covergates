@@ -98,9 +98,7 @@ describe('RepoListItem.vue', () => {
         } as Repository
       }
     });
-    const activateBtn = wrapper.findComponent({
-      ref: 'activate'
-    });
+    const activateBtn = wrapper.findComponent({ ref: 'activate' });
     const snackBar = wrapper.find('v-snackbar-stub');
     const mockGet = jest.spyOn(axios, 'get');
     const mockPost = jest.spyOn(axios, 'post');
@@ -126,5 +124,35 @@ describe('RepoListItem.vue', () => {
     expect(activateBtn.element).toBeVisible();
     expect(wrapper.vm.$data.loading).toBeFalsy();
     expect(snackBar.element).toHaveTextContent(/500/);
+  });
+
+  it('show route link button when activate successfully', () => {
+    const wrapper = shallowMount(RepoListItem, {
+      localVue,
+      vuetify,
+      store,
+      propsData: {
+        repo: {
+          SCM: 'github',
+          NameSpace: 'org',
+          Name: 'repo'
+        } as Repository
+      }
+    });
+    const mockGet = jest.spyOn(axios, 'get');
+    const mockPatch = jest.spyOn(axios, 'patch');
+    mockGet.mockResolvedValueOnce({});
+    mockPatch.mockResolvedValueOnce({});
+
+    const activateBtn = wrapper.findComponent({ ref: 'activate' });
+    const routeBtn = wrapper.findComponent({ ref: 'goto' });
+    expect(routeBtn.element).not.toBeVisible();
+    activateBtn.vm.$emit('click');
+    return flushPromises().then(() => {
+      expect(mockGet).toHaveBeenCalled();
+      expect(mockPatch).toHaveBeenCalled();
+      expect(routeBtn.element).toBeVisible();
+      expect(activateBtn.element).not.toBeVisible();
+    });
   });
 });

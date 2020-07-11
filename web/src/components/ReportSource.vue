@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="ma-5">
     <v-toolbar flat>
       <v-toolbar-title class="grey--text">{{filePath}}</v-toolbar-title>
     </v-toolbar>

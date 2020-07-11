@@ -1,12 +1,14 @@
 <template>
-  <v-container>
-    <v-tabs>
-      <v-tab v-for="tab in tabs" :key="tab.key" :to="tab.link">{{tab.key}}</v-tab>
-    </v-tabs>
-    <div class="router-container">
-      <router-view></router-view>
-    </div>
-  </v-container>
+  <perfect-scrollbar class="page-container">
+    <v-container>
+      <v-tabs>
+        <v-tab v-for="tab in tabs" :key="tab.key" :to="tab.link">{{tab.key}}</v-tab>
+      </v-tabs>
+      <div class="router-container">
+        <router-view></router-view>
+      </div>
+    </v-container>
+  </perfect-scrollbar>
 </template>
 
 <script lang="ts">
@@ -38,5 +40,9 @@ export default class Report extends Vue {
 <style lang="scss" scoped>
 .router-container {
   height: calc(100% - 48px);
+}
+.page-container {
+  overflow-y: auto;
+  height: 100%;
 }
 </style>
