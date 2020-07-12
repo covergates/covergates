@@ -21,3 +21,4 @@
 core.db
 *.zip
 !**/testdata/*.zip
+test.log

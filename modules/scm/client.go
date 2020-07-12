@@ -8,6 +8,7 @@ import (
 type client struct {
 	scm       core.SCMProvider
 	scmClient *scm.Client
+	git       core.Git
 	userStore core.UserStore
 }
 
@@ -37,5 +38,6 @@ func (c *client) Contents() core.ContentService {
 	return &contentService{
 		scm:    c.scm,
 		client: c.scmClient,
+		git:    c.git,
 	}
 }

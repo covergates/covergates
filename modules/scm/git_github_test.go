@@ -13,7 +13,7 @@ import (
 func TestGithubFindCommit(t *testing.T) {
 	service := &gitService{
 		scm:       core.Github,
-		scmClient: getClient(),
+		scmClient: getGithubClient(),
 	}
 	ctx := context.Background()
 	user := &core.User{

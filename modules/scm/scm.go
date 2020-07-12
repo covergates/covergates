@@ -27,6 +27,7 @@ func (e *errClientNotFound) Error() string {
 // Service of SCM
 type Service struct {
 	Config    *config.Config
+	Git       core.Git
 	UserStore core.UserStore
 }
 
@@ -39,11 +40,7 @@ func transport(insecure bool) http.RoundTripper {
 	}
 }
 
-func withUser(
-	ctx context.Context,
-	s core.SCMProvider,
-	usr *core.User,
-) context.Context {
+func userToken(s core.SCMProvider, usr *core.User) *scm.Token {
 	var token *scm.Token
 	switch s {
 	case core.Github:
@@ -59,7 +56,15 @@ func withUser(
 	default:
 		log.Warningf("%s is not supported", s)
 	}
-	return context.WithValue(ctx, scm.TokenKey{}, token)
+	return token
+}
+
+func withUser(
+	ctx context.Context,
+	s core.SCMProvider,
+	usr *core.User,
+) context.Context {
+	return context.WithValue(ctx, scm.TokenKey{}, userToken(s, usr))
 }
 
 // Client to access SCM API
@@ -72,6 +77,7 @@ func (service *Service) Client(s core.SCMProvider) (core.Client, error) {
 		scm:       s,
 		scmClient: scmClient,
 		userStore: service.UserStore,
+		git:       service.Git,
 	}, nil
 }
 

@@ -14,7 +14,7 @@ import (
 	"github.com/drone/go-scm/scm/transport/oauth2"
 )
 
-func getClient() *scm.Client {
+func getGithubClient() *scm.Client {
 	client, _ := github.New("https://api.github.com")
 	client.Client = &http.Client{
 		Transport: &oauth2.Transport{
@@ -32,7 +32,7 @@ func TestGithubList(t *testing.T) {
 		GithubToken: os.Getenv("GITHUB_SECRET"),
 	}
 	service := &repoService{
-		client: getClient(),
+		client: getGithubClient(),
 		scm:    core.Github,
 	}
 	repo, err := service.List(context.Background(), user)
@@ -48,7 +48,7 @@ func TestGithubList(t *testing.T) {
 func TestGithubFind(t *testing.T) {
 
 	service := repoService{
-		client: getClient(),
+		client: getGithubClient(),
 		scm:    core.Github,
 	}
 	user := &core.User{

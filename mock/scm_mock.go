@@ -72,6 +72,20 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
 }
 
+// Contents mocks base method
+func (m *MockClient) Contents() core.ContentService {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Contents")
+	ret0, _ := ret[0].(core.ContentService)
+	return ret0
+}
+
+// Contents indicates an expected call of Contents
+func (mr *MockClientMockRecorder) Contents() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Contents", reflect.TypeOf((*MockClient)(nil).Contents))
+}
+
 // Git mocks base method
 func (m *MockClient) Git() core.GitService {
 	m.ctrl.T.Helper()

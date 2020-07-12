@@ -2,13 +2,16 @@ package scm
 
 import (
 	"context"
+	"sync"
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/drone/go-scm/scm"
 )
 
 type contentService struct {
+	sync.Mutex
 	client *scm.Client
+	git    core.Git
 	scm    core.SCMProvider
 }
 
@@ -19,27 +22,20 @@ func (service *contentService) ListAllFiles(
 ) ([]string, error) {
 	client := service.client
 	ctx = withUser(ctx, service.scm, user)
-
-	var path string
-	paths := []string{""}
-	files := make([]string, 0)
-	seen := make(map[string]bool)
-	for len(paths) > 0 {
-		path, paths = paths[0], paths[1:]
-		contents, _, err := client.Contents.List(ctx, repo, path, ref, scm.ListOptions{})
-		if err != nil {
-			return []string{}, err
-		}
-		for _, content := range contents {
-			if content.Kind == scm.ContentKindDirectory && !seen[content.Path] {
-				seen[content.Path] = true
-				paths = append(paths, content.Path)
-			} else if content.Kind == scm.ContentKindFile {
-				files = append(files, content.Path)
-			}
-		}
+	commit, _, err := client.Git.FindCommit(ctx, repo, ref)
+	if err != nil {
+		return nil, err
 	}
-	return files, nil
+	r, _, err := client.Repositories.Find(ctx, repo)
+	if err != nil {
+		return nil, err
+	}
+	token := userToken(service.scm, user)
+	gitRepo, err := service.git.Clone(ctx, r.Clone, token.Token)
+	if err != nil {
+		return nil, err
+	}
+	return gitRepo.ListAllFiles(commit.Sha)
 }
 
 func (service *contentService) Find(ctx context.Context, user *core.User, repo, path, ref string) ([]byte, error) {

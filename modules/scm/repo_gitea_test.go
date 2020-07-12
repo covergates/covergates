@@ -4,10 +4,30 @@ package scm
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/gitea"
+	"github.com/drone/go-scm/scm/transport/oauth2"
 )
+
+func getGiteaClient() *scm.Client {
+	client, _ := gitea.New("http://localhost:3000")
+	client.Client = &http.Client{
+		Transport: &oauth2.Transport{
+			Scheme: oauth2.SchemeBearer,
+			Source: &oauth2.Refresher{
+				ClientID:     "c8c6a2cc-f948-475c-8663-f420c8fc15ab",
+				ClientSecret: "J8YYirhYOZY9a9RepaoORN-8EFcSO-sbwjSGvGo4NwE=",
+				Endpoint:     "http://localhost:3000/login/oauth/access_token",
+				Source:       oauth2.ContextTokenSource(),
+			},
+		},
+	}
+	return client
+}
 
 func TestGiteaList(t *testing.T) {
 
@@ -15,11 +35,11 @@ func TestGiteaList(t *testing.T) {
 		GiteaToken: "1749a6106454f05f689051c331680c13d78d81b7",
 	}
 	service := repoService{
-		client: getClient(),
+		client: getGiteaClient(),
 		scm:    core.Gitea,
 	}
 	repos, _ := service.List(context.Background(), user)
-	if len(repos) < 1 || repos[0].Name != "repo1" || repos[0].NameSpace != "gitea" {
+	if len(repos) <= 0 {
 		t.Fail()
 	}
 }

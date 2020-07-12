@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/code-devel-cover/CodeCover/modules/git"
 )
 
 func TestContentGithubListAllFiles(t *testing.T) {
@@ -15,8 +16,9 @@ func TestContentGithubListAllFiles(t *testing.T) {
 		GithubToken: os.Getenv("GITHUB_SECRET"),
 	}
 	service := &contentService{
-		client: getClient(),
+		client: getGithubClient(),
 		scm:    core.Github,
+		git:    &git.Service{},
 	}
 	files, err := service.ListAllFiles(
 		context.Background(),
@@ -37,8 +39,9 @@ func TestContentGithubFind(t *testing.T) {
 		GithubToken: os.Getenv("GITHUB_SECRET"),
 	}
 	service := &contentService{
-		client: getClient(),
+		client: getGithubClient(),
 		scm:    core.Github,
+		git:    &git.Service{},
 	}
 	content, err := service.Find(context.Background(), user, "blueworrybear/livelogs", "go.mod", "master")
 	if err != nil {

@@ -1,3 +1,5 @@
+// +build gitea,github
+
 package scm
 
 import (

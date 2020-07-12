@@ -75,7 +75,7 @@ func TestUpload(t *testing.T) {
 	addFormFile(w, "file", "cover_db.zip", file)
 	w.Close()
 
-	req, _ := http.NewRequest("POST", "/report/1234/perl", buffer)
+	req, _ := http.NewRequest("POST", "/reports/1234/perl", buffer)
 	req.Header.Set("Content-Type", w.FormDataContentType())
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()
@@ -84,7 +84,7 @@ func TestUpload(t *testing.T) {
 		}
 	})
 	// test empty commit
-	req, _ = http.NewRequest("POST", "/report/1234/perl", nil)
+	req, _ = http.NewRequest("POST", "/reports/1234/perl", nil)
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()
 		if rst.StatusCode != 400 {
