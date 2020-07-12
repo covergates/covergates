@@ -15,15 +15,16 @@ require (
 	github.com/golang/mock v1.4.3
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/google/wire v0.4.0
-	github.com/jinzhu/gorm v1.9.12
+	github.com/jinzhu/gorm v1.9.14
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
 	github.com/rs/xid v1.2.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
-	github.com/urfave/cli v1.20.0
-	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
+	github.com/urfave/cli v1.22.4
+	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
