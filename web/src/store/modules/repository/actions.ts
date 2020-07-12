@@ -5,9 +5,9 @@ import { RootState } from '@/store';
 
 const errUndefinedCurrentRepo = new Error('current repository is undefined');
 
-function fetchSCMRepositories(context: ActionContext<RepoState, RootState>, scm: string): Promise<void> {
+function fetchRepositories(context: ActionContext<RepoState, RootState>): Promise<void> {
   return new Promise((resolve) => {
-    Axios.get<Repository[]>(`${context.rootState.base}/api/v1/repos/${scm}`)
+    Axios.get<Repository[]>(`${context.rootState.base}/api/v1/repos`)
       .then((response) => {
         context.commit(Mutations.UPDATE_REPOSITORY_LIST, response.data);
       }).catch((error) => {
@@ -25,10 +25,6 @@ function fetchRepository(base: string, scm: string, namespace: string, name: str
       `${base}/api/v1/repos/${scm}/${namespace}/${name}`
     ).then((response) => {
       repository = response.data;
-      return Axios.get<string[]>(`${base}/api/v1/repos/${scm}/${namespace}/${name}/files`);
-    }).then((response) => {
-      // TODO: need to handle repository empty error
-      repository.Files = response.data;
     }).catch((reason) => {
       let error: Error;
       if (reason.response) {
@@ -49,12 +45,7 @@ function fetchRepository(base: string, scm: string, namespace: string, name: str
 
 export function fetchRepositoryList<S extends RepoState, R extends RootState>(context: ActionContext<S, R>): Promise<void> {
   context.commit(Mutations.START_REPOSITORY_LOADING);
-  const providers = ['github'];
-  const jobs: Promise<void>[] = [];
-  for (const scm of providers) {
-    jobs.push(fetchSCMRepositories(context, scm));
-  }
-  return Promise.all(jobs).then(() => {
+  return fetchRepositories(context).then(() => {
     context.commit(Mutations.STOP_REPOSITORY_LOADING);
   });
 }

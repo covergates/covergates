@@ -137,7 +137,7 @@ func HandleGet(reportStore core.ReportStore, repoStore core.RepoStore) gin.Handl
 		if option.Latest {
 			report, err := getLatest(reportStore, repoStore, reportID)
 			if err != nil {
-				c.JSON(400, []*core.Report{})
+				c.JSON(404, []*core.Report{})
 			} else {
 				c.JSON(200, []*core.Report{report})
 			}

@@ -9,13 +9,13 @@ import (
 
 // Report defined the code report structure
 type Report struct {
-	Coverage *CoverageReport
-	Files    []string
-	Type     ReportType
-	ReportID string
-	Branch   string
-	Tag      string
-	Commit   string
+	Coverage *CoverageReport `json:"coverage"`
+	Files    []string        `json:"files"`
+	Type     ReportType      `json:"type"`
+	ReportID string          `json:"reportID"`
+	Branch   string          `json:"branch"`
+	Tag      string          `json:"tag"`
+	Commit   string          `json::"commit"`
 }
 
 // CoverageReport defined the code coverage report

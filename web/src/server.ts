@@ -90,6 +90,9 @@ if ($s =~ /^t/) {
   });
   // report
   this.get('/reports/:id', (_, request) => {
+    if (request.params.id === 'report1') {
+      return new Response(404);
+    }
     const report: Report = {
       commit: '123456',
       reportID: `report${request.params.id}`,
@@ -111,7 +114,8 @@ if ($s =~ /^t/) {
           }
         ],
         StatementCoverage: 0.8
-      }
+      },
+      files: ['a', 'b', 'c', 'main.pl']
     };
     return report;
   });

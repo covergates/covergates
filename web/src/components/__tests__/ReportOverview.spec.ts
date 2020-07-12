@@ -23,20 +23,17 @@ describe('ReportOverview.vue', () => {
   });
 
   localVue.use(Vuetify);
-  it('update file count when current repository is set', async () => {
+  it('update file count when current report is set', async () => {
     const wrapper = shallowMount(ReportOverview, {
       localVue,
       vuetify,
       store
     }) as Wrapper<ReportOverview & { filesCount: number }>;
-    expect(wrapper.vm.$store.state.repository.current).toBeUndefined();
+    expect(wrapper.vm.$store.state.report.current).toBeUndefined();
     expect(wrapper.vm.filesCount).toEqual(0);
-    wrapper.vm.$store.commit(Mutations.SET_REPOSITORY_CURRENT, {
-      Name: 'repo',
-      NameSpace: 'org',
-      SCM: 'github',
-      Files: ['a', 'b', 'c']
-    } as Repository);
+    wrapper.vm.$store.commit(Mutations.SET_REPORT_CURRENT, {
+      files: ['a', 'b', 'c']
+    } as Report);
     await flushPromises();
     expect(wrapper.vm.filesCount).toEqual(3);
   });

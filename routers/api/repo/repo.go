@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/net/context"
 )
 
 // TODO: Need to check user permission
@@ -89,6 +91,35 @@ func HandleGet(store core.RepoStore) gin.HandlerFunc {
 	}
 }
 
+// HandleListAll repositories
+// @Summary List repositories for all available SCM providers
+// @Tags Repository
+// @Success 200 {object} []core.Repo "repositories"
+// @Router /repos [get]
+func HandleListAll(config *config.Config, service core.SCMService, store core.RepoStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		repositories := make([]*core.Repo, 0)
+		user, ok := request.UserFrom(c)
+		if !ok {
+			c.JSON(401, repositories)
+			return
+		}
+		ctx := c.Request.Context()
+		for _, provider := range config.Providers() {
+			client, err := service.Client(provider)
+			if err != nil {
+				continue
+			}
+			result, err := getRepositories(ctx, user, client, store)
+			if err != nil {
+				continue
+			}
+			repositories = append(repositories, result...)
+		}
+		c.JSON(200, repositories)
+	}
+}
+
 // HandleListSCM repositories
 // @Summary List repositories
 // @Tags Repository
@@ -110,25 +141,10 @@ func HandleListSCM(service core.SCMService, store core.RepoStore) gin.HandlerFun
 			c.JSON(500, []*core.Repo{})
 			return
 		}
-		repositories, err := client.Repositories().List(ctx, user)
-		urls := make([]string, len(repositories))
-		for i, repo := range repositories {
-			urls[i] = repo.URL
-		}
-		storeRepositories, err := store.Finds(urls...)
+		repositories, err := getRepositories(ctx, user, client, store)
 		if err != nil {
-			c.JSON(200, repositories)
+			c.JSON(500, []*core.Repo{})
 			return
-		}
-		reportsMap := make(map[string]string)
-		for _, repo := range storeRepositories {
-			reportsMap[repo.URL] = repo.ReportID
-		}
-		for _, repo := range repositories {
-			report, ok := reportsMap[repo.URL]
-			if ok {
-				repo.ReportID = report
-			}
 		}
 		c.JSON(200, repositories)
 	}
@@ -224,4 +240,35 @@ func getRef(c *gin.Context, client core.Client, user *core.User) (string, error)
 		ref = repo.Branch
 	}
 	return ref, nil
+}
+
+func getRepositories(
+	ctx context.Context,
+	user *core.User,
+	client core.Client,
+	store core.RepoStore,
+) ([]*core.Repo, error) {
+	repositories, err := client.Repositories().List(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	urls := make([]string, len(repositories))
+	for i, repo := range repositories {
+		urls[i] = repo.URL
+	}
+	storeRepositories, err := store.Finds(urls...)
+	if err != nil {
+		return repositories, nil
+	}
+	reportsMap := make(map[string]string)
+	for _, repo := range storeRepositories {
+		reportsMap[repo.URL] = repo.ReportID
+	}
+	for _, repo := range repositories {
+		report, ok := reportsMap[repo.URL]
+		if ok {
+			repo.ReportID = report
+		}
+	}
+	return repositories, nil
 }

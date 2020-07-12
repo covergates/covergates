@@ -1,6 +1,10 @@
 package config
 
-import "net/url"
+import (
+	"net/url"
+
+	"github.com/code-devel-cover/CodeCover/core"
+)
 
 type Config struct {
 	Server Server
@@ -31,6 +35,19 @@ type Github struct {
 	Scope        []string `default:"repo,repo:status,user:email,read:org"`
 }
 
+// Providers of all available SCM
+func (c *Config) Providers() []core.SCMProvider {
+	providers := make([]core.SCMProvider, 0)
+	if c.Gitea.Server != "" {
+		providers = append(providers, core.Gitea)
+	}
+	if c.Github.Server != "" {
+		providers = append(providers, core.Github)
+	}
+	return providers
+}
+
+// Port opened for the current server
 func (server Server) Port() string {
 	u, err := url.Parse(server.Addr)
 	if err != nil {

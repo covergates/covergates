@@ -15,3 +15,7 @@ export function stopLoading(state: ReportState): void {
 export function setSource(state: ReportState, source: string): void {
   state.source = source;
 }
+
+export function setError(state: ReportState, error: Error): void {
+  state.error = error;
+}

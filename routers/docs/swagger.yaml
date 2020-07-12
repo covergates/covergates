@@ -25,6 +25,10 @@ definitions:
         type: string
       coverage:
         type: CoverageReport
+      files:
+        items:
+          type: string
+        type: array
       reportID:
         type: string
       tag:
@@ -157,6 +161,17 @@ paths:
       tags:
       - Report
   /repos:
+    get:
+      responses:
+        "200":
+          description: repositories
+          schema:
+            items:
+              $ref: '#/definitions/core.Repo'
+            type: array
+      summary: List repositories for all available SCM providers
+      tags:
+      - Repository
     post:
       parameters:
       - description: repository to create

@@ -19,6 +19,9 @@ type FileInfo = {
 
 @Component
 export default class ReportCode extends Vue {
+  /**
+   * Table Headers
+   */
   headers = [
     {
       text: 'File Path',
@@ -31,29 +34,32 @@ export default class ReportCode extends Vue {
     }
   ];
 
+  get report(): Report | undefined {
+    return this.$store.state.report.current;
+  }
+
   get fileInfos(): FileInfo[] {
-    const repo = this.$store.state.repository.current;
-    const report = this.$store.state.report.current;
-    if (repo === undefined || report === undefined) {
+    if (!this.report) {
       return [];
     }
     const info = {} as { [key: string]: FileInfo };
-    if (repo.Files) {
-      for (const file of repo.Files) {
+    if (this.report.files) {
+      for (const file of this.report.files) {
         info[file] = {
           name: file,
           coverage: 0
         };
       }
     }
-    if (report.coverage && report.coverage.Files) {
-      for (const file of report.coverage.Files) {
+    if (this.report.coverage && this.report.coverage.Files) {
+      for (const file of this.report.coverage.Files) {
+        const coverage = file.StatementCoverage * 100;
         if (info[file.Name]) {
-          info[file.Name].coverage = file.StatementCoverage;
+          info[file.Name].coverage = coverage;
         } else {
           info[file.Name] = {
             name: file.Name,
-            coverage: file.StatementCoverage
+            coverage: coverage
           };
         }
       }

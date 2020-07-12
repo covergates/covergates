@@ -13,7 +13,6 @@ declare interface Repository {
   NameSpace: string;
   Name: string;
   Branch: string;
-  Files?: string[];
 }
 
 declare interface StatementHit {
@@ -39,4 +38,5 @@ declare interface Report {
   reportID: string;
   tag?: string;
   type?: string;
+  files?: string[];
 }

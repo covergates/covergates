@@ -191,6 +191,23 @@ var doc = `{
             }
         },
         "/repos": {
+            "get": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "List repositories for all available SCM providers",
+                "responses": {
+                    "200": {
+                        "description": "repositories",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/core.Repo"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "Repository"
@@ -512,6 +529,12 @@ var doc = `{
                 },
                 "coverage": {
                     "type": "CoverageReport"
+                },
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "reportID": {
                     "type": "string"

@@ -19,6 +19,7 @@ import (
 	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -198,6 +199,38 @@ func TestGet(t *testing.T) {
 		data, _ := ioutil.ReadAll(rst.Body)
 		json.Unmarshal(data, &reports)
 		if len(reports) < 1 || reports[0].ReportID != "1234" {
+			t.Fail()
+		}
+	})
+}
+
+func TestGetNotFound(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := &core.Repo{
+		ReportID: "1234",
+		SCM:      core.Github,
+	}
+
+	repoStore := mock.NewMockRepoStore(ctrl)
+	reportStore := mock.NewMockReportStore(ctrl)
+
+	repoStore.EXPECT().Find(gomock.Eq(&core.Repo{
+		ReportID: repo.ReportID,
+	})).Return(repo, nil)
+
+	reportStore.EXPECT().Find(gomock.Any()).Return(nil, gorm.ErrRecordNotFound)
+
+	r := gin.Default()
+	r.GET("/reports/:id", HandleGet(reportStore, repoStore))
+
+	req, _ := http.NewRequest("GET", "/reports/1234", nil)
+	query := req.URL.Query()
+	query.Set("latest", "1")
+	req.URL.RawQuery = query.Encode()
+	testRequest(r, req, func(w *httptest.ResponseRecorder) {
+		rst := w.Result()
+		if rst.StatusCode != 404 {
 			t.Fail()
 		}
 	})

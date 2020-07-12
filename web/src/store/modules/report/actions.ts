@@ -3,17 +3,22 @@ import Axios from 'axios';
 import { Route } from 'vue-router';
 import { ReportState, Mutations } from '.';
 import { RootState } from '@/store';
+import { reasonToError } from '@/plugins/http';
 
 export function fetchCurrentReport<S extends ReportState, R extends RootState>(context: ActionContext<S, R>, reportID: string): Promise<void> {
   return new Promise((resolve) => {
     context.commit(Mutations.START_REPORT_LOADING);
-    Axios.get<Report>(`${context.rootState.base}/api/v1/reports/${reportID}`)
+    Axios.get<Report>(`${context.rootState.base}/api/v1/reports/${reportID}`, {
+      params: {
+        latest: true
+      }
+    })
       .then((response) => {
         context.commit(Mutations.SET_REPORT_CURRENT, response.data);
       })
-      .catch((error) => {
-        // TODO: add error mutation
-        console.warn(error);
+      .catch(reason => {
+        context.commit(Mutations.SET_REPORT_CURRENT, undefined);
+        context.commit(Mutations.SET_REPORT_ERROR, reasonToError(reason));
       })
       .finally(() => {
         context.commit(Mutations.STOP_REPORT_LOADING);
@@ -42,8 +47,7 @@ export function fetchSource<S extends ReportState, R extends RootState>(context:
         context.commit(Mutations.SET_REPORT_SOURCE, response.data);
       })
       .catch(reason => {
-        // TODO: add error mutation
-        console.warn(reason);
+        context.commit(Mutations.SET_REPORT_ERROR, reasonToError(reason));
       })
       .finally(() => {
         context.commit(Mutations.STOP_REPORT_LOADING);
