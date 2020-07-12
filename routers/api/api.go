@@ -62,7 +62,9 @@ func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
 	{
 		g := g.Group("/reports")
 		g.POST("/:id/:type", report.HandleUpload(
+			r.SCMService,
 			r.CoverageService,
+			r.RepoStore,
 			r.ReportStore,
 		))
 		g.GET("/:id", report.HandleGet(r.ReportStore, r.RepoStore))

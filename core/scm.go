@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-//go:generate mockgen -package mock -destination ../mock/scm_mock.go . SCMService,Client,RepoService,UserService
+//go:generate mockgen -package mock -destination ../mock/scm_mock.go . SCMService,Client,RepoService,UserService,ContentService
 
 type SCMService interface {
 	Client(scm SCMProvider) (Client, error)
@@ -22,6 +22,7 @@ type Client interface {
 	Users() UserService
 	Git() GitService
 	Contents() ContentService
+	Token(user *User) Token
 }
 
 // RepoService provides operations with SCM
@@ -30,6 +31,7 @@ type RepoService interface {
 	// List repositories from SCM context
 	List(ctx context.Context, user *User) ([]*Repo, error)
 	Find(ctx context.Context, user *User, name string) (*Repo, error)
+	CloneURL(ctx context.Context, user *User, name string) (string, error)
 }
 
 // UserService defines operations with SCM

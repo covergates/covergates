@@ -10,6 +10,7 @@ import (
 // Report defined the code report structure
 type Report struct {
 	Coverage *CoverageReport
+	Files    []string
 	Type     ReportType
 	ReportID string
 	Branch   string

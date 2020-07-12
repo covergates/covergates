@@ -64,3 +64,17 @@ func (service *repoService) Find(
 		Branch:    repo.Branch,
 	}, nil
 }
+
+func (service *repoService) CloneURL(
+	ctx context.Context,
+	user *core.User,
+	name string,
+) (string, error) {
+	client := service.client
+	ctx = withUser(ctx, service.scm, user)
+	repo, _, err := client.Repositories.Find(ctx, name)
+	if err != nil {
+		return "", err
+	}
+	return repo.Clone, nil
+}

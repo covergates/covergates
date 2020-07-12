@@ -2,8 +2,10 @@ package report
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -20,7 +22,12 @@ import (
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "error message"
 // @Router /reports/{id}/{type} [post]
-func HandleUpload(service core.CoverageService, store core.ReportStore) gin.HandlerFunc {
+func HandleUpload(
+	scmService core.SCMService,
+	coverageService core.CoverageService,
+	repoStore core.RepoStore,
+	reportStore core.ReportStore,
+) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		reportID := c.Param("id")
 		reportType := core.ReportType(c.Param("type"))
@@ -29,28 +36,55 @@ func HandleUpload(service core.CoverageService, store core.ReportStore) gin.Hand
 			c.String(400, "must have commit SHA")
 			return
 		}
+		ctx := c.Request.Context()
+		user, ok := request.UserFrom(c)
+		if !ok {
+			c.String(403, "user not found")
+		}
+
+		repo, err := repoStore.Find(&core.Repo{ReportID: reportID})
+		if err != nil {
+			c.String(400, "cannot find repository related to report id")
+			return
+		}
+
+		client, err := scmService.Client(repo.SCM)
+		if err != nil {
+			c.String(400, err.Error())
+			return
+		}
+
+		files, err := client.Contents().ListAllFiles(
+			ctx, user,
+			fmt.Sprintf("%s/%s", repo.NameSpace, repo.Name), commit)
+		if err != nil {
+			c.String(400, err.Error())
+			return
+		}
+
 		file, err := c.FormFile("file")
 		if err != nil {
 			c.Error(err)
 			c.String(400, err.Error())
 			return
 		}
-		ctx := c.Request.Context()
 		reader, err := file.Open()
-		coverage, err := service.Report(ctx, reportType, reader)
+		coverage, err := coverageService.Report(ctx, reportType, reader)
 		if err != nil {
 			c.String(400, err.Error())
 			return
 		}
+
 		report := &core.Report{
 			ReportID: reportID,
 			Coverage: coverage,
+			Files:    files,
 			Type:     reportType,
 			Branch:   c.PostForm("branch"),
 			Tag:      c.PostForm("tag"),
 			Commit:   commit,
 		}
-		if err := store.Upload(report); err != nil {
+		if err := reportStore.Upload(report); err != nil {
 			c.Error(err)
 			c.String(500, err.Error())
 			return

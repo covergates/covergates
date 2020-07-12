@@ -16,19 +16,11 @@ import (
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/mock"
+	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	log "github.com/sirupsen/logrus"
 )
-
-func setupRouter(
-	coverageService core.CoverageService,
-	reportStore core.ReportStore,
-) *gin.Engine {
-	r := gin.Default()
-	r.POST("/reports/:id/:type", HandleUpload(coverageService, reportStore))
-	return r
-}
 
 func testRequest(r *gin.Engine, req *http.Request, f func(w *httptest.ResponseRecorder)) {
 	w := httptest.NewRecorder()
@@ -50,23 +42,65 @@ func addFormFile(w *multipart.Writer, k, name string, r io.Reader) {
 func TestUpload(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
+	mockSCMService := mock.NewMockSCMService(ctrl)
+	mockClient := mock.NewMockClient(ctrl)
+	mockContent := mock.NewMockContentService(ctrl)
 	mockCoverageService := mock.NewMockCoverageService(ctrl)
 	mockReportStore := mock.NewMockReportStore(ctrl)
+	mockRepoStore := mock.NewMockRepoStore(ctrl)
+	user := &core.User{}
 	coverage := &core.CoverageReport{}
+	repo := &core.Repo{
+		NameSpace: "org",
+		Name:      "repo",
+		SCM:       core.Github,
+	}
+	report := &core.Report{
+		ReportID: "1234",
+		Type:     core.ReportPerl,
+		Coverage: coverage,
+		Commit:   "abcdef",
+		Files:    []string{"a"},
+	}
+
+	mockSCMService.EXPECT().Client(
+		gomock.Eq(core.Github),
+	).Return(mockClient, nil)
+
+	mockClient.EXPECT().Contents().Return(mockContent)
+	mockContent.EXPECT().ListAllFiles(
+		gomock.Any(),
+		gomock.Eq(user),
+		gomock.Eq(fmt.Sprintf("%s/%s", repo.NameSpace, repo.Name)),
+		gomock.Eq(report.Commit),
+	).Return([]string{"a"}, nil)
+
+	mockRepoStore.EXPECT().Find(
+		gomock.Eq(&core.Repo{
+			ReportID: report.ReportID,
+		}),
+	).Return(repo, nil)
+
 	mockCoverageService.EXPECT().Report(
 		gomock.Any(),
 		gomock.Eq(core.ReportPerl),
 		gomock.Any(),
 	).Return(coverage, nil)
-	mockReportStore.EXPECT().Upload(gomock.Eq(
-		&core.Report{
-			ReportID: "1234",
-			Type:     core.ReportPerl,
-			Coverage: coverage,
-			Commit:   "abcdef",
-		},
-	)).Return(nil)
-	r := setupRouter(mockCoverageService, mockReportStore)
+
+	mockReportStore.EXPECT().Upload(
+		gomock.Eq(report),
+	).Return(nil)
+
+	r := gin.Default()
+	r.Use(func(c *gin.Context) {
+		request.WithUser(c, user)
+	})
+	r.POST("/reports/:id/:type", HandleUpload(
+		mockSCMService,
+		mockCoverageService,
+		mockRepoStore,
+		mockReportStore,
+	))
 
 	buffer := bytes.NewBuffer([]byte{})
 	w := multipart.NewWriter(buffer)

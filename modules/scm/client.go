@@ -41,3 +41,12 @@ func (c *client) Contents() core.ContentService {
 		git:    c.git,
 	}
 }
+
+func (c *client) Token(user *core.User) core.Token {
+	token := userToken(c.scm, user)
+	return core.Token{
+		Token:   token.Token,
+		Expires: token.Expires,
+		Refresh: token.Refresh,
+	}
+}

@@ -14,6 +14,7 @@ var errReportID = errors.New("Error Report ID")
 type Report struct {
 	gorm.Model
 	Data     []byte
+	FileData []byte
 	Type     string
 	ReportID string `gorm:"unique_index:report_id_commit"`
 	Branch   string `gorm:"index"`
@@ -71,10 +72,20 @@ func (r *Report) CoverageReport() (*core.CoverageReport, error) {
 	return cover, err
 }
 
+func (r *Report) Files() ([]string, error) {
+	var files []string
+	err := json.Unmarshal(r.FileData, &files)
+	return files, err
+}
+
 func (r *Report) ToCoreReport() *core.Report {
 	coverage, err := r.CoverageReport()
 	if err != nil {
 		coverage = &core.CoverageReport{}
+	}
+	files, err := r.Files()
+	if err != nil {
+		files = []string{}
 	}
 	report := &core.Report{
 		Coverage: coverage,
@@ -82,6 +93,7 @@ func (r *Report) ToCoreReport() *core.Report {
 		Commit:   r.Commit,
 		ReportID: r.ReportID,
 		Tag:      r.Tag,
+		Files:    files,
 		Type:     core.ReportType(r.Type),
 	}
 	return report
@@ -102,10 +114,15 @@ func copyReport(dst *Report, src *core.Report) {
 	if err != nil {
 		data = []byte{}
 	}
+	files, err := json.Marshal(src.Files)
+	if err != nil {
+		files = []byte{}
+	}
 	dst.Branch = src.Branch
 	dst.Tag = src.Tag
 	dst.Commit = src.Commit
 	dst.ReportID = src.ReportID
 	dst.Type = string(src.Type)
 	dst.Data = data
+	dst.FileData = files
 }

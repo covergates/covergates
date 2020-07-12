@@ -66,3 +66,21 @@ func TestGithubFind(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGithubRepoCloneURL(t *testing.T) {
+	service := repoService{
+		client: getGithubClient(),
+		scm:    core.Github,
+	}
+	user := &core.User{
+		GithubToken: os.Getenv("GITHUB_SECRET"),
+	}
+	url, err := service.CloneURL(context.Background(), user, "blueworrybear/livelogs")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if url == "" {
+		t.Fail()
+	}
+}
