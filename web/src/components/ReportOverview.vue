@@ -44,7 +44,7 @@ export default class ReportOverview extends Vue {
 
   get coverage(): number {
     if (this.report !== undefined && this.report.coverage !== undefined) {
-      return this.report.coverage.StatementCoverage * 100;
+      return Math.round(this.report.coverage.StatementCoverage * 10000) / 100;
     }
     return 0;
   }

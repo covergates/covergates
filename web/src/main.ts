@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import vuetify from './plugins/vuetify';
+import { authorize } from './router/gates';
 import { makeServer } from './server';
 import store, { Actions } from '@/store';
 import { AxiosPlugin } from '@/plugins/http';
@@ -18,6 +19,7 @@ if (process.env.NODE_ENV === 'development' && process.env.VUE_APP_MOCK_SERVER ==
 }
 
 Vue.config.productionTip = false;
+router.beforeEach(authorize(store));
 store.dispatch(Actions.FETCH_USER).then(() => {
   new Vue({
     router,

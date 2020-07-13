@@ -62,6 +62,9 @@ function routes(this: Server<Registry<Models, {}>>): void {
   this.get('/repos/:scm', schema => {
     return schema.all('repository').models;
   });
+  this.get('/repos', schema => {
+    return schema.all('repository').models;
+  });
   this.get('/repos/:scm/:namespace/:name/files', () => {
     const files = [];
     for (let i = 0; i < 10; i++) {
@@ -117,7 +120,7 @@ if ($s =~ /^t/) {
       },
       files: ['a', 'b', 'c', 'main.pl']
     };
-    return report;
+    return [report];
   });
 }
 

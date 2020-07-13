@@ -19,10 +19,12 @@ const routes: Array<RouteConfig> = [
       {
         path: '/repo',
         name: 'Repo',
+        meta: { requiresAuth: true },
         component: () => import('@/views/Repo.vue')
       }, {
         path: '/report/:scm/:namespace/:name',
         name: 'Report',
+        meta: { requiresAuth: true },
         component: () => import('@/views/Report.vue'),
         beforeEnter: fetchCurrentRepository(store),
         children: [
@@ -50,6 +52,11 @@ const routes: Array<RouteConfig> = [
     path: '/login',
     name: 'Login',
     component: () => import('@/views/Login.vue')
+  },
+  {
+    path: '*',
+    name: 'NoRoute',
+    redirect: '/'
   }
 ];
 

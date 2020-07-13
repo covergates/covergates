@@ -8,13 +8,18 @@ import { reasonToError } from '@/plugins/http';
 export function fetchCurrentReport<S extends ReportState, R extends RootState>(context: ActionContext<S, R>, reportID: string): Promise<void> {
   return new Promise((resolve) => {
     context.commit(Mutations.START_REPORT_LOADING);
-    Axios.get<Report>(`${context.rootState.base}/api/v1/reports/${reportID}`, {
+    Axios.get<Report[]>(`${context.rootState.base}/api/v1/reports/${reportID}`, {
       params: {
         latest: true
       }
     })
       .then((response) => {
-        context.commit(Mutations.SET_REPORT_CURRENT, response.data);
+        if (response.data.length <= 0) {
+          context.commit(Mutations.SET_REPORT_CURRENT, undefined);
+          context.commit(Mutations.SET_REPORT_ERROR, new Error('report not found'));
+        } else {
+          context.commit(Mutations.SET_REPORT_CURRENT, response.data[0]);
+        }
       })
       .catch(reason => {
         context.commit(Mutations.SET_REPORT_CURRENT, undefined);

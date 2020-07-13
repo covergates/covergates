@@ -19,7 +19,7 @@ describe('store.module.report.actions', () => {
     const report = {};
     mockGet.mockResolvedValueOnce({
       status: 200,
-      data: report
+      data: [report]
     } as AxiosResponse);
     return fetchCurrentReport(context, '1234').then(() => {
       expect(context.commit).toHaveBeenCalledWith(Mutations.SET_REPORT_CURRENT, report);
