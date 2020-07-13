@@ -12,12 +12,13 @@ var errEmptyRepoFiled = errors.New("repository must have SCM and URL filed")
 // Repo defines a repository
 type Repo struct {
 	gorm.Model
-	URL       string `gorm:"unique_index;not null"`
-	ReportID  string
-	NameSpace string `gorm:"index;not null"`
-	Name      string `gorm:"index;not null"`
-	Branch    string
-	SCM       string `gorm:"index;not null"`
+	URL          string `gorm:"unique_index;not null"`
+	ReportID     string
+	NameSpace    string `gorm:"index;not null"`
+	Name         string `gorm:"index;not null"`
+	Branch       string
+	SCM          string `gorm:"index;not null"`
+	CreatorEmail string
 }
 
 // RepoStore repositories in storage
@@ -38,17 +39,18 @@ func (repo *Repo) ToCoreRepo() *core.Repo {
 }
 
 // Create a new repository
-func (store *RepoStore) Create(repo *core.Repo) error {
+func (store *RepoStore) Create(repo *core.Repo, user *core.User) error {
 	if repo.SCM == "" || repo.URL == "" {
 		return errEmptyRepoFiled
 	}
 	session := store.DB.Session()
 	r := &Repo{
-		URL:       repo.URL,
-		NameSpace: repo.NameSpace,
-		Name:      repo.Name,
-		SCM:       string(repo.SCM),
-		Branch:    repo.Branch,
+		URL:          repo.URL,
+		NameSpace:    repo.NameSpace,
+		Name:         repo.Name,
+		SCM:          string(repo.SCM),
+		Branch:       repo.Branch,
+		CreatorEmail: user.Email,
 	}
 	return session.Create(r).Error
 }
@@ -71,6 +73,21 @@ func (store *RepoStore) Find(repo *core.Repo) (*core.Repo, error) {
 		return nil, err
 	}
 	return r.ToCoreRepo(), nil
+}
+
+func (store *RepoStore) Creator(repo *core.Repo) (*core.User, error) {
+	session := store.DB.Session()
+	r := &Repo{}
+	if err := session.Where(repo).First(r).Error; err != nil {
+		return nil, err
+	}
+	user := &User{
+		Email: r.CreatorEmail,
+	}
+	if err := session.First(user).Error; err != nil {
+		return nil, err
+	}
+	return user.toCoreUser(), nil
 }
 
 func (store *RepoStore) Finds(urls ...string) ([]*core.Repo, error) {

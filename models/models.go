@@ -35,10 +35,5 @@ func init() {
 }
 
 func migrate(db *gorm.DB) error {
-	for _, table := range tables {
-		if err := db.AutoMigrate(table).Error; err != nil {
-			return err
-		}
-	}
-	return nil
+	return db.AutoMigrate(tables...).Error
 }

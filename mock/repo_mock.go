@@ -34,17 +34,32 @@ func (m *MockRepoStore) EXPECT() *MockRepoStoreMockRecorder {
 }
 
 // Create mocks base method
-func (m *MockRepoStore) Create(arg0 *core.Repo) error {
+func (m *MockRepoStore) Create(arg0 *core.Repo, arg1 *core.User) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", arg0)
+	ret := m.ctrl.Call(m, "Create", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create
-func (mr *MockRepoStoreMockRecorder) Create(arg0 interface{}) *gomock.Call {
+func (mr *MockRepoStoreMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockRepoStore)(nil).Create), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockRepoStore)(nil).Create), arg0, arg1)
+}
+
+// Creator mocks base method
+func (m *MockRepoStore) Creator(arg0 *core.Repo) (*core.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Creator", arg0)
+	ret0, _ := ret[0].(*core.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Creator indicates an expected call of Creator
+func (mr *MockRepoStoreMockRecorder) Creator(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Creator", reflect.TypeOf((*MockRepoStore)(nil).Creator), arg0)
 }
 
 // Find mocks base method

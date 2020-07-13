@@ -16,7 +16,6 @@ import (
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/mock"
-	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/jinzhu/gorm"
@@ -82,6 +81,10 @@ func TestUpload(t *testing.T) {
 		}),
 	).Return(repo, nil)
 
+	mockRepoStore.EXPECT().Creator(
+		gomock.Eq(repo),
+	).Return(user, nil)
+
 	mockCoverageService.EXPECT().Report(
 		gomock.Any(),
 		gomock.Eq(core.ReportPerl),
@@ -93,9 +96,6 @@ func TestUpload(t *testing.T) {
 	).Return(nil)
 
 	r := gin.Default()
-	r.Use(func(c *gin.Context) {
-		request.WithUser(c, user)
-	})
 	r.POST("/reports/:id/:type", HandleUpload(
 		mockSCMService,
 		mockCoverageService,

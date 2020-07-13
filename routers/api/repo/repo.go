@@ -21,12 +21,17 @@ import (
 // @Router /repos [post]
 func HandleCreate(store core.RepoStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		user, ok := request.UserFrom(c)
+		if !ok {
+			c.String(403, "user not found")
+			return
+		}
 		repo := &core.Repo{}
 		if err := c.BindJSON(repo); err != nil {
 			c.String(400, err.Error())
 			return
 		}
-		if err := store.Create(repo); err != nil {
+		if err := store.Create(repo, user); err != nil {
 			c.String(400, err.Error())
 			return
 		}

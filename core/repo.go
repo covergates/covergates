@@ -15,8 +15,9 @@ type Repo struct {
 
 // RepoStore repository in storage
 type RepoStore interface {
-	Create(repo *Repo) error
+	Create(repo *Repo, creator *User) error
 	Update(repo *Repo) error
 	Find(repo *Repo) (*Repo, error)
 	Finds(urls ...string) ([]*Repo, error)
+	Creator(repo *Repo) (*User, error)
 }

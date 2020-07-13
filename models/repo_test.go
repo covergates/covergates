@@ -1,6 +1,7 @@
 package models
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/code-devel-cover/CodeCover/core"
@@ -70,4 +71,43 @@ func TestRepoFinds(t *testing.T) {
 			t.Fail()
 		}
 	}
+}
+
+func TestRepoAssociation(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	session := db.Session()
+	user := &User{
+		Name:  "user",
+		Email: "associate@email",
+	}
+	repo := &Repo{
+		Name:      "repo",
+		NameSpace: "associate",
+		SCM:       string(core.Github),
+		URL:       "http://associate/repo",
+	}
+	if err := session.Create(&user).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	repoStore := &RepoStore{
+		DB: db,
+	}
+
+	if err := repoStore.Create(repo.ToCoreRepo(), user.toCoreUser()); err != nil {
+		t.Error(err)
+	}
+
+	u, err := repoStore.Creator(repo.ToCoreRepo())
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !reflect.DeepEqual(u, user.toCoreUser()) {
+		t.Fail()
+	}
+
 }

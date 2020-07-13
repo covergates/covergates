@@ -5,16 +5,26 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"path/filepath"
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/modules/archive"
+	"github.com/code-devel-cover/CodeCover/modules/util"
 )
 
 var errCoverDatabaseNotFound = errors.New("Coverage database not found")
 var errDigestNoFound = errors.New("Digest not found")
+
+type errDigestFormat struct {
+	msg string
+}
+
+func (err *errDigestFormat) Error() string {
+	return fmt.Sprintf("digest format error: %s", err.msg)
+}
 
 const coverDBName = "cover.14"
 const digiestFolder = "structure"
@@ -53,20 +63,53 @@ func findDigests(files []*zip.File) (DigestsMap, error) {
 			if filepath.Ext(name) == ".lock" {
 				continue
 			}
-			digest := &coverDigest{}
 			r, err := file.Open()
 			defer r.Close()
-			data, err := ioutil.ReadAll(r)
+			digest, err := unmarshalCoverDigest(r)
 			if err != nil {
-				return nil, err
-			}
-			if err := json.Unmarshal(data, digest); err != nil {
 				return nil, err
 			}
 			digests[name] = digest
 		}
 	}
 	return digests, nil
+}
+
+func unmarshalCoverDigest(r io.Reader) (*coverDigest, error) {
+	var m map[string]interface{}
+	data, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(data, &m); err != nil {
+		return nil, err
+	}
+	fileData, ok := m["file"]
+	if !ok {
+		return nil, &errDigestFormat{msg: "file not found"}
+	}
+	file, ok := fileData.(string)
+	if !ok {
+		return nil, &errDigestFormat{msg: "file is not string"}
+	}
+
+	statementData, ok := m["statement"]
+	if !ok {
+		return nil, &errDigestFormat{msg: "statement not found"}
+	}
+	statementSlice, ok := statementData.([]interface{})
+	if !ok {
+		return nil, &errDigestFormat{msg: "statement is not array"}
+	}
+
+	statements, err := util.ToIntSlice(statementSlice)
+	if err != nil {
+		return nil, err
+	}
+	return &coverDigest{
+		File:      file,
+		Statement: statements,
+	}, nil
 }
 
 func findCoverDB(z *zip.Reader) (*coverDB, error) {

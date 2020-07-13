@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -37,15 +36,16 @@ func HandleUpload(
 			return
 		}
 		ctx := c.Request.Context()
-		user, ok := request.UserFrom(c)
-		if !ok {
-			c.String(403, "user not found")
-		}
 
 		repo, err := repoStore.Find(&core.Repo{ReportID: reportID})
 		if err != nil {
 			c.String(400, "cannot find repository related to report id")
 			return
+		}
+
+		user, err := repoStore.Creator(repo)
+		if err != nil {
+			c.String(403, "repository creator not found")
 		}
 
 		client, err := scmService.Client(repo.SCM)
