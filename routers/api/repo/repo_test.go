@@ -16,14 +16,6 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func setRouter(
-	store core.RepoStore,
-) *gin.Engine {
-	r := gin.Default()
-	r.POST("/repo", HandleCreate(store))
-	return r
-}
-
 func testRequest(r *gin.Engine, req *http.Request, f func(*httptest.ResponseRecorder)) {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -39,8 +31,9 @@ func TestCreate(t *testing.T) {
 		Name:      "repo",
 		SCM:       core.Gitea,
 	}
+	user := &core.User{}
 	store := mock.NewMockRepoStore(ctrl)
-	store.EXPECT().Create(gomock.Eq(repo)).Return(nil)
+	store.EXPECT().Create(gomock.Eq(repo), gomock.Eq(user)).Return(nil)
 
 	data, err := json.Marshal(repo)
 	if err != nil {
@@ -49,7 +42,11 @@ func TestCreate(t *testing.T) {
 	}
 	read := bytes.NewReader(data)
 	req, _ := http.NewRequest("POST", "/repo", read)
-	r := setRouter(store)
+	r := gin.Default()
+	r.Use(func(c *gin.Context) {
+		request.WithUser(c, user)
+	})
+	r.POST("/repo", HandleCreate(store))
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()
 		if rst.StatusCode != 200 {
