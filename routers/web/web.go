@@ -22,6 +22,7 @@ func (r *WebRouter) RegisterRoutes(e *gin.Engine) {
 		g.Any("/github",
 			MiddlewareLogin(core.Github, r.LoginMiddleware),
 			HandleLogin(
+				r.Config,
 				core.Github,
 				r.SCMService,
 				r.Session,
@@ -30,13 +31,14 @@ func (r *WebRouter) RegisterRoutes(e *gin.Engine) {
 		g.Any("/gitea",
 			MiddlewareLogin(core.Gitea, r.LoginMiddleware),
 			HandleLogin(
+				r.Config,
 				core.Gitea,
 				r.SCMService,
 				r.Session,
 			),
 		)
 	}
-	e.Any("/logout", handleLogout(r.Session))
+	e.Any("/logoff", HandleLogout(r.Config, r.Session))
 	h := gin.WrapH(http.FileServer(web.New()))
 	e.GET("/favicon.ico", h)
 	e.GET("/js/*filepath", h)

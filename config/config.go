@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/code-devel-cover/CodeCover/core"
 )
@@ -54,4 +56,10 @@ func (server Server) Port() string {
 		return ""
 	}
 	return u.Port()
+}
+
+// BaseURL sanitize the Base string to URL format
+func (server Server) BaseURL() string {
+	base := strings.Trim(server.Base, "/")
+	return fmt.Sprintf("/%s", base)
 }

@@ -2,16 +2,18 @@ import { ActionContext } from 'vuex';
 import Axios from 'axios';
 import { UserState, Mutations } from '.';
 import { RootState } from '@/store';
+import { reasonToError } from '@/plugins/http';
 
 export function fetchUser<S extends UserState, R extends RootState>(context: ActionContext<S, R>) {
   return new Promise<void>((resolve) => {
+    context.commit(Mutations.CLEAR_USER_ERROR);
     Axios.get<User>(`${context.rootState.base}/api/v1/user`).then((response) => {
       context.commit(Mutations.UPDATE_USER, response.data);
-    }).catch((error) => {
-      if (error.response.status === 404) {
-        context.commit(Mutations.UPDATE_USER, { error: 'user not found' });
+    }).catch(reason => {
+      if (reason.response && reason.response.status === 404) {
+        context.commit(Mutations.SET_USER_ERROR, new Error('user not found'));
       } else {
-        context.commit(Mutations.UPDATE_USER, { error: error.response.data });
+        context.commit(Mutations.SET_USER_ERROR, reasonToError(reason));
       }
     }).finally(() => {
       resolve();

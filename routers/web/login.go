@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 
+	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/drone/go-login/login"
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ const (
 )
 
 func HandleLogin(
+	config *config.Config,
 	scm core.SCMProvider,
 	scmService core.SCMService,
 	session core.Session,
@@ -44,7 +46,7 @@ func HandleLogin(
 			c.String(400, err.Error())
 			return
 		}
-		c.String(200, "login")
+		c.Redirect(301, config.Server.BaseURL())
 	}
 }
 

@@ -1,9 +1,12 @@
 <template>
   <perfect-scrollbar class="page-container">
     <v-container>
-      <v-tabs v-show="!loading">
-        <v-tab v-for="tab in tabs" :key="tab.key" :to="tab.link">{{tab.key}}</v-tab>
-      </v-tabs>
+      <v-card flat>
+        <v-card-title>{{title}}</v-card-title>
+        <v-tabs v-show="!loading">
+          <v-tab v-for="tab in tabs" :key="tab.key" :to="tab.link">{{tab.key}}</v-tab>
+        </v-tabs>
+      </v-card>
       <v-progress-linear :active="loading" :indeterminate="loading"></v-progress-linear>
       <div class="router-container" v-show="!loading">
         <router-view></router-view>
@@ -31,6 +34,17 @@ export default class ReportView extends Vue {
     return (
       this.$store.state.repository.loading || this.$store.state.report.loading
     );
+  }
+
+  get repo(): Repository | undefined {
+    return this.$store.state.repository.current;
+  }
+
+  get title(): string {
+    if (this.repo) {
+      return `${this.repo.NameSpace}/${this.repo.Name}`;
+    }
+    return 'Report';
   }
 
   get report(): Report | undefined {

@@ -3,7 +3,6 @@ declare var VUE_BASE: any; // eslint-disable-line
 declare interface User {
   login?: string;
   email?: string;
-  error?: string;
 }
 
 declare interface Repository {
