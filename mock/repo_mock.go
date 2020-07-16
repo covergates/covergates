@@ -96,6 +96,21 @@ func (mr *MockRepoStoreMockRecorder) Finds(arg0 ...interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Finds", reflect.TypeOf((*MockRepoStore)(nil).Finds), arg0...)
 }
 
+// Setting mocks base method
+func (m *MockRepoStore) Setting(arg0 *core.Repo) (*core.RepoSetting, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Setting", arg0)
+	ret0, _ := ret[0].(*core.RepoSetting)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Setting indicates an expected call of Setting
+func (mr *MockRepoStoreMockRecorder) Setting(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Setting", reflect.TypeOf((*MockRepoStore)(nil).Setting), arg0)
+}
+
 // Update mocks base method
 func (m *MockRepoStore) Update(arg0 *core.Repo) error {
 	m.ctrl.T.Helper()
@@ -108,4 +123,18 @@ func (m *MockRepoStore) Update(arg0 *core.Repo) error {
 func (mr *MockRepoStoreMockRecorder) Update(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockRepoStore)(nil).Update), arg0)
+}
+
+// UpdateSetting mocks base method
+func (m *MockRepoStore) UpdateSetting(arg0 *core.Repo, arg1 *core.RepoSetting) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateSetting", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateSetting indicates an expected call of UpdateSetting
+func (mr *MockRepoStoreMockRecorder) UpdateSetting(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSetting", reflect.TypeOf((*MockRepoStore)(nil).UpdateSetting), arg0, arg1)
 }

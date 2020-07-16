@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 
 	"github.com/code-devel-cover/CodeCover/core"
@@ -21,6 +22,12 @@ type Repo struct {
 	CreatorEmail string
 }
 
+type RepoSetting struct {
+	gorm.Model
+	RepoID uint `gorm:"unique_index"`
+	Config []byte
+}
+
 // RepoStore repositories in storage
 type RepoStore struct {
 	DB core.DatabaseService
@@ -36,6 +43,15 @@ func (repo *Repo) ToCoreRepo() *core.Repo {
 		Branch:    repo.Branch,
 		URL:       repo.URL,
 	}
+}
+
+func (setting *RepoSetting) Update(newSetting *core.RepoSetting) error {
+	data, err := json.Marshal(newSetting)
+	if err != nil {
+		return err
+	}
+	setting.Config = data
+	return nil
 }
 
 // Create a new repository
@@ -102,6 +118,31 @@ func (store *RepoStore) Finds(urls ...string) ([]*core.Repo, error) {
 		coreRepositories[i] = repo.ToCoreRepo()
 	}
 	return coreRepositories, nil
+}
+
+func (store *RepoStore) Setting(repo *core.Repo) (*core.RepoSetting, error) {
+	session := store.DB.Session()
+	setting := &RepoSetting{RepoID: repo.ID}
+	if err := session.First(&setting).Error; err != nil {
+		return nil, err
+	}
+	coreSetting := &core.RepoSetting{}
+	if err := json.Unmarshal(setting.Config, coreSetting); err != nil {
+		return nil, err
+	}
+	return coreSetting, nil
+}
+
+func (store *RepoStore) UpdateSetting(repo *core.Repo, setting *core.RepoSetting) error {
+	session := store.DB.Session()
+	repoSetting := &RepoSetting{RepoID: repo.ID}
+	if err := session.FirstOrCreate(repoSetting).Error; err != nil {
+		return err
+	}
+	if err := repoSetting.Update(setting); err != nil {
+		return err
+	}
+	return session.Save(repoSetting).Error
 }
 
 func copyRepo(dst *Repo, src *core.Repo) {

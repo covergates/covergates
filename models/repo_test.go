@@ -109,5 +109,51 @@ func TestRepoAssociation(t *testing.T) {
 	if !reflect.DeepEqual(u, user.toCoreUser()) {
 		t.Fail()
 	}
+}
+
+func TestRepoSetting(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+
+	store := &RepoStore{DB: db}
+
+	repo := &core.Repo{
+		ID: 1234,
+	}
+	setting := &core.RepoSetting{
+		Filters: []string{"a", "b", "c"},
+	}
+
+	if err := store.UpdateSetting(repo, setting); err != nil {
+		t.Error(err)
+		return
+	}
+
+	target, err := store.Setting(repo)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !reflect.DeepEqual(target.Filters, setting.Filters) {
+		t.Fail()
+	}
+
+	setting.Filters = []string{"a"}
+
+	if err := store.UpdateSetting(repo, setting); err != nil {
+		t.Error(err)
+		return
+	}
+
+	target, err = store.Setting(repo)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !reflect.DeepEqual(target.Filters, setting.Filters) {
+		t.Fail()
+	}
 
 }

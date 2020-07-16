@@ -85,11 +85,21 @@ func TestUpload(t *testing.T) {
 		gomock.Eq(repo),
 	).Return(user, nil)
 
+	mockRepoStore.EXPECT().Setting(
+		gomock.Eq(repo),
+	).Return(&core.RepoSetting{}, nil)
+
 	mockCoverageService.EXPECT().Report(
 		gomock.Any(),
 		gomock.Eq(core.ReportPerl),
 		gomock.Any(),
 	).Return(coverage, nil)
+
+	mockCoverageService.EXPECT().TrimFileNames(
+		gomock.Any(),
+		gomock.Eq(coverage),
+		gomock.Any(),
+	).Return(nil)
 
 	mockReportStore.EXPECT().Upload(
 		gomock.Eq(report),

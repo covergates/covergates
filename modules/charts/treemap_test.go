@@ -52,6 +52,10 @@ func TestCoverDiffTreeMap(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer func() {
+		file.Close()
+		os.Remove(file.Name())
+	}()
 	if err := m.Render(file); err != nil {
 		t.Error(err)
 		return

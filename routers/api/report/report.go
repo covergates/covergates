@@ -75,6 +75,16 @@ func HandleUpload(
 			return
 		}
 
+		setting, err := repoStore.Setting(repo)
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+
+		if err := coverageService.TrimFileNames(ctx, coverage, setting.Filters); err != nil {
+			c.String(500, err.Error())
+		}
+
 		report := &core.Report{
 			ReportID: reportID,
 			Coverage: coverage,

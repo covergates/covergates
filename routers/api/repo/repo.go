@@ -11,8 +11,6 @@ import (
 	"golang.org/x/net/context"
 )
 
-// TODO: Need to check user permission
-
 // HandleCreate a repository
 // @Summary Create new repository for code coverage
 // @Tags Repository
@@ -231,6 +229,69 @@ func HandleGetFileContent(service core.SCMService) gin.HandlerFunc {
 		}
 		content, err := client.Contents().Find(ctx, user, repoName, filePath, ref)
 		c.Data(200, "text/plain", content)
+	}
+}
+
+// HandleGetSetting for the repository
+// @Summary get repository setting
+// @Tags Repository
+// @Param scm path string true "SCM"
+// @Param namespace path string true "Namespace"
+// @Param name path string true "name"
+// @Success 200 {object} core.RepoSetting repository setting
+// @Router /repos/{scm}/{namespace}/{name}/setting [get]
+func HandleGetSetting(store core.RepoStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		repo, err := store.Find(&core.Repo{
+			NameSpace: c.Param("namespace"),
+			Name:      c.Param("name"),
+			SCM:       core.SCMProvider(c.Param("scm")),
+		})
+		if err != nil {
+			c.JSON(404, &core.RepoSetting{})
+			return
+		}
+		setting, err := store.Setting(repo)
+		if err != nil {
+			if err != nil {
+				c.JSON(404, &core.RepoSetting{})
+				return
+			}
+		}
+		c.JSON(200, setting)
+	}
+}
+
+// HandleUpdateSetting for the repository
+// @Summary get repository setting
+// @Tags Repository
+// @Param scm path string true "SCM"
+// @Param namespace path string true "Namespace"
+// @Param name path string true "name"
+// @Param setting body core.RepoSetting true "repository setting"
+// @Success 200 {object} core.RepoSetting repository setting
+// @Router /repos/{scm}/{namespace}/{name}/setting [post]
+func HandleUpdateSetting(store core.RepoStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		repo, err := store.Find(&core.Repo{
+			NameSpace: c.Param("namespace"),
+			Name:      c.Param("name"),
+			SCM:       core.SCMProvider(c.Param("scm")),
+		})
+		if err != nil {
+			c.JSON(404, &core.RepoSetting{})
+			return
+		}
+		setting := &core.RepoSetting{}
+		if err := c.BindJSON(setting); err != nil {
+			c.JSON(400, setting)
+			return
+		}
+		if err := store.UpdateSetting(repo, setting); err != nil {
+			c.JSON(500, setting)
+			return
+		}
+		c.JSON(200, setting)
 	}
 }
 

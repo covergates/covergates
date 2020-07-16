@@ -13,6 +13,11 @@ type Repo struct {
 	SCM       SCMProvider
 }
 
+// RepoSetting to customize repository
+type RepoSetting struct {
+	Filters FileNameFilters
+}
+
 // RepoStore repository in storage
 type RepoStore interface {
 	Create(repo *Repo, creator *User) error
@@ -20,4 +25,6 @@ type RepoStore interface {
 	Find(repo *Repo) (*Repo, error)
 	Finds(urls ...string) ([]*Repo, error)
 	Creator(repo *Repo) (*User, error)
+	Setting(repo *Repo) (*RepoSetting, error)
+	UpdateSetting(repo *Repo, setting *RepoSetting) error
 }

@@ -17,6 +17,11 @@ definitions:
       url:
         type: string
     type: object
+  core.RepoSetting:
+    properties:
+      filters:
+        type: FileNameFilters
+    type: object
   core.Report:
     properties:
       branch:
@@ -323,6 +328,63 @@ paths:
           schema:
             $ref: '#/definitions/core.Repo'
       summary: renew repository report id
+      tags:
+      - Repository
+  /repos/{scm}/{namespace}/{name}/setting:
+    get:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.RepoSetting'
+      summary: get repository setting
+      tags:
+      - Repository
+    post:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: repository setting
+        in: body
+        name: setting
+        required: true
+        schema:
+          $ref: '#/definitions/core.RepoSetting'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.RepoSetting'
+      summary: get repository setting
       tags:
       - Repository
   /scm/{scm}/repos:

@@ -116,3 +116,17 @@ func (mr *MockCoverageServiceMockRecorder) Report(arg0, arg1, arg2 interface{}) 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Report", reflect.TypeOf((*MockCoverageService)(nil).Report), arg0, arg1, arg2)
 }
+
+// TrimFileNames mocks base method
+func (m *MockCoverageService) TrimFileNames(arg0 context.Context, arg1 *core.CoverageReport, arg2 core.FileNameFilters) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TrimFileNames", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// TrimFileNames indicates an expected call of TrimFileNames
+func (mr *MockCoverageServiceMockRecorder) TrimFileNames(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TrimFileNames", reflect.TypeOf((*MockCoverageService)(nil).TrimFileNames), arg0, arg1, arg2)
+}

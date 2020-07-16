@@ -15,6 +15,7 @@ func TestUserCreate(t *testing.T) {
 		DB: db,
 	}
 	user1 := &scm.User{
+		Login:  "create1",
 		Name:   "create1",
 		Email:  "create1@gmail.com",
 		Avatar: "http://avatar",

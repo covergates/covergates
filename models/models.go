@@ -31,6 +31,7 @@ func init() {
 		&Report{},
 		&User{},
 		&Repo{},
+		&RepoSetting{},
 	)
 }
 

@@ -425,6 +425,91 @@
                 }
             }
         },
+        "/repos/{scm}/{namespace}/{name}/setting": {
+            "get": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "get repository setting",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/core.RepoSetting"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "get repository setting",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "repository setting",
+                        "name": "setting",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/core.RepoSetting"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/core.RepoSetting"
+                        }
+                    }
+                }
+            }
+        },
         "/scm/{scm}/repos": {
             "get": {
                 "tags": [
@@ -500,6 +585,14 @@
                 },
                 "url": {
                     "type": "string"
+                }
+            }
+        },
+        "core.RepoSetting": {
+            "type": "object",
+            "properties": {
+                "filters": {
+                    "type": "FileNameFilters"
                 }
             }
         },
