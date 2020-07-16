@@ -482,7 +482,7 @@ var doc = `{
                 "tags": [
                     "Repository"
                 ],
-                "summary": "get repository setting",
+                "summary": "update repository setting",
                 "parameters": [
                     {
                         "type": "string",

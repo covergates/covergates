@@ -384,7 +384,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/core.RepoSetting'
-      summary: get repository setting
+      summary: update repository setting
       tags:
       - Repository
   /scm/{scm}/repos:

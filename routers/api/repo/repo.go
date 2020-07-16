@@ -263,7 +263,7 @@ func HandleGetSetting(store core.RepoStore) gin.HandlerFunc {
 }
 
 // HandleUpdateSetting for the repository
-// @Summary get repository setting
+// @Summary update repository setting
 // @Tags Repository
 // @Param scm path string true "SCM"
 // @Param namespace path string true "Namespace"
