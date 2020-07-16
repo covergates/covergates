@@ -14,6 +14,10 @@ declare interface Repository {
   Branch: string;
 }
 
+declare interface RepositorySetting {
+  filters?: string[];
+}
+
 declare interface StatementHit {
   LineNumber: number;
   Hits: number;

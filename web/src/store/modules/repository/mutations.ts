@@ -24,3 +24,7 @@ export function setError(state: RepoState, error?: Error): void {
     state.error = undefined;
   }
 }
+
+export function setSetting(state: RepoState, setting?: RepositorySetting): void {
+  state.setting = setting;
+}

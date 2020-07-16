@@ -2,6 +2,7 @@ import { ActionContext } from 'vuex';
 import Axios from 'axios';
 import { RepoState, Mutations } from '.';
 import { RootState } from '@/store';
+import { reasonToError } from '@/plugins/http';
 
 const errUndefinedCurrentRepo = new Error('current repository is undefined');
 
@@ -87,8 +88,9 @@ export function updateRepositoryReportID<S extends RepoState, R extends RootStat
       `${context.rootState.base}/api/v1/${repo?.SCM}/${repo?.NameSpace}/${repo?.Name}`
     ).then((response) => {
       context.commit(Mutations.SET_REPOSITORY_CURRENT, response.data);
-    }).catch((error) => {
-      // TODO: add error mutation
+    }).catch(reason => {
+      const error = reasonToError(reason);
+      context.commit(Mutations.SET_REPOSITORY_ERROR, error);
       reject(error);
     }).finally(() => {
       context.commit(Mutations.STOP_REPOSITORY_LOADING);
@@ -108,6 +110,33 @@ export function changeCurrentRepository<S extends RepoState, R extends RootState
         context.commit(Mutations.SET_REPOSITORY_CURRENT, response);
       }).catch(error => {
         context.commit(Mutations.SET_REPOSITORY_ERROR, error);
+      }).finally(() => {
+        context.commit(Mutations.STOP_REPOSITORY_LOADING);
+        resolve();
+      });
+  });
+}
+
+export function fetchRepositorySetting<S extends RepoState, R extends RootState>(
+  context: ActionContext<S, R>
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const base = context.rootState.base;
+    const repo = context.state.current;
+    if (repo === undefined) {
+      context.commit(Mutations.SET_REPOSITORY_SETTING, undefined);
+      reject(new Error('no repository found'));
+      return;
+    }
+    context.commit(Mutations.START_REPOSITORY_LOADING);
+    const { SCM, Name, NameSpace } = (repo as Repository);
+    Axios.get<RepositorySetting>(`${base}/api/v1/repos/${SCM}/${NameSpace}/${Name}/setting`)
+      .then(response => {
+        context.commit(Mutations.SET_REPOSITORY_SETTING, response.data);
+      })
+      .catch(reason => {
+        context.commit(Mutations.SET_REPOSITORY_SETTING, undefined);
+        reject(reasonToError(reason));
       }).finally(() => {
         context.commit(Mutations.STOP_REPOSITORY_LOADING);
         resolve();
