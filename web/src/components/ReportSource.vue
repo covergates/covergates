@@ -50,15 +50,14 @@ export default class ReportSource extends Vue {
 
   updateHitMap() {
     this.hitMap = {};
-    if (this.report === undefined || this.report.coverage === undefined) {
-      return;
-    }
-    const file = this.report.coverage.Files.find(file => {
-      return file.Name === this.filePath;
-    });
-    if (file) {
-      for (const hit of file.StatementHits) {
-        this.hitMap[hit.LineNumber] = hit.Hits > 0;
+    if (this.report && this.report.coverage) {
+      const file = this.report.coverage.Files.find(file => {
+        return file.Name === this.filePath;
+      });
+      if (file) {
+        for (const hit of file.StatementHits) {
+          this.hitMap[hit.LineNumber] = hit.Hits > 0;
+        }
       }
     }
   }
