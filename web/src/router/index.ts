@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import { fetchReportSource, fetchCurrentRepository } from './fetchers';
+import { fetchReportSource, fetchCurrentRepository, fetchReportSetting } from './fetchers';
 import store from '@/store';
 
 Vue.use(VueRouter);
@@ -43,6 +43,11 @@ const routes: Array<RouteConfig> = [
             name: 'report-source',
             component: () => import('@/components/ReportSource.vue'),
             beforeEnter: fetchReportSource(store)
+          },
+          {
+            path: 'setting',
+            name: 'report-setting',
+            component: () => import('@/components/ReportSetting.vue')
           }
         ]
       }

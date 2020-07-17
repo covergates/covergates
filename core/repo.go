@@ -15,7 +15,7 @@ type Repo struct {
 
 // RepoSetting to customize repository
 type RepoSetting struct {
-	Filters FileNameFilters
+	Filters FileNameFilters `json:"filters"`
 }
 
 // RepoStore repository in storage

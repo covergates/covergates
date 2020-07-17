@@ -91,7 +91,7 @@ describe('store.module.repository', () => {
     spy.mockClear();
     context.commit.mockClear();
     expect(context.commit).not.toHaveBeenCalledWith(Mutations.START_REPOSITORY_LOADING);
-    await expect(fetchRepositorySetting(context)).rejects.toBeDefined();
+    await fetchRepositorySetting(context);
     expect(context.commit).toHaveBeenCalledWith(Mutations.START_REPOSITORY_LOADING);
     expect(context.commit).toHaveBeenCalledWith(Mutations.SET_REPOSITORY_SETTING, undefined);
     expect(context.commit).toHaveBeenLastCalledWith(Mutations.STOP_REPOSITORY_LOADING);
@@ -100,7 +100,7 @@ describe('store.module.repository', () => {
   it('set repository setting undefined if no current repository', async () => {
     const context = mock<ActionContext<RepoState, RootState>>();
     expect(context.state.current).toBeUndefined();
-    await expect(fetchRepositorySetting(context)).rejects.toBeDefined();
+    await fetchRepositorySetting(context);
     expect(context.commit).not.toHaveBeenCalledWith(Mutations.START_REPOSITORY_LOADING);
     expect(context.commit).toHaveBeenCalledWith(Mutations.SET_REPOSITORY_SETTING, undefined);
   });

@@ -12,6 +12,7 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
           store.dispatch(
             Actions.FETCH_REPORT_CURRENT,
             (store.state as State).repository.current?.ReportID);
+          store.dispatch(Actions.FETCH_REPOSITORY_SETTING);
         }
       });
     next();
@@ -21,6 +22,13 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
 export function fetchReportSource(store: Store<RootState>): RouteHandler {
   return (to, from, next) => {
     store.dispatch(Actions.FETCH_REPORT_SOURCE, to);
+    next();
+  };
+}
+
+export function fetchReportSetting(store: Store<RootState>): RouteHandler {
+  return (to, from, next) => {
+    store.dispatch(Actions.FETCH_REPOSITORY_SETTING);
     next();
   };
 }

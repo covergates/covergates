@@ -68,6 +68,14 @@ export default class ReportView extends Vue {
         }
       });
     }
+    if (this.repo) {
+      options.push({
+        key: 'Setting',
+        link: {
+          name: 'report-setting'
+        }
+      });
+    }
     return options;
   }
 }

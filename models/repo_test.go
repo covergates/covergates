@@ -117,42 +117,65 @@ func TestRepoSetting(t *testing.T) {
 
 	store := &RepoStore{DB: db}
 
-	repo := &core.Repo{
+	repo1 := &core.Repo{
 		ID: 1234,
 	}
-	setting := &core.RepoSetting{
+	setting1 := &core.RepoSetting{
 		Filters: []string{"a", "b", "c"},
 	}
+	repo2 := &core.Repo{
+		ID: 4567,
+	}
+	setting2 := &core.RepoSetting{
+		Filters: []string{"e", "f"},
+	}
 
-	if err := store.UpdateSetting(repo, setting); err != nil {
+	if err := store.UpdateSetting(repo1, setting1); err != nil {
 		t.Error(err)
 		return
 	}
 
-	target, err := store.Setting(repo)
+	if err := store.UpdateSetting(repo2, setting2); err != nil {
+		t.Error(err)
+		return
+	}
+
+	target, err := store.Setting(repo1)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	if !reflect.DeepEqual(target.Filters, setting.Filters) {
+	if !reflect.DeepEqual(target.Filters, setting1.Filters) {
+		t.Logf("\nExpect: %v\nGot: %v\n", setting1.Filters, target.Filters)
 		t.Fail()
 	}
 
-	setting.Filters = []string{"a"}
-
-	if err := store.UpdateSetting(repo, setting); err != nil {
-		t.Error(err)
-		return
-	}
-
-	target, err = store.Setting(repo)
+	target2, err := store.Setting(repo2)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	if !reflect.DeepEqual(target.Filters, setting.Filters) {
+	if !reflect.DeepEqual(target2.Filters, setting2.Filters) {
+		t.Logf("\nExpect: %v\nGot: %v\n", setting2.Filters, target2.Filters)
+		t.Fail()
+	}
+
+	setting1.Filters = []string{"a"}
+
+	if err := store.UpdateSetting(repo1, setting1); err != nil {
+		t.Error(err)
+		return
+	}
+
+	target, err = store.Setting(repo1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !reflect.DeepEqual(target.Filters, setting1.Filters) {
 		t.Fail()
 	}
 

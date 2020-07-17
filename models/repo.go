@@ -123,7 +123,7 @@ func (store *RepoStore) Finds(urls ...string) ([]*core.Repo, error) {
 func (store *RepoStore) Setting(repo *core.Repo) (*core.RepoSetting, error) {
 	session := store.DB.Session()
 	setting := &RepoSetting{RepoID: repo.ID}
-	if err := session.First(&setting).Error; err != nil {
+	if err := session.Where(&setting).First(&setting).Error; err != nil {
 		return nil, err
 	}
 	coreSetting := &core.RepoSetting{}
@@ -136,7 +136,7 @@ func (store *RepoStore) Setting(repo *core.Repo) (*core.RepoSetting, error) {
 func (store *RepoStore) UpdateSetting(repo *core.Repo, setting *core.RepoSetting) error {
 	session := store.DB.Session()
 	repoSetting := &RepoSetting{RepoID: repo.ID}
-	if err := session.FirstOrCreate(repoSetting).Error; err != nil {
+	if err := session.Where(&repoSetting).FirstOrCreate(repoSetting).Error; err != nil {
 		return err
 	}
 	if err := repoSetting.Update(setting); err != nil {

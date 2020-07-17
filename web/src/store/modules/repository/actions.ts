@@ -120,12 +120,12 @@ export function changeCurrentRepository<S extends RepoState, R extends RootState
 export function fetchRepositorySetting<S extends RepoState, R extends RootState>(
   context: ActionContext<S, R>
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const base = context.rootState.base;
     const repo = context.state.current;
     if (repo === undefined) {
       context.commit(Mutations.SET_REPOSITORY_SETTING, undefined);
-      reject(new Error('no repository found'));
+      resolve();
       return;
     }
     context.commit(Mutations.START_REPOSITORY_LOADING);
@@ -134,9 +134,8 @@ export function fetchRepositorySetting<S extends RepoState, R extends RootState>
       .then(response => {
         context.commit(Mutations.SET_REPOSITORY_SETTING, response.data);
       })
-      .catch(reason => {
+      .catch(() => {
         context.commit(Mutations.SET_REPOSITORY_SETTING, undefined);
-        reject(reasonToError(reason));
       }).finally(() => {
         context.commit(Mutations.STOP_REPOSITORY_LOADING);
         resolve();
