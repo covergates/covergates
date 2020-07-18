@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-//go:generate mockgen -package mock -destination ../mock/scm_mock.go . SCMService,Client,RepoService,UserService,ContentService
+//go:generate mockgen -package mock -destination ../mock/scm_mock.go . SCMService,Client,RepoService,UserService,ContentService,GitService
 
 type SCMService interface {
 	Client(scm SCMProvider) (Client, error)
@@ -41,6 +41,7 @@ type UserService interface {
 }
 
 type GitService interface {
+	GitRepository(ctx context.Context, user *User, repo string) (GitRepository, error)
 	FindCommit(ctx context.Context, user *User, repo *Repo) string
 }
 

@@ -9,6 +9,7 @@ import (
 )
 
 type gitService struct {
+	git       core.Git
 	scm       core.SCMProvider
 	scmClient *scm.Client
 }
@@ -25,4 +26,16 @@ func (service *gitService) FindCommit(ctx context.Context, user *core.User, repo
 		return ""
 	}
 	return ref.Sha
+}
+
+func (servie *gitService) GitRepository(ctx context.Context, user *core.User, repo string) (core.GitRepository, error) {
+	client := servie.scmClient
+	rs := &repoService{scm: servie.scm, client: client}
+	token := userToken(servie.scm, user)
+	ctx = withUser(ctx, servie.scm, user)
+	url, err := rs.CloneURL(ctx, user, repo)
+	if err != nil {
+		return nil, err
+	}
+	return servie.git.Clone(ctx, url, token.Token)
 }

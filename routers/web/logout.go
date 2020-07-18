@@ -13,6 +13,7 @@ func HandleLogout(config *config.Config, session core.Session) gin.HandlerFunc {
 			c.String(500, "Fail to logout")
 			return
 		}
+		c.Header("Cache-Control", "no-store")
 		c.Redirect(301, config.Server.BaseURL())
 	}
 }

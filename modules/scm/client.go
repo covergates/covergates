@@ -29,6 +29,7 @@ func (c *client) Users() core.UserService {
 
 func (c *client) Git() core.GitService {
 	return &gitService{
+		git:       c.git,
 		scm:       c.scm,
 		scmClient: c.scmClient,
 	}

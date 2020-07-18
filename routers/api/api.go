@@ -81,6 +81,7 @@ func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
 		g.POST("", repo.HandleCreate(r.RepoStore))
 		g.GET("/:scm", repo.HandleListSCM(r.SCMService, r.RepoStore))
 		g.GET("/:scm/:namespace/:name", repo.HandleGet(r.RepoStore))
+		g.PATCH("/:scm/:namespace/:name", repo.HandleSync(r.SCMService, r.RepoStore))
 		g.GET("/:scm/:namespace/:name/setting", repo.HandleGetSetting(r.RepoStore))
 		g.POST("/:scm/:namespace/:name/setting", repo.HandleUpdateSetting(r.RepoStore))
 		g.PATCH("/:scm/:namespace/:name/report", repo.HandleReportIDRenew(r.RepoStore, r.SCMService))

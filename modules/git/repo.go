@@ -1,6 +1,7 @@
 package git
 
 import (
+	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
@@ -37,4 +38,11 @@ func (repo *repository) ListAllFiles(commit string) ([]string, error) {
 		return nil
 	})
 	return files, nil
+}
+
+func (repo *repository) Commit(commit string) (core.GitCommit, error) {
+	return &commitObject{
+		repo: repo,
+		hash: plumbing.NewHash(commit),
+	}, nil
 }

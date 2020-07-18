@@ -2,7 +2,8 @@ package report
 
 import (
 	"bytes"
-	"fmt"
+	"context"
+	"io"
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/gin-gonic/gin"
@@ -30,6 +31,7 @@ func HandleUpload(
 	return func(c *gin.Context) {
 		reportID := c.Param("id")
 		reportType := core.ReportType(c.Param("type"))
+		branch := c.PostForm("branch")
 		commit, ok := c.GetPostForm("commit")
 		if !ok {
 			c.String(400, "must have commit SHA")
@@ -43,46 +45,44 @@ func HandleUpload(
 			return
 		}
 
-		user, err := repoStore.Creator(repo)
-		if err != nil {
-			c.String(403, "repository creator not found")
-		}
-
-		client, err := scmService.Client(repo.SCM)
-		if err != nil {
-			c.String(400, err.Error())
-			return
-		}
-
-		files, err := client.Contents().ListAllFiles(
-			ctx, user,
-			fmt.Sprintf("%s/%s", repo.NameSpace, repo.Name), commit)
-		if err != nil {
-			c.String(400, err.Error())
-			return
-		}
-
-		file, err := c.FormFile("file")
-		if err != nil {
-			c.Error(err)
-			c.String(400, err.Error())
-			return
-		}
-		reader, err := file.Open()
-		coverage, err := coverageService.Report(ctx, reportType, reader)
-		if err != nil {
-			c.String(400, err.Error())
-			return
-		}
-
 		setting, err := repoStore.Setting(repo)
 		if err != nil {
 			c.String(500, err.Error())
 			return
 		}
 
-		if err := coverageService.TrimFileNames(ctx, coverage, setting.Filters); err != nil {
+		// get upload file
+		file, err := c.FormFile("file")
+		if err != nil {
+			c.Error(err)
+			c.String(400, err.Error())
+			return
+		}
+
+		gitRepo, err := getGitRepository(ctx, repoStore, scmService, repo)
+		if err != nil {
 			c.String(500, err.Error())
+			return
+		}
+
+		files, err := gitRepo.ListAllFiles(commit)
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+
+		if branch == "" {
+			co, err := gitRepo.Commit(commit)
+			if err == nil && co.InDefaultBranch() {
+				branch = repo.Branch
+			}
+		}
+
+		reader, err := file.Open()
+		coverage, err := loadCoverageReport(ctx, coverageService, reportType, reader, setting)
+		if err != nil {
+			c.String(500, err.Error())
+			return
 		}
 
 		report := &core.Report{
@@ -90,7 +90,7 @@ func HandleUpload(
 			Coverage: coverage,
 			Files:    files,
 			Type:     reportType,
-			Branch:   c.PostForm("branch"),
+			Branch:   branch,
 			Tag:      c.PostForm("tag"),
 			Commit:   commit,
 		}
@@ -214,8 +214,45 @@ func getLatest(reportStore core.ReportStore, repoStore core.RepoStore, reportID 
 	})
 }
 
+// getAll reports related to gitven reportID
 func getAll(store core.ReportStore, reportID string) ([]*core.Report, error) {
 	return store.Finds(&core.Report{
 		ReportID: reportID,
 	})
+}
+
+// loadCoverageReort from io reader and apply repository wide setting
+func loadCoverageReport(
+	ctx context.Context,
+	service core.CoverageService,
+	reportType core.ReportType,
+	data io.Reader,
+	setting *core.RepoSetting,
+) (*core.CoverageReport, error) {
+	coverage, err := service.Report(ctx, reportType, data)
+	if err != nil {
+		return nil, err
+	}
+	if err := service.TrimFileNames(ctx, coverage, setting.Filters); err != nil {
+		return nil, err
+	}
+	return coverage, nil
+}
+
+// getGitRepository with given Repo
+func getGitRepository(
+	ctx context.Context,
+	store core.RepoStore,
+	service core.SCMService,
+	repo *core.Repo,
+) (core.GitRepository, error) {
+	user, err := store.Creator(repo)
+	if err != nil {
+		return nil, err
+	}
+	client, err := service.Client(repo.SCM)
+	if err != nil {
+		return nil, err
+	}
+	return client.Git().GitRepository(ctx, user, repo.FullName())
 }

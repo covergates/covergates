@@ -284,6 +284,43 @@
                         }
                     }
                 }
+            },
+            "patch": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "sync repository information with SCM",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/core.Repo"
+                        }
+                    }
+                }
             }
         },
         "/repos/{scm}/{namespace}/{name}/content/{path}": {

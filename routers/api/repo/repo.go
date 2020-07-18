@@ -19,6 +19,7 @@ import (
 // @Router /repos [post]
 func HandleCreate(store core.RepoStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// TODO: Need to update master branch when repo created
 		user, ok := request.UserFrom(c)
 		if !ok {
 			c.String(403, "user not found")
@@ -91,6 +92,52 @@ func HandleGet(store core.RepoStore) gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, repo)
+	}
+}
+
+// HandleSync repository information with SCM
+// @Summary sync repository information with SCM
+// @Tags Repository
+// @Param scm path string true "SCM"
+// @Param namespace path string true "Namespace"
+// @Param name path string true "name"
+// @Success 200 {object} core.Repo updated repository
+// @Router /repos/{scm}/{namespace}/{name} [patch]
+func HandleSync(service core.SCMService, store core.RepoStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+		repo := &core.Repo{}
+		provider := core.SCMProvider(c.Param("scm"))
+		nameSpace := c.Param("namespace")
+		name := c.Param("name")
+		user, ok := request.UserFrom(c)
+		if !ok {
+			c.JSON(403, repo)
+			return
+		}
+		client, err := service.Client(provider)
+		if err != nil {
+			c.JSON(500, repo)
+			return
+		}
+		repo, err = client.Repositories().Find(ctx, user, fmt.Sprintf("%s/%s", nameSpace, name))
+		if err != nil {
+			c.JSON(500, repo)
+			return
+		}
+		storeRepo, err := store.Find(&core.Repo{
+			URL: repo.URL,
+		})
+		if err != nil {
+			c.JSON(500, repo)
+			return
+		}
+		storeRepo.Branch = repo.Branch
+		if err := store.Update(storeRepo); err != nil {
+			c.JSON(500, repo)
+			return
+		}
+		c.JSON(200, storeRepo)
 	}
 }
 

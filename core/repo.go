@@ -1,5 +1,7 @@
 package core
 
+import "fmt"
+
 //go:generate mockgen -package mock -destination ../mock/repo_mock.go . RepoStore
 
 // Repo defined a repository structure
@@ -24,7 +26,13 @@ type RepoStore interface {
 	Update(repo *Repo) error
 	Find(repo *Repo) (*Repo, error)
 	Finds(urls ...string) ([]*Repo, error)
+	// Creator is the user activated the repository
 	Creator(repo *Repo) (*User, error)
 	Setting(repo *Repo) (*RepoSetting, error)
 	UpdateSetting(repo *Repo, setting *RepoSetting) error
+}
+
+// FullName is namespace+name
+func (repo *Repo) FullName() string {
+	return fmt.Sprintf("%s/%s", repo.NameSpace, repo.Name)
 }

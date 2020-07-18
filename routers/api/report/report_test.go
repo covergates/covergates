@@ -44,7 +44,9 @@ func TestUpload(t *testing.T) {
 	defer ctrl.Finish()
 	mockSCMService := mock.NewMockSCMService(ctrl)
 	mockClient := mock.NewMockClient(ctrl)
-	mockContent := mock.NewMockContentService(ctrl)
+	mockGitService := mock.NewMockGitService(ctrl)
+	mockGitRepo := mock.NewMockGitRepository(ctrl)
+	mockGitCommit := mock.NewMockGitCommit(ctrl)
 	mockCoverageService := mock.NewMockCoverageService(ctrl)
 	mockReportStore := mock.NewMockReportStore(ctrl)
 	mockRepoStore := mock.NewMockRepoStore(ctrl)
@@ -54,12 +56,14 @@ func TestUpload(t *testing.T) {
 		NameSpace: "org",
 		Name:      "repo",
 		SCM:       core.Github,
+		Branch:    "bear",
 	}
 	report := &core.Report{
 		ReportID: "1234",
 		Type:     core.ReportPerl,
 		Coverage: coverage,
 		Commit:   "abcdef",
+		Branch:   "bear",
 		Files:    []string{"a"},
 	}
 
@@ -67,13 +71,23 @@ func TestUpload(t *testing.T) {
 		gomock.Eq(core.Github),
 	).Return(mockClient, nil)
 
-	mockClient.EXPECT().Contents().Return(mockContent)
-	mockContent.EXPECT().ListAllFiles(
+	mockClient.EXPECT().Git().Return(mockGitService)
+
+	mockGitService.EXPECT().GitRepository(
 		gomock.Any(),
 		gomock.Eq(user),
-		gomock.Eq(fmt.Sprintf("%s/%s", repo.NameSpace, repo.Name)),
+		gomock.Eq(repo.FullName()),
+	).Return(mockGitRepo, nil)
+
+	mockGitRepo.EXPECT().Commit(
 		gomock.Eq(report.Commit),
-	).Return([]string{"a"}, nil)
+	).Return(mockGitCommit, nil)
+
+	mockGitRepo.EXPECT().ListAllFiles(
+		gomock.Eq(report.Commit),
+	).Return(report.Files, nil)
+
+	mockGitCommit.EXPECT().InDefaultBranch().Return(true)
 
 	mockRepoStore.EXPECT().Find(
 		gomock.Eq(&core.Repo{
