@@ -30,6 +30,8 @@ definitions:
         type: string
       coverage:
         type: CoverageReport
+      createdAt:
+        type: string
       files:
         items:
           type: string

@@ -82,7 +82,7 @@ export default class ReportOverview extends Vue {
   }
 
   get uploadDate(): string {
-    if (this.report) {
+    if (this.report && this.report.createdAt) {
       const date = new Date(this.report.createdAt);
       return date.toLocaleDateString();
     } else {

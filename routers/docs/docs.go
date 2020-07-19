@@ -660,6 +660,9 @@ var doc = `{
                 "coverage": {
                     "type": "CoverageReport"
                 },
+                "createdAt": {
+                    "type": "string"
+                },
                 "files": {
                     "type": "array",
                     "items": {
