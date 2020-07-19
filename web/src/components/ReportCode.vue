@@ -1,6 +1,13 @@
 <template>
   <v-container>
-    <v-data-table :items="fileInfos" item-key="name" :headers="headers" :fixed-header="true">
+    <v-data-table
+      :items="fileInfos"
+      item-key="name"
+      :headers="headers"
+      :fixed-header="true"
+      sort-by="coverage"
+      :sort-desc="true"
+    >
       <template v-slot:item.name="{ item }">
         <router-link :append="true" :to="item.name">{{item.name}}</router-link>
       </template>
@@ -53,7 +60,7 @@ export default class ReportCode extends Vue {
     }
     if (this.report.coverage && this.report.coverage.Files) {
       for (const file of this.report.coverage.Files) {
-        const coverage = file.StatementCoverage * 100;
+        const coverage = Math.round(file.StatementCoverage * 10000) / 100;
         if (info[file.Name]) {
           info[file.Name].coverage = coverage;
         } else {

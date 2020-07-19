@@ -4,7 +4,7 @@
 
 <style lang="scss">
 .icon {
-  max-width: 24px;
+  max-width: 48px;
 }
 </style>>
 

@@ -78,7 +78,7 @@ func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
 		g := g.Group("/repos")
 		g.Use(request.CheckLogin(r.Session))
 		g.GET("", repo.HandleListAll(r.Config, r.SCMService, r.RepoStore))
-		g.POST("", repo.HandleCreate(r.RepoStore))
+		g.POST("", repo.HandleCreate(r.RepoStore, r.SCMService))
 		g.GET("/:scm", repo.HandleListSCM(r.SCMService, r.RepoStore))
 		g.GET("/:scm/:namespace/:name", repo.HandleGet(r.RepoStore))
 		g.PATCH("/:scm/:namespace/:name", repo.HandleSync(r.SCMService, r.RepoStore))

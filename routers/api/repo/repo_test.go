@@ -30,10 +30,12 @@ func TestCreate(t *testing.T) {
 		NameSpace: "org",
 		Name:      "repo",
 		SCM:       core.Gitea,
+		Branch:    "master",
 	}
 	user := &core.User{}
 	store := mock.NewMockRepoStore(ctrl)
 	store.EXPECT().Create(gomock.Eq(repo), gomock.Eq(user)).Return(nil)
+	service := mock.NewMockSCMService(ctrl)
 
 	data, err := json.Marshal(repo)
 	if err != nil {
@@ -46,7 +48,7 @@ func TestCreate(t *testing.T) {
 	r.Use(func(c *gin.Context) {
 		request.WithUser(c, user)
 	})
-	r.POST("/repo", HandleCreate(store))
+	r.POST("/repo", HandleCreate(store, service))
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()
 		if rst.StatusCode != 200 {

@@ -88,13 +88,14 @@ func (r *Report) ToCoreReport() *core.Report {
 		files = []string{}
 	}
 	report := &core.Report{
-		Coverage: coverage,
-		Branch:   r.Branch,
-		Commit:   r.Commit,
-		ReportID: r.ReportID,
-		Tag:      r.Tag,
-		Files:    files,
-		Type:     core.ReportType(r.Type),
+		Coverage:  coverage,
+		Branch:    r.Branch,
+		Commit:    r.Commit,
+		ReportID:  r.ReportID,
+		Tag:       r.Tag,
+		Files:     files,
+		Type:      core.ReportType(r.Type),
+		CreatedAt: r.CreatedAt,
 	}
 	return report
 }

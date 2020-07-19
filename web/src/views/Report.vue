@@ -2,7 +2,10 @@
   <perfect-scrollbar class="page-container">
     <v-container>
       <v-card flat>
-        <v-card-title>{{title}}</v-card-title>
+        <v-card-title>
+          <v-icon class="mr-5" size="36">{{avatar}}</v-icon>
+          {{title}}
+        </v-card-title>
         <v-tabs v-show="!loading">
           <v-tab v-for="tab in tabs" :key="tab.key" :to="tab.link">{{tab.key}}</v-tab>
         </v-tabs>
@@ -77,6 +80,20 @@ export default class ReportView extends Vue {
       });
     }
     return options;
+  }
+
+  get avatar(): string {
+    switch (this.repo?.SCM) {
+      case 'github': {
+        return 'mdi-github';
+      }
+      case 'gitea': {
+        return '$vuetify.icons.gitea';
+      }
+      default: {
+        return 'mdi-source-repository';
+      }
+    }
   }
 }
 </script>

@@ -42,4 +42,5 @@ declare interface Report {
   tag?: string;
   type?: string;
   files?: string[];
+  createdAt?: string;
 }

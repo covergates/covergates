@@ -2,7 +2,7 @@
   <div>
     <v-list-item>
       <v-list-item-avatar>
-        <v-icon>{{avatar}}</v-icon>
+        <v-icon size="28">{{avatar}}</v-icon>
       </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title>{{name}}</v-list-item-title>

@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import VueClipboard from 'vue-clipboard2';
 import App from './App.vue';
 import router from './router';
 import vuetify from './plugins/vuetify';
@@ -13,6 +14,7 @@ __webpack_public_path__ = process.env.NODE_ENV === 'production' ? `${VUE_BASE}/`
 
 Vue.use(AxiosPlugin);
 Vue.use(HighlightPlugin);
+Vue.use(VueClipboard);
 
 if (process.env.NODE_ENV === 'development' && process.env.VUE_APP_MOCK_SERVER === 'true') {
   makeServer();

@@ -17,9 +17,8 @@ import (
 // @Param repo body core.Repo true "repository to create"
 // @Success 200 {object} core.Repo "Created repository"
 // @Router /repos [post]
-func HandleCreate(store core.RepoStore) gin.HandlerFunc {
+func HandleCreate(store core.RepoStore, service core.SCMService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO: Need to update master branch when repo created
 		user, ok := request.UserFrom(c)
 		if !ok {
 			c.String(403, "user not found")
@@ -30,6 +29,20 @@ func HandleCreate(store core.RepoStore) gin.HandlerFunc {
 			c.String(400, err.Error())
 			return
 		}
+
+		if repo.Branch == "" {
+			client, err := service.Client(repo.SCM)
+			if err != nil {
+				c.String(500, err.Error())
+			}
+			scmRepo, err := client.Repositories().Find(c.Request.Context(), user, repo.FullName())
+			if err != nil {
+				c.String(500, err.Error())
+				return
+			}
+			repo.Branch = scmRepo.Branch
+		}
+
 		if err := store.Create(repo, user); err != nil {
 			c.String(400, err.Error())
 			return

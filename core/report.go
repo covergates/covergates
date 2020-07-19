@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"io"
+	"time"
 )
 
 //go:generate mockgen -package mock -destination ../mock/report_mock.go . ReportStore,CoverageService
@@ -12,13 +13,14 @@ type FileNameFilters []string
 
 // Report defined the code report structure
 type Report struct {
-	Coverage *CoverageReport `json:"coverage"`
-	Files    []string        `json:"files"`
-	Type     ReportType      `json:"type"`
-	ReportID string          `json:"reportID"`
-	Branch   string          `json:"branch"`
-	Tag      string          `json:"tag"`
-	Commit   string          `json::"commit"`
+	Coverage  *CoverageReport `json:"coverage"`
+	Files     []string        `json:"files"`
+	Type      ReportType      `json:"type"`
+	ReportID  string          `json:"reportID"`
+	Branch    string          `json:"branch"`
+	Tag       string          `json:"tag"`
+	Commit    string          `json:"commit"`
+	CreatedAt time.Time       `json:"createdAt"`
 }
 
 // CoverageReport defined the code coverage report

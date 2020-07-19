@@ -53,7 +53,12 @@ export default class AccountButton extends Vue {
   }
 
   actionClick(item: actionItem) {
-    this.$router.push(item.to);
+    if (item.name === 'Logout') {
+      const base = this.$store.state.base;
+      window.location.href = `${base}${item.to}`;
+    } else {
+      this.$router.push(item.to);
+    }
   }
 }
 </script>

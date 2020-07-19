@@ -67,7 +67,9 @@ export default class ReportSetting extends Vue {
       return;
     }
     const base = this.$store.state.base;
-    const setting = this.setting;
+    const setting = this.setting
+      ? this.setting
+      : ({ filters: [] } as RepositorySetting);
     const { SCM, NameSpace, Name } = this.repo;
     setting.filters = this.filters.trim().split('\n');
     this.loading = true;
