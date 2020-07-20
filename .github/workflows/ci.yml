@@ -54,4 +54,5 @@ jobs:
       - name: Frontend Unit Test
         if: env.BUILD_TYPE == 'FRONTEND'
         run: |
+          cd web
           npm run unit:test
