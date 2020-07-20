@@ -8,7 +8,7 @@ import { Mutations } from '@/store';
 
 export default {
   components: { ReportOverview },
-  mounted: function() {
+  mounted: function () {
     this.$store.commit(Mutations.SET_REPORT_CURRENT, {
       coverage: {
         StatementCoverage: 50

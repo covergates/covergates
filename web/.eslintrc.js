@@ -8,7 +8,7 @@ module.exports = {
     '@vue/standard',
     '@vue/typescript/recommended'
   ],
-  plugins: ["import"],
+  plugins: ['import'],
   parserOptions: {
     ecmaVersion: 2020
   },
@@ -21,8 +21,8 @@ module.exports = {
       named: 'never',
       asyncArrow: 'always'
     }],
-    'semi': ['error', 'always'],
-    '@typescript-eslint/camelcase': ['error', { 'allow': ['__webpack_public_path__'] }],
+    semi: ['error', 'always'],
+    '@typescript-eslint/camelcase': ['error', { allow: ['__webpack_public_path__'] }],
     'import/order': ['error']
   },
   overrides: [
