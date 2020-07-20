@@ -55,4 +55,4 @@ jobs:
         if: env.BUILD_TYPE == 'FRONTEND'
         run: |
           cd web
-          npm run unit:test
+          npm run test:unit
