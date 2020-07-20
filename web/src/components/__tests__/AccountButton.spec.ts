@@ -54,6 +54,12 @@ describe('AccountButton.vue', () => {
         $router
       }
     }) as Wrapper<AccountButton & { user?: User }>;
+    globalThis.window = Object.create(window);
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: ''
+      }
+    });
     expect(wrapper.vm.user).toBeUndefined();
     store.commit(Mutations.UPDATE_USER, {} as User);
     expect(wrapper.vm.user).toBeDefined();
@@ -65,6 +71,7 @@ describe('AccountButton.vue', () => {
     if (index !== undefined) {
       wrapper.findAll('v-list-item-stub').at(index).vm.$emit('click');
     }
-    expect($router.push).toHaveBeenCalledWith('/logoff');
+    // expect($router.push).toHaveBeenCalledWith('/logoff');
+    expect(window.location.href).toMatch('/logoff');
   });
 });
