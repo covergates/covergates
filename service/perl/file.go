@@ -2,6 +2,7 @@ package perl
 
 import "github.com/code-devel-cover/CodeCover/core"
 
+// FileCollection of Perl source codes
 type FileCollection struct {
 	collect map[string][]*core.File
 }

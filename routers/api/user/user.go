@@ -5,11 +5,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// User for API response
 type User struct {
 	Login string `json:"login"`
 	Email string `json:"email"`
 }
 
+// HandleCreate new user
 func HandleCreate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// TODO: Implement user create

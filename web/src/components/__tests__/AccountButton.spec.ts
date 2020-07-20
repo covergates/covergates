@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import Vuex, { Store } from 'vuex';
 import { createLocalVue, shallowMount, Wrapper } from '@vue/test-utils';
-import { cloneDeep, at } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { storeConfig, RootState, Mutations } from '@/store';
 import AccountButton from '@/components/AccountButton.vue';
 

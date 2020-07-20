@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// HandleLogout user session
 func HandleLogout(config *config.Config, session core.Session) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if err := session.Clear(c); err != nil {

@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// HandleIndex return HTML
 func HandleIndex(config *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		buffer := bytes.NewBuffer([]byte{})

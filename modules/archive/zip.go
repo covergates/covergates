@@ -6,6 +6,7 @@ import (
 	"io"
 )
 
+// NewZipReader from io.Reader
 func NewZipReader(r io.Reader) (*zip.Reader, error) {
 	buffer := bytes.NewBuffer([]byte{})
 	size, err := io.Copy(buffer, r)

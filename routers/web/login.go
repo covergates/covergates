@@ -17,6 +17,7 @@ const (
 	keyExpires = "expires"
 )
 
+// HandleLogin user
 func HandleLogin(
 	config *config.Config,
 	scm core.SCMProvider,
@@ -50,6 +51,7 @@ func HandleLogin(
 	}
 }
 
+// MiddlewareLogin context
 func MiddlewareLogin(scm core.SCMProvider, m core.LoginMiddleware) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		middleware := m.Handler(scm)

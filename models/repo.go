@@ -22,6 +22,7 @@ type Repo struct {
 	CreatorEmail string
 }
 
+// RepoSetting defines user customization
 type RepoSetting struct {
 	gorm.Model
 	RepoID uint `gorm:"unique_index"`
@@ -33,6 +34,7 @@ type RepoStore struct {
 	DB core.DatabaseService
 }
 
+// ToCoreRepo object
 func (repo *Repo) ToCoreRepo() *core.Repo {
 	return &core.Repo{
 		ID:        repo.ID,
@@ -45,6 +47,7 @@ func (repo *Repo) ToCoreRepo() *core.Repo {
 	}
 }
 
+// Update with a new setting
 func (setting *RepoSetting) Update(newSetting *core.RepoSetting) error {
 	data, err := json.Marshal(newSetting)
 	if err != nil {
@@ -82,6 +85,7 @@ func (store *RepoStore) Update(repo *core.Repo) error {
 	return session.Save(r).Error
 }
 
+// Find Repo with seed. The non-empty filed of input will use as where condition
 func (store *RepoStore) Find(repo *core.Repo) (*core.Repo, error) {
 	session := store.DB.Session()
 	r := &Repo{}
@@ -91,6 +95,7 @@ func (store *RepoStore) Find(repo *core.Repo) (*core.Repo, error) {
 	return r.ToCoreRepo(), nil
 }
 
+// Creator user who activated the repository
 func (store *RepoStore) Creator(repo *core.Repo) (*core.User, error) {
 	session := store.DB.Session()
 	r := &Repo{}
@@ -106,6 +111,7 @@ func (store *RepoStore) Creator(repo *core.Repo) (*core.User, error) {
 	return user.toCoreUser(), nil
 }
 
+// Finds all repositories with URLs
 func (store *RepoStore) Finds(urls ...string) ([]*core.Repo, error) {
 	session := store.DB.Session()
 	var repositories []*Repo
@@ -120,6 +126,7 @@ func (store *RepoStore) Finds(urls ...string) ([]*core.Repo, error) {
 	return coreRepositories, nil
 }
 
+// Setting of the repository
 func (store *RepoStore) Setting(repo *core.Repo) (*core.RepoSetting, error) {
 	session := store.DB.Session()
 	setting := &RepoSetting{RepoID: repo.ID}
@@ -133,6 +140,7 @@ func (store *RepoStore) Setting(repo *core.Repo) (*core.RepoSetting, error) {
 	return coreSetting, nil
 }
 
+// UpdateSetting for the repository
 func (store *RepoStore) UpdateSetting(repo *core.Repo, setting *core.RepoSetting) error {
 	session := store.DB.Session()
 	repoSetting := &RepoSetting{RepoID: repo.ID}

@@ -36,7 +36,7 @@ func provideSession() core.Session {
 }
 
 func provideCoverageService() core.CoverageService {
-	return &coverage.CoverageService{}
+	return &coverage.Service{}
 }
 
 func provideChartService() core.ChartService {

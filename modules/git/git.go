@@ -12,6 +12,7 @@ import (
 // Service provides git operations
 type Service struct{}
 
+// Clone repository in memory
 func (s *Service) Clone(ctx context.Context, URL, token string) (core.GitRepository, error) {
 	store := memory.NewStorage()
 	repo, err := git.CloneContext(ctx, store, nil, &git.CloneOptions{

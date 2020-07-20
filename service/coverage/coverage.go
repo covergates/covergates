@@ -12,11 +12,15 @@ import (
 
 var errReportTypeNotSupport = errors.New("Report type not support")
 
-type CoverageService struct{}
+// Service of coverage report
+type Service struct{}
+
+//TypeCoverageService defines a coverage service for a language
 type TypeCoverageService interface {
 	Report(ctx context.Context, data io.Reader) (*core.CoverageReport, error)
 }
 
+// IsReportTypeNotSupportError check
 func IsReportTypeNotSupportError(err error) bool {
 	if err == errReportTypeNotSupport {
 		return true
@@ -24,7 +28,7 @@ func IsReportTypeNotSupportError(err error) bool {
 	return false
 }
 
-func (s *CoverageService) service(t core.ReportType) (TypeCoverageService, error) {
+func (s *Service) service(t core.ReportType) (TypeCoverageService, error) {
 	switch t {
 	case core.ReportPerl:
 		return &perl.CoverageService{}, nil
@@ -33,7 +37,8 @@ func (s *CoverageService) service(t core.ReportType) (TypeCoverageService, error
 	}
 }
 
-func (s *CoverageService) Report(ctx context.Context, t core.ReportType, r io.Reader) (*core.CoverageReport, error) {
+// Report coverage from reader data
+func (s *Service) Report(ctx context.Context, t core.ReportType, r io.Reader) (*core.CoverageReport, error) {
 	service, err := s.service(t)
 	if err != nil {
 		return nil, err
@@ -41,7 +46,8 @@ func (s *CoverageService) Report(ctx context.Context, t core.ReportType, r io.Re
 	return service.Report(ctx, r)
 }
 
-func (s *CoverageService) TrimFileNames(ctx context.Context, report *core.CoverageReport, filters core.FileNameFilters) error {
+// TrimFileNames for all files in coverage report
+func (s *Service) TrimFileNames(ctx context.Context, report *core.CoverageReport, filters core.FileNameFilters) error {
 	regexps := toRegexps(filters)
 	for _, file := range report.Files {
 		for _, regex := range regexps {

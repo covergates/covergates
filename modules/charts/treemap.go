@@ -13,11 +13,13 @@ const (
 	colorNoChange = "#ADC7C5"
 )
 
+// CoverageDiffTreeMap for two coverage reports
 type CoverageDiffTreeMap struct {
 	oldFiles map[string]*core.File
 	newFiles map[string]*core.File
 }
 
+// NewCoverageDiffTreeMap with two coverage reports
 func NewCoverageDiffTreeMap(old, new *core.CoverageReport) *CoverageDiffTreeMap {
 	oldFiles := make(map[string]*core.File)
 	newFiles := make(map[string]*core.File)
@@ -33,6 +35,7 @@ func NewCoverageDiffTreeMap(old, new *core.CoverageReport) *CoverageDiffTreeMap 
 	}
 }
 
+// Render chart to writer
 func (c *CoverageDiffTreeMap) Render(w io.Writer) error {
 	colors := make([]string, 0)
 	labels := make([]string, 0)

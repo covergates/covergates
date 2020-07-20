@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TokenFrom context
 func TokenFrom(c *gin.Context) *core.Token {
 	return &core.Token{
 		Token:   c.GetString(keyAccess),

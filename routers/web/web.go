@@ -9,14 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type WebRouter struct {
+// Router for frontend web
+type Router struct {
 	Config          *config.Config
 	LoginMiddleware core.LoginMiddleware
 	SCMService      core.SCMService
 	Session         core.Session
 }
 
-func (r *WebRouter) RegisterRoutes(e *gin.Engine) {
+// RegisterRoutes for Gin
+func (r *Router) RegisterRoutes(e *gin.Engine) {
 	{
 		g := e.Group("/login")
 		g.Any("/github",

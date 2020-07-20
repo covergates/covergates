@@ -28,14 +28,15 @@ func (service *gitService) FindCommit(ctx context.Context, user *core.User, repo
 	return ref.Sha
 }
 
-func (servie *gitService) GitRepository(ctx context.Context, user *core.User, repo string) (core.GitRepository, error) {
-	client := servie.scmClient
-	rs := &repoService{scm: servie.scm, client: client}
-	token := userToken(servie.scm, user)
-	ctx = withUser(ctx, servie.scm, user)
+// GitRepository clone
+func (service *gitService) GitRepository(ctx context.Context, user *core.User, repo string) (core.GitRepository, error) {
+	client := service.scmClient
+	rs := &repoService{scm: service.scm, client: client}
+	token := userToken(service.scm, user)
+	ctx = withUser(ctx, service.scm, user)
 	url, err := rs.CloneURL(ctx, user, repo)
 	if err != nil {
 		return nil, err
 	}
-	return servie.git.Clone(ctx, url, token.Token)
+	return service.git.Clone(ctx, url, token.Token)
 }

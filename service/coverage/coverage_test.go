@@ -31,7 +31,7 @@ func TestTrimReportFileName(t *testing.T) {
 		Files: files,
 	}
 
-	service := &CoverageService{}
+	service := &Service{}
 	err := service.TrimFileNames(context.Background(), report, filters)
 	if err != nil {
 		t.Error(err)

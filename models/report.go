@@ -22,6 +22,7 @@ type Report struct {
 	Commit   string `gorm:"unique_index:report_id_commit"`
 }
 
+// ReportStore reports in storage
 type ReportStore struct {
 	DB core.DatabaseService
 }
@@ -43,6 +44,7 @@ func (store *ReportStore) Upload(r *core.Report) error {
 	return session.Save(report).Error
 }
 
+// Find report with the input seed. No-empty filed will use as where condition
 func (store *ReportStore) Find(r *core.Report) (*core.Report, error) {
 	session := store.DB.Session()
 	rst := &Report{}
@@ -53,6 +55,7 @@ func (store *ReportStore) Find(r *core.Report) (*core.Report, error) {
 	return rst.ToCoreReport(), nil
 }
 
+// Finds all report with given seed
 func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
 	session := store.DB.Session()
 	var rst []*Report
@@ -66,18 +69,21 @@ func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
 	return reports, nil
 }
 
+// CoverageReport un-marshal the coverage data
 func (r *Report) CoverageReport() (*core.CoverageReport, error) {
 	cover := &core.CoverageReport{}
 	err := json.Unmarshal(r.Data, cover)
 	return cover, err
 }
 
+// Files of the report
 func (r *Report) Files() ([]string, error) {
 	var files []string
 	err := json.Unmarshal(r.FileData, &files)
 	return files, err
 }
 
+// ToCoreReport object
 func (r *Report) ToCoreReport() *core.Report {
 	coverage, err := r.CoverageReport()
 	if err != nil {

@@ -8,18 +8,21 @@ import (
 	"github.com/code-devel-cover/CodeCover/core"
 )
 
+// Config of application
 type Config struct {
 	Server Server
 	Gitea  Gitea
 	Github Github
 }
 
+// Server setting
 type Server struct {
 	Secret string `default:"secret"`
 	Addr   string
 	Base   string
 }
 
+// Gitea connection setting
 type Gitea struct {
 	Server       string
 	ClientID     string
@@ -28,6 +31,7 @@ type Gitea struct {
 	Scope        []string `default:"repo,repo:status,user:email,read:org"`
 }
 
+// Github connection setting
 type Github struct {
 	Server       string `default:"https://github.com"`
 	APIServer    string

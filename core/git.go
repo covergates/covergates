@@ -10,6 +10,7 @@ type GitRepository interface {
 	Commit(commit string) (GitCommit, error)
 }
 
+// GitCommit object
 type GitCommit interface {
 	InDefaultBranch() bool
 }

@@ -29,7 +29,8 @@ import (
 // @host localhost:8080
 // @BasePath /api/v1
 
-type APIRouter struct {
+// Router for API
+type Router struct {
 	Config  *config.Config
 	Session core.Session
 	// service
@@ -50,7 +51,7 @@ func host(addr string) string {
 }
 
 // RegisterRoutes for API
-func (r *APIRouter) RegisterRoutes(e *gin.Engine) {
+func (r *Router) RegisterRoutes(e *gin.Engine) {
 	docs.SwaggerInfo.Host = host(r.Config.Server.Addr)
 	e.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	g := e.Group("/api/v1")

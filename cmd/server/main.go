@@ -22,6 +22,7 @@ func connectDatabase() *gorm.DB {
 
 }
 
+// Run server
 func Run(c *cli.Context) error {
 	config := &config.Config{
 		Server: config.Server{

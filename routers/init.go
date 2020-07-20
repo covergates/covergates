@@ -30,13 +30,13 @@ func (r *Routers) RegisterRoutes(e *gin.Engine) {
 	e.Use(sessions.Sessions("codecover", store))
 	e.Use(cors.Default())
 
-	webRoute := &web.WebRouter{
+	webRoute := &web.Router{
 		Config:          r.Config,
 		LoginMiddleware: r.LoginMiddleware,
 		SCMService:      r.SCMService,
 		Session:         r.Session,
 	}
-	apiRoute := &api.APIRouter{
+	apiRoute := &api.Router{
 		Config:          r.Config,
 		Session:         r.Session,
 		CoverageService: r.CoverageService,

@@ -8,6 +8,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// User data
 type User struct {
 	gorm.Model
 	Login         string `gorm:"unique_index"`
@@ -27,10 +28,12 @@ type User struct {
 	GithubExpire  int64
 }
 
+// UserStore user in storage
 type UserStore struct {
 	DB core.DatabaseService
 }
 
+// Create a new user
 func (store *UserStore) Create(scm core.SCMProvider, user *scm.User, token *scm.Token) error {
 	session := store.DB.Session()
 	u := &User{
@@ -58,6 +61,7 @@ func (store *UserStore) Create(scm core.SCMProvider, user *scm.User, token *scm.
 	return session.Create(u).Error
 }
 
+// Find user with SCM information
 func (store *UserStore) Find(scm core.SCMProvider, user *scm.User) (*core.User, error) {
 	session := store.DB.Session()
 	var condition *User

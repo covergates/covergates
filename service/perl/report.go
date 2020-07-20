@@ -29,9 +29,12 @@ func (err *errDigestFormat) Error() string {
 const coverDBName = "cover.14"
 const digiestFolder = "structure"
 
-type DigestsMap map[string]*coverDigest
+type digestsMap map[string]*coverDigest
+
+// CoverageService for Perl
 type CoverageService struct{}
 
+// Report coverage for Perl
 func (r *CoverageService) Report(
 	ctx context.Context,
 	data io.Reader,
@@ -52,8 +55,8 @@ func (r *CoverageService) Report(
 	return report(db, digests)
 }
 
-func findDigests(files []*zip.File) (DigestsMap, error) {
-	digests := make(DigestsMap)
+func findDigests(files []*zip.File) (digestsMap, error) {
+	digests := make(digestsMap)
 	for _, file := range files {
 		if file.FileInfo().IsDir() {
 			continue
@@ -148,7 +151,7 @@ func avgStatementCoverage(files []*core.File) float64 {
 	return s / float64(len(files))
 }
 
-func report(db *coverDB, digests DigestsMap) (*core.CoverageReport, error) {
+func report(db *coverDB, digests digestsMap) (*core.CoverageReport, error) {
 	fileCollection := newFileCollection()
 	for _, run := range db.Runs {
 		for name, count := range run.Counts {

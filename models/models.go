@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/jinzhu/gorm"
 )
 
@@ -12,7 +13,8 @@ type databaseService struct {
 	db *gorm.DB
 }
 
-func NewDatabaseService(db *gorm.DB) *databaseService {
+// NewDatabaseService with GORM
+func NewDatabaseService(db *gorm.DB) core.DatabaseService {
 	return &databaseService{
 		db: db,
 	}
