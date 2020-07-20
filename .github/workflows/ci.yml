@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: "${{ matrix.build_types }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      BUILD_TYPE: ${{ matrix.build_types }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_types: ["BACKEND", "FRONTEND"]
+
+    services:
+      gitea:
+        image: blueworrybear/gitea-docker
+        ports:
+          - 3000:3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Golang
+        if: env.BUILD_TYPE == 'BACKEND'
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.14"
+
+      - name: Go Test
+        if: env.BUILD_TYPE == 'BACKEND'
+        env:
+          GITEA_SECRET: ${{ secrets.GITEA_SECRET }}
+        run: |
+          go test -tags="gitea" ./...
+
+      - name: Setup NPM
+        if: env.BUILD_TYPE == 'FRONTEND'
+        run: |
+          cd web
+          npm install
+
+      - name: Frontend Unit Test
+        if: env.BUILD_TYPE == 'FRONTEND'
+        run: |
+          npm run unit:test
