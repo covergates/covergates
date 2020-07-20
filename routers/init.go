@@ -3,7 +3,7 @@ package routers
 import (
 	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
-	_ "github.com/code-devel-cover/CodeCover/models"
+
 	"github.com/code-devel-cover/CodeCover/routers/api"
 	"github.com/code-devel-cover/CodeCover/routers/web"
 	"github.com/gin-contrib/cors"
@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Routers of server
 type Routers struct {
 	Config          *config.Config
 	Session         core.Session
@@ -25,6 +26,7 @@ type Routers struct {
 	RepoStore   core.RepoStore
 }
 
+// RegisterRoutes for Gin engine
 func (r *Routers) RegisterRoutes(e *gin.Engine) {
 	store := cookie.NewStore([]byte(r.Config.Server.Secret))
 	e.Use(sessions.Sessions("codecover", store))

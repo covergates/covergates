@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CheckLogin session
 func CheckLogin(session core.Session) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := session.Get(c)
