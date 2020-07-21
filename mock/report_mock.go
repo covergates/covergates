@@ -102,6 +102,36 @@ func (m *MockCoverageService) EXPECT() *MockCoverageServiceMockRecorder {
 	return m.recorder
 }
 
+// Find mocks base method
+func (m *MockCoverageService) Find(arg0 context.Context, arg1 core.ReportType, arg2 string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Find", arg0, arg1, arg2)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Find indicates an expected call of Find
+func (mr *MockCoverageServiceMockRecorder) Find(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockCoverageService)(nil).Find), arg0, arg1, arg2)
+}
+
+// Open mocks base method
+func (m *MockCoverageService) Open(arg0 context.Context, arg1 core.ReportType, arg2 string) (io.Reader, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Open", arg0, arg1, arg2)
+	ret0, _ := ret[0].(io.Reader)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Open indicates an expected call of Open
+func (mr *MockCoverageServiceMockRecorder) Open(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Open", reflect.TypeOf((*MockCoverageService)(nil).Open), arg0, arg1, arg2)
+}
+
 // Report mocks base method
 func (m *MockCoverageService) Report(arg0 context.Context, arg1 core.ReportType, arg2 io.Reader) (*core.CoverageReport, error) {
 	m.ctrl.T.Helper()

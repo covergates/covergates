@@ -18,6 +18,8 @@ type Service struct{}
 //TypeCoverageService defines a coverage service for a language
 type TypeCoverageService interface {
 	Report(ctx context.Context, data io.Reader) (*core.CoverageReport, error)
+	Find(ctx context.Context, path string) (string, error)
+	Open(ctx context.Context, path string) (io.Reader, error)
 }
 
 // IsReportTypeNotSupportError check
@@ -44,6 +46,24 @@ func (s *Service) Report(ctx context.Context, t core.ReportType, r io.Reader) (*
 		return nil, err
 	}
 	return service.Report(ctx, r)
+}
+
+// Find coverage report data from given path
+func (s *Service) Find(ctx context.Context, t core.ReportType, path string) (string, error) {
+	service, err := s.service(t)
+	if err != nil {
+		return "", err
+	}
+	return service.Find(ctx, path)
+}
+
+// Open coverage report with given path
+func (s *Service) Open(ctx context.Context, t core.ReportType, path string) (io.Reader, error) {
+	service, err := s.service(t)
+	if err != nil {
+		return nil, err
+	}
+	return service.Open(ctx, path)
 }
 
 // TrimFileNames for all files in coverage report

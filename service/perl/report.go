@@ -2,13 +2,16 @@ package perl
 
 import (
 	"archive/zip"
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/modules/archive"
@@ -27,6 +30,7 @@ func (err *errDigestFormat) Error() string {
 }
 
 const coverDBName = "cover.14"
+const coverFolderName = "cover_db"
 const digiestFolder = "structure"
 
 type digestsMap map[string]*coverDigest
@@ -53,6 +57,67 @@ func (r *CoverageService) Report(
 		return nil, err
 	}
 	return report(db, digests)
+}
+
+// Find coverage report of Perl from given path
+func (r *CoverageService) Find(ctx context.Context, path string) (string, error) {
+	if !util.IsDir(path) {
+		return "", fmt.Errorf("not found")
+	}
+	if filepath.Base(path) == coverFolderName {
+		return path, nil
+	}
+	report := ""
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() && filepath.Base(path) == coverFolderName {
+			report = path
+			return io.EOF
+		}
+		return nil
+	})
+	if err != nil && err != io.EOF {
+		return "", err
+	}
+	return report, nil
+}
+
+// Open coverage report
+func (r *CoverageService) Open(ctx context.Context, path string) (io.Reader, error) {
+	if !util.IsDir(path) {
+		return nil, fmt.Errorf("%s is not a folder", path)
+	}
+	root := strings.TrimRight(path, "/")
+	buf := new(bytes.Buffer)
+	w := zip.NewWriter(buf)
+	defer w.Close()
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if len(path) <= len(root) {
+			return nil
+		}
+		name := path[len(root)+1:]
+		if info.IsDir() {
+			if _, err := w.Create(name + "/"); err != nil {
+				return err
+			}
+		} else {
+			f, err := w.Create(name)
+			if err != nil {
+				return err
+			}
+			data, err := ioutil.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			if _, err := f.Write(data); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return buf, err
 }
 
 func findDigests(files []*zip.File) (digestsMap, error) {

@@ -32,6 +32,9 @@ type CoverageReport struct {
 // CoverageService provides CoverReport
 type CoverageService interface {
 	Report(ctx context.Context, t ReportType, r io.Reader) (*CoverageReport, error)
+	// Find coverage report from the given path.
+	Find(ctx context.Context, t ReportType, path string) (string, error)
+	Open(ctx context.Context, t ReportType, path string) (io.Reader, error)
 	// TrimFileNames in the coverage report
 	TrimFileNames(ctx context.Context, report *CoverageReport, filters FileNameFilters) error
 }
