@@ -81,6 +81,9 @@ func (r *CoverageService) Find(ctx context.Context, path string) (string, error)
 	if err != nil && err != io.EOF {
 		return "", err
 	}
+	if report == "" {
+		return report, fmt.Errorf("perl coverage report not found")
+	}
 	return report, nil
 }
 

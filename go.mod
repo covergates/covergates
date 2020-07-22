@@ -15,7 +15,7 @@ require (
 	github.com/golang/mock v1.4.3
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/google/wire v0.4.0
-	github.com/jinzhu/gorm v1.9.14
+	github.com/jinzhu/gorm v1.9.15
 	github.com/jinzhu/now v1.1.1 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
@@ -24,9 +24,10 @@ require (
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
-	github.com/urfave/cli v1.22.4
-	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
+	github.com/urfave/cli/v2 v2.2.0
+	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
+	golang.org/x/tools v0.0.0-20190729092621-ff9f1409240a // indirect
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
