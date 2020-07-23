@@ -9,6 +9,7 @@ import store, { Actions } from '@/store';
 import { AxiosPlugin } from '@/plugins/http';
 import { HighlightPlugin } from '@/plugins/highlight';
 import '@/plugins/scrollbar';
+import 'file-icon-vectors/dist/file-icon-vivid.min.css';
 
 __webpack_public_path__ = process.env.NODE_ENV === 'production' ? `${VUE_BASE}/` : process.env.BASE_URL;
 

@@ -1,10 +1,10 @@
 <template>
   <v-app class="app">
     <v-app-bar app color="primary" flat dark clipped-left>
-      <v-app-bar-nav-icon to="/">
+      <v-app-bar-nav-icon @click="routeTo('/')">
         <v-icon>mdi-home</v-icon>
       </v-app-bar-nav-icon>
-      <v-btn class="ml-5" text to="/repo">Repositories</v-btn>
+      <v-btn class="ml-5" text @click="routeTo('/repo')">Repositories</v-btn>
       <v-spacer></v-spacer>
       <account-button />
     </v-app-bar>
@@ -25,7 +25,11 @@ import AccountButton from '@/components/AccountButton.vue';
     AccountButton
   }
 })
-export default class Main extends Vue {}
+export default class Main extends Vue {
+  routeTo(to: string) {
+    this.$router.push(to);
+  }
+}
 </script>
 
 <style>

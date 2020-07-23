@@ -36,7 +36,7 @@ const routes: Array<RouteConfig> = [
           {
             path: 'code',
             name: 'report-code',
-            component: () => import('@/components/ReportCode.vue')
+            component: () => import('@/components/ReportFiles.vue')
           },
           {
             path: 'code/:path+',

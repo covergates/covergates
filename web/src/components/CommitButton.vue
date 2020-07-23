@@ -1,5 +1,5 @@
 <template>
-  <v-btn small v-clipboard:copy="report.commit" v-clipboard:success="onCopied">
+  <v-btn small v-clipboard:copy="report?report.commit:''" v-clipboard:success="onCopied">
     <v-icon left>{{buttonIcon}}</v-icon>
     {{commit}}
   </v-btn>

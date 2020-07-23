@@ -1,14 +1,35 @@
 <template>
   <v-container>
-    <v-card>
+    <v-card flat>
+      <v-card-title>General</v-card-title>
+      <v-divider />
+      <v-card-text>
+        <v-row>
+          <v-text-field
+            label="Report ID"
+            :readonly="true"
+            :value="repo.ReportID"
+            outlined
+            dense
+            flat
+          ></v-text-field>
+        </v-row>
+        <v-row>
+          <span>Use this ID to upload report. This ID is used only to identify your report. It can't be used to access repository information.</span>
+          <v-spacer></v-spacer>
+          <!-- <v-btn class="mr-5" small>Regenerate</v-btn> -->
+        </v-row>
+      </v-card-text>
+    </v-card>
+    <v-card flat>
       <v-card-title>Filters</v-card-title>
+      <v-divider />
       <v-card-text>
         <v-textarea name="filters" v-model="filters" :hint="hint" flat outlined></v-textarea>
       </v-card-text>
-      <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn class="mr-5" text @click="saveSetting" :loading="loading" :disabled="!repo">save</v-btn>
+        <v-btn class="mr-5" @click="saveSetting" :loading="loading" :disabled="!repo" small>save</v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
