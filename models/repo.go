@@ -131,7 +131,7 @@ func (store *RepoStore) Setting(repo *core.Repo) (*core.RepoSetting, error) {
 	session := store.DB.Session()
 	setting := &RepoSetting{RepoID: repo.ID}
 	if err := session.Where(&setting).First(&setting).Error; err != nil {
-		return nil, err
+		return &core.RepoSetting{}, nil
 	}
 	coreSetting := &core.RepoSetting{}
 	if err := json.Unmarshal(setting.Config, coreSetting); err != nil {

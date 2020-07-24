@@ -17,12 +17,12 @@ type User struct {
 	Email         string `gorm:"unique_index"`
 	Active        bool
 	Avater        string
-	GiteaLogin    string `gorm:"unique_index"`
+	GiteaLogin    string `gorm:"index"`
 	GiteaEmail    string `gorm:"index"`
 	GiteaToken    string
 	GiteaRefresh  string
 	GiteaExpire   int64
-	GithubLogin   string `gorm:"unique_index"`
+	GithubLogin   string `gorm:"index"`
 	GithubEmail   string `gorm:"index"`
 	GithubToken   string
 	GithubRefresh string
@@ -83,6 +83,9 @@ func (store *UserStore) Bind(
 ) (*core.User, error) {
 	if user.Login == "" {
 		return user, fmt.Errorf("user login should not be empty")
+	}
+	if _, err := store.Find(scm, scmUser); err == nil {
+		return user, errUserExist
 	}
 	session := store.DB.Session()
 	u := &User{}

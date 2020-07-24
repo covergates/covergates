@@ -128,3 +128,39 @@ func TestUserBind(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestUserBindExist(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &UserStore{
+		DB: db,
+	}
+
+	githubUser := &scm.User{
+		Login: "exists_github",
+		Email: "exists_github@mail",
+	}
+
+	giteaUser := &scm.User{
+		Login: "exists_gitea",
+		Email: "exists_gitea@mail",
+	}
+
+	err := store.Create(core.Github, githubUser, &core.Token{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = store.Create(core.Gitea, giteaUser, &core.Token{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	user1, err := store.Find(core.Github, githubUser)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.Bind(core.Gitea, user1, giteaUser, &core.Token{}); err != errUserExist {
+		t.Fail()
+	}
+
+}

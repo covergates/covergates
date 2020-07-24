@@ -1,10 +1,13 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/code-devel-cover/CodeCover/core"
 )
+
+var errUserExist = errors.New("user already exist")
 
 type errNotSupportedSCM struct {
 	scm core.SCMProvider
