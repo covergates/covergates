@@ -41,6 +41,7 @@ type RepoService interface {
 type UserService interface {
 	Find(ctx context.Context, token *Token) (*User, error)
 	Create(ctx context.Context, token *Token) (*User, error)
+	Bind(ctx context.Context, user *User, token *Token) (*User, error)
 }
 
 // GitService provides Git operations

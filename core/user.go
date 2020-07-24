@@ -27,6 +27,8 @@ type User struct {
 
 // UserStore the user data to storage
 type UserStore interface {
-	Create(scm SCMProvider, user *scm.User, token *scm.Token) error
+	Create(scm SCMProvider, user *scm.User, token *Token) error
 	Find(scm SCMProvider, user *scm.User) (*User, error)
+	// Bind a new user from another SCM to registered user
+	Bind(scm SCMProvider, user *User, scmUser *scm.User, token *Token) (*User, error)
 }

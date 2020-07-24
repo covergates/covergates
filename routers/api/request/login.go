@@ -10,7 +10,7 @@ import (
 // CheckLogin session
 func CheckLogin(session core.Session) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := session.Get(c)
+		user := session.GetUser(c)
 		if user.Login == "" {
 			c.String(401, "Unauthorized")
 			c.Abort()

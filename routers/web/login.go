@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/code-devel-cover/CodeCover/config"
@@ -28,27 +29,40 @@ func HandleLogin(
 		if !c.GetBool(keyLogin) {
 			return
 		}
+		ctx := c.Request.Context()
 		client, err := scmService.Client(scm)
 		if err != nil {
 			c.String(500, err.Error())
 			return
 		}
-		ctx := c.Request.Context()
-		user, err := client.Users().Find(ctx, TokenFrom(c))
-		if err != nil {
-			user, err = client.Users().Create(ctx, TokenFrom(c))
+		token := TokenFrom(c)
+		user := session.GetUser(c)
+		if session.ShouldBindUser(c) {
+			user, err = client.Users().Bind(ctx, user, token)
+			session.EndBindUser(c)
+		} else {
+			user, err = createUser(ctx, client, token)
 		}
+
 		if err != nil {
 			log.Error(err)
 			c.String(400, err.Error())
 		}
-		if err := session.Create(c, user); err != nil {
+		if err := session.CreateUser(c, user); err != nil {
 			log.Error(err)
 			c.String(400, err.Error())
 			return
 		}
 		c.Redirect(301, config.Server.BaseURL())
 	}
+}
+
+func createUser(ctx context.Context, client core.Client, token *core.Token) (*core.User, error) {
+	user, err := client.Users().Find(ctx, token)
+	if err != nil {
+		user, err = client.Users().Create(ctx, token)
+	}
+	return user, err
 }
 
 // MiddlewareLogin context
@@ -70,5 +84,22 @@ func MiddlewareLogin(scm core.SCMProvider, m core.LoginMiddleware) gin.HandlerFu
 			c.Set(keyRefresh, tok.Refresh)
 		}))
 		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+// MiddlewareBindUser handle bind user request
+func MiddlewareBindUser(session core.Session) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		_, bind := c.GetQuery("bind")
+		if !bind {
+			return
+		}
+		user := session.GetUser(c)
+		if user.Login == "" {
+			c.String(401, "Unauthorized")
+			c.Abort()
+			return
+		}
+		session.StartBindUser(c)
 	}
 }

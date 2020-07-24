@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/code-devel-cover/CodeCover/core"
@@ -11,9 +12,9 @@ import (
 // User data
 type User struct {
 	gorm.Model
-	Login         string `gorm:"unique_index"`
+	Login         string `gorm:"unique_index;not null"`
 	Name          string
-	Email         string `gorm:"unique_index"`
+	Email         string `gorm:"unique_index;not null"`
 	Active        bool
 	Avater        string
 	GiteaLogin    string `gorm:"index"`
@@ -34,7 +35,7 @@ type UserStore struct {
 }
 
 // Create a new user
-func (store *UserStore) Create(scm core.SCMProvider, user *scm.User, token *scm.Token) error {
+func (store *UserStore) Create(scm core.SCMProvider, user *scm.User, token *core.Token) error {
 	session := store.DB.Session()
 	u := &User{
 		Login:  user.Login,
@@ -42,21 +43,8 @@ func (store *UserStore) Create(scm core.SCMProvider, user *scm.User, token *scm.
 		Avater: user.Avatar,
 		Active: true,
 	}
-	switch scm {
-	case core.Github:
-		u.GithubEmail = user.Email
-		u.GithubLogin = user.Login
-		u.GithubToken = token.Token
-		u.GithubRefresh = token.Refresh
-		u.GithubExpire = token.Expires.Unix()
-	case core.Gitea:
-		u.GiteaEmail = user.Email
-		u.GiteaLogin = user.Login
-		u.GiteaToken = token.Token
-		u.GiteaRefresh = token.Refresh
-		u.GiteaExpire = token.Expires.Unix()
-	default:
-		return &errNotSupportedSCM{scm}
+	if err := u.updateWithSCM(scm, user, token); err != nil {
+		return err
 	}
 	return session.Create(u).Error
 }
@@ -86,6 +74,30 @@ func (store *UserStore) Find(scm core.SCMProvider, user *scm.User) (*core.User, 
 	return u.toCoreUser(), nil
 }
 
+// Bind a new user from another SCM to registered user
+func (store *UserStore) Bind(
+	scm core.SCMProvider,
+	user *core.User,
+	scmUser *scm.User,
+	token *core.Token,
+) (*core.User, error) {
+	if user.Email == "" {
+		return user, fmt.Errorf("user email should not be empty")
+	}
+	session := store.DB.Session()
+	u := &User{}
+	if err := session.Where(&User{Email: user.Email}).First(u).Error; err != nil {
+		return user, err
+	}
+	if err := u.updateWithSCM(scm, scmUser, token); err != nil {
+		return user, err
+	}
+	if err := session.Save(u).Error; err != nil {
+		return user, err
+	}
+	return u.toCoreUser(), nil
+}
+
 func (u *User) toCoreUser() *core.User {
 	return &core.User{
 		Login:         u.Login,
@@ -102,4 +114,24 @@ func (u *User) toCoreUser() *core.User {
 		GithubExpire:  time.Unix(u.GithubExpire, 0),
 		GithubRefresh: u.GithubRefresh,
 	}
+}
+
+func (u *User) updateWithSCM(scm core.SCMProvider, user *scm.User, token *core.Token) error {
+	switch scm {
+	case core.Github:
+		u.GithubEmail = user.Email
+		u.GithubLogin = user.Login
+		u.GithubToken = token.Token
+		u.GithubRefresh = token.Refresh
+		u.GithubExpire = token.Expires.Unix()
+	case core.Gitea:
+		u.GiteaEmail = user.Email
+		u.GiteaLogin = user.Login
+		u.GiteaToken = token.Token
+		u.GiteaRefresh = token.Refresh
+		u.GiteaExpire = token.Expires.Unix()
+	default:
+		return &errNotSupportedSCM{scm}
+	}
+	return nil
 }

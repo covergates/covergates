@@ -25,6 +25,7 @@ func getDatabaseService(t *testing.T) (*gomock.Controller, core.DatabaseService)
 }
 
 func TestMain(m *testing.M) {
+	log.SetReportCaller(true)
 	cwd, _ := os.Getwd()
 	tempFile, err := ioutil.TempFile(cwd, "*.db")
 	if err != nil {

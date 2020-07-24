@@ -14,6 +14,7 @@ require (
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/golang/mock v1.4.3
 	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/google/go-cmp v0.5.1
 	github.com/google/wire v0.4.0
 	github.com/jinzhu/gorm v1.9.15
 	github.com/jinzhu/now v1.1.1 // indirect
