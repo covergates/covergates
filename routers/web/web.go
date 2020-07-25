@@ -21,8 +21,8 @@ type Router struct {
 func (r *Router) RegisterRoutes(e *gin.Engine) {
 	{
 		g := e.Group("/login")
+		g.Use(MiddlewareBindUser(r.Session))
 		g.Any("/github",
-			MiddlewareBindUser(r.Session),
 			MiddlewareLogin(core.Github, r.LoginMiddleware),
 			HandleLogin(
 				r.Config,

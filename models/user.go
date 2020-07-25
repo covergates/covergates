@@ -14,15 +14,15 @@ type User struct {
 	gorm.Model
 	Login         string `gorm:"unique_index;not null"`
 	Name          string
-	Email         string `gorm:"unique_index;not null"`
+	Email         string `gorm:"unique_index"`
 	Active        bool
 	Avater        string
-	GiteaLogin    string `gorm:"index"`
+	GiteaLogin    string `gorm:"unique_index"`
 	GiteaEmail    string `gorm:"index"`
 	GiteaToken    string
 	GiteaRefresh  string
 	GiteaExpire   int64
-	GithubLogin   string `gorm:"index"`
+	GithubLogin   string `gorm:"unique_index"`
 	GithubEmail   string `gorm:"index"`
 	GithubToken   string
 	GithubRefresh string
@@ -81,12 +81,12 @@ func (store *UserStore) Bind(
 	scmUser *scm.User,
 	token *core.Token,
 ) (*core.User, error) {
-	if user.Email == "" {
-		return user, fmt.Errorf("user email should not be empty")
+	if user.Login == "" {
+		return user, fmt.Errorf("user login should not be empty")
 	}
 	session := store.DB.Session()
 	u := &User{}
-	if err := session.Where(&User{Email: user.Email}).First(u).Error; err != nil {
+	if err := session.Where(&User{Login: user.Login}).First(u).Error; err != nil {
 		return user, err
 	}
 	if err := u.updateWithSCM(scm, scmUser, token); err != nil {

@@ -13,13 +13,13 @@ var errEmptyRepoFiled = errors.New("repository must have SCM and URL filed")
 // Repo defines a repository
 type Repo struct {
 	gorm.Model
-	URL          string `gorm:"unique_index;not null"`
-	ReportID     string
-	NameSpace    string `gorm:"index;not null"`
-	Name         string `gorm:"index;not null"`
-	Branch       string
-	SCM          string `gorm:"index;not null"`
-	CreatorEmail string
+	URL       string `gorm:"unique_index;not null"`
+	ReportID  string
+	NameSpace string `gorm:"index;not null"`
+	Name      string `gorm:"index;not null"`
+	Branch    string
+	SCM       string `gorm:"index;not null"`
+	Creator   string
 }
 
 // RepoSetting defines user customization
@@ -64,12 +64,12 @@ func (store *RepoStore) Create(repo *core.Repo, user *core.User) error {
 	}
 	session := store.DB.Session()
 	r := &Repo{
-		URL:          repo.URL,
-		NameSpace:    repo.NameSpace,
-		Name:         repo.Name,
-		SCM:          string(repo.SCM),
-		Branch:       repo.Branch,
-		CreatorEmail: user.Email,
+		URL:       repo.URL,
+		NameSpace: repo.NameSpace,
+		Name:      repo.Name,
+		SCM:       string(repo.SCM),
+		Branch:    repo.Branch,
+		Creator:   user.Login,
 	}
 	return session.Create(r).Error
 }
@@ -103,7 +103,7 @@ func (store *RepoStore) Creator(repo *core.Repo) (*core.User, error) {
 		return nil, err
 	}
 	user := &User{
-		Email: r.CreatorEmail,
+		Login: r.Creator,
 	}
 	if err := session.First(user).Error; err != nil {
 		return nil, err
