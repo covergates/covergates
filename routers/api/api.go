@@ -69,20 +69,20 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			r.RepoStore,
 			r.ReportStore,
 		))
-		g.GET("/:id", report.HandleGet(r.ReportStore, r.RepoStore))
+		g.GET("/:id", report.HandleGet(r.ReportStore, r.RepoStore, r.SCMService))
 		g.GET("/:id/:commit/treemap", report.HandleGetTreeMap(
 			r.ReportStore,
 			r.RepoStore,
 			r.ChartService,
 		))
 	}
+	g.GET("/repos/:scm/:namespace/:name", repo.HandleGet(r.RepoStore))
 	{
 		g := g.Group("/repos")
 		g.Use(request.CheckLogin(r.Session))
 		g.GET("", repo.HandleListAll(r.Config, r.SCMService, r.RepoStore))
 		g.POST("", repo.HandleCreate(r.RepoStore, r.SCMService))
 		g.GET("/:scm", repo.HandleListSCM(r.SCMService, r.RepoStore))
-		g.GET("/:scm/:namespace/:name", repo.HandleGet(r.RepoStore))
 		g.PATCH("/:scm/:namespace/:name", repo.HandleSync(r.SCMService, r.RepoStore))
 		g.GET("/:scm/:namespace/:name/setting", repo.HandleGetSetting(r.RepoStore))
 		g.POST("/:scm/:namespace/:name/setting", repo.HandleUpdateSetting(r.RepoStore))

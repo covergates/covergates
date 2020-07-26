@@ -12,6 +12,7 @@ type Repo struct {
 	NameSpace string
 	Name      string
 	Branch    string
+	Private   bool
 	SCM       SCMProvider
 }
 

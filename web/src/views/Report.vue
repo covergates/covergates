@@ -54,6 +54,10 @@ export default class ReportView extends Vue {
     return this.$store.state.report.current;
   }
 
+  get user(): User | undefined {
+    return this.$store.state.user.current;
+  }
+
   get tabs(): tabOptions[] {
     const options: tabOptions[] = [
       {
@@ -63,7 +67,7 @@ export default class ReportView extends Vue {
         }
       }
     ];
-    if (this.report) {
+    if (this.report && this.user) {
       options.push({
         key: 'Code',
         link: {
@@ -71,7 +75,7 @@ export default class ReportView extends Vue {
         }
       });
     }
-    if (this.repo) {
+    if (this.repo && this.user) {
       options.push({
         key: 'Setting',
         link: {

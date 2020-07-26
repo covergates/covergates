@@ -48,17 +48,20 @@ const routes: Array<RouteConfig> = [
           {
             path: 'code',
             name: 'report-code',
+            meta: { requiresAuth: true },
             component: () => import('@/components/ReportFiles.vue')
           },
           {
             path: 'code/:path+',
             name: 'report-source',
+            meta: { requiresAuth: true },
             component: () => import('@/components/ReportSource.vue'),
             beforeEnter: fetchReportSource(store)
           },
           {
             path: 'setting',
             name: 'report-setting',
+            meta: { requiresAuth: true },
             component: () => import('@/components/ReportSetting.vue')
           }
         ]

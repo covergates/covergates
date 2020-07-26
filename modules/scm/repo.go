@@ -62,6 +62,7 @@ func (service *repoService) Find(
 		SCM:       core.SCMProvider(service.scm),
 		URL:       repo.Link,
 		Branch:    repo.Branch,
+		Private:   repo.Private,
 	}, nil
 }
 

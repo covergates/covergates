@@ -104,6 +104,12 @@ func HandleGet(store core.RepoStore) gin.HandlerFunc {
 			c.JSON(404, &core.Repo{})
 			return
 		}
+		if repo.Private {
+			if _, ok := request.UserFrom(c); !ok {
+				c.JSON(401, &core.Repo{})
+				return
+			}
+		}
 		c.JSON(200, repo)
 	}
 }

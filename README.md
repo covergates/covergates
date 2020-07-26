@@ -1,7 +1,7 @@
 # TODO
 
-- [ ] Public Repository does not require user authorization
-- [ ] Redirect to login page if unauthorized user accessing to private repository
+- [x] Public Repository does not require user authorization
+- [x] Redirect to login page if unauthorized user accessing to private repository
 - [ ] Support Go, Python
 - [ ] Enable webhook to create comment on pull request
 - [ ] Enable multiple language coverage report

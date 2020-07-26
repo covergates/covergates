@@ -6,6 +6,7 @@ import (
 	"io"
 
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -134,13 +135,21 @@ type getOptions struct {
 // @Param latest query bool false "get latest report in main branch"
 // @Success 200 {object} core.Report "coverage report"
 // @Router /reports/{id} [get]
-func HandleGet(reportStore core.ReportStore, repoStore core.RepoStore) gin.HandlerFunc {
+func HandleGet(
+	reportStore core.ReportStore,
+	repoStore core.RepoStore,
+	service core.SCMService,
+) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		reportID := c.Param("id")
 		option := &getOptions{}
 		if err := c.BindQuery(option); err != nil {
 			log.Error(err)
 			c.JSON(400, []*core.Report{})
+			return
+		}
+		if !hasPermission(c, repoStore, service, reportID) {
+			c.JSON(401, []*core.Report{})
 			return
 		}
 		// TODO: support multiple type (language) reports in one repository
@@ -201,6 +210,34 @@ func HandleGetTreeMap(
 		c.Data(200, "image/svg+xml", buffer.Bytes())
 		return
 	}
+}
+
+func hasPermission(
+	c *gin.Context,
+	store core.RepoStore,
+	service core.SCMService,
+	reportID string,
+) bool {
+	repo, err := store.Find(&core.Repo{ReportID: reportID})
+	if err != nil {
+		return false
+	}
+	if !repo.Private {
+		return true
+	}
+	user, ok := request.UserFrom(c)
+	if !ok {
+		return false
+	}
+	client, err := service.Client(repo.SCM)
+	if err != nil {
+		return false
+	}
+	_, err = client.Repositories().Find(c.Request.Context(), user, repo.FullName())
+	if err != nil {
+		return false
+	}
+	return true
 }
 
 func getLatest(reportStore core.ReportStore, repoStore core.RepoStore, reportID string) (*core.Report, error) {

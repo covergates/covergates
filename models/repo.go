@@ -20,6 +20,7 @@ type Repo struct {
 	Branch    string
 	SCM       string `gorm:"index;not null"`
 	Creator   string
+	Private   bool
 }
 
 // RepoSetting defines user customization
@@ -44,6 +45,7 @@ func (repo *Repo) ToCoreRepo() *core.Repo {
 		SCM:       core.SCMProvider(repo.SCM),
 		Branch:    repo.Branch,
 		URL:       repo.URL,
+		Private:   repo.Private,
 	}
 }
 
@@ -70,6 +72,7 @@ func (store *RepoStore) Create(repo *core.Repo, user *core.User) error {
 		SCM:       string(repo.SCM),
 		Branch:    repo.Branch,
 		Creator:   user.Login,
+		Private:   repo.Private,
 	}
 	return session.Create(r).Error
 }
@@ -156,4 +159,5 @@ func (store *RepoStore) UpdateSetting(repo *core.Repo, setting *core.RepoSetting
 func copyRepo(dst *Repo, src *core.Repo) {
 	dst.ReportID = src.ReportID
 	dst.Branch = src.Branch
+	dst.Private = src.Private
 }

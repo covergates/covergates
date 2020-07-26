@@ -16,6 +16,7 @@ import (
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/mock"
+	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/jinzhu/gorm"
@@ -200,15 +201,17 @@ func TestGet(t *testing.T) {
 
 	reportStore := mock.NewMockReportStore(ctrl)
 	repoStore := mock.NewMockRepoStore(ctrl)
+	service := mock.NewMockSCMService(ctrl)
+
 	repoStore.EXPECT().Find(gomock.Eq(&core.Repo{
 		ReportID: repo.ReportID,
-	})).Return(repo, nil)
+	})).AnyTimes().Return(repo, nil)
 	reportStore.EXPECT().Find(gomock.Eq(&core.Report{
 		ReportID: report.ReportID,
 		Branch:   repo.Branch,
 	})).Return(report, nil)
 	r := gin.Default()
-	r.GET("/reports/:id", HandleGet(reportStore, repoStore))
+	r.GET("/reports/:id", HandleGet(reportStore, repoStore, service))
 
 	req, _ := http.NewRequest("GET", "/reports/1234", nil)
 	query := req.URL.Query()
@@ -228,6 +231,67 @@ func TestGet(t *testing.T) {
 	})
 }
 
+func TestGetPrivate(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := &core.Repo{
+		Branch:    "master",
+		Name:      "repo",
+		NameSpace: "org",
+		ReportID:  "1234",
+		SCM:       core.Github,
+		Private:   true,
+	}
+	reportStore := mock.NewMockReportStore(ctrl)
+	repoStore := mock.NewMockRepoStore(ctrl)
+	service := mock.NewMockSCMService(ctrl)
+	client := mock.NewMockClient(ctrl)
+	repoService := mock.NewMockRepoService(ctrl)
+
+	repoStore.EXPECT().Find(
+		gomock.Eq(&core.Repo{ReportID: repo.ReportID}),
+	).AnyTimes().Return(repo, nil)
+
+	service.EXPECT().Client(
+		gomock.Eq(repo.SCM),
+	).Return(client, nil)
+
+	client.EXPECT().Repositories().Return(repoService)
+
+	repoService.EXPECT().Find(
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Eq(repo.FullName()),
+	).Return(repo, fmt.Errorf(""))
+
+	// test if no user login
+	r := gin.Default()
+	r.GET("/reports/:id", HandleGet(reportStore, repoStore, service))
+
+	req, _ := http.NewRequest("GET", "/reports/1234", nil)
+
+	testRequest(r, req, func(w *httptest.ResponseRecorder) {
+		rst := w.Result()
+		if rst.StatusCode != 401 {
+			t.Fail()
+		}
+	})
+
+	// test if user login but without repository access right
+	r = gin.Default()
+	r.Use(func(c *gin.Context) {
+		request.WithUser(c, &core.User{})
+	})
+	r.GET("/reports/:id", HandleGet(reportStore, repoStore, service))
+	testRequest(r, req, func(w *httptest.ResponseRecorder) {
+		rst := w.Result()
+		if rst.StatusCode != 401 {
+			t.Fail()
+		}
+	})
+
+}
+
 func TestGetNotFound(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -238,15 +302,16 @@ func TestGetNotFound(t *testing.T) {
 
 	repoStore := mock.NewMockRepoStore(ctrl)
 	reportStore := mock.NewMockReportStore(ctrl)
+	service := mock.NewMockSCMService(ctrl)
 
 	repoStore.EXPECT().Find(gomock.Eq(&core.Repo{
 		ReportID: repo.ReportID,
-	})).Return(repo, nil)
+	})).AnyTimes().Return(repo, nil)
 
 	reportStore.EXPECT().Find(gomock.Any()).Return(nil, gorm.ErrRecordNotFound)
 
 	r := gin.Default()
-	r.GET("/reports/:id", HandleGet(reportStore, repoStore))
+	r.GET("/reports/:id", HandleGet(reportStore, repoStore, service))
 
 	req, _ := http.NewRequest("GET", "/reports/1234", nil)
 	query := req.URL.Query()

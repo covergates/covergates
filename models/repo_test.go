@@ -178,5 +178,49 @@ func TestRepoSetting(t *testing.T) {
 	if !reflect.DeepEqual(target.Filters, setting1.Filters) {
 		t.Fail()
 	}
+}
+
+func TestPrivateRepository(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &RepoStore{DB: db}
+
+	user := &core.User{Login: "user"}
+
+	coreRepo := &core.Repo{
+		Name:      "private_repo",
+		NameSpace: "gitea",
+		URL:       "private_repo.com",
+		SCM:       core.Gitea,
+	}
+
+	if err := store.Create(coreRepo, user); err != nil {
+		t.Fatal(err)
+	}
+
+	repo, err := store.Find(&core.Repo{Name: coreRepo.Name})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if repo.Private {
+		t.Log("repo should be public")
+		t.Fail()
+	}
+
+	coreRepo.Private = true
+
+	if err := store.Update(coreRepo); err != nil {
+		t.Fatal(err)
+	}
+
+	if repo, err = store.Find(&core.Repo{Name: coreRepo.Name}); err != nil {
+		t.Fatal(err)
+	}
+
+	if !repo.Private {
+		t.Log("repo should be private")
+		t.Fail()
+	}
 
 }
