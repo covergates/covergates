@@ -35,24 +35,25 @@ export default class ReportFiles extends Vue {
   /**
    * Table Headers
    */
+  headerClass = 'text-subtitle-1 align-center accent white--text';
   headers = [
     {
       text: 'File Path',
       align: 'start',
       value: 'name',
-      class: 'flex text-subtitle-1 align-center'
+      class: this.headerClass
     },
     {
       text: 'Hit Lines',
       value: 'hits',
       width: '150px',
-      class: 'text-subtitle-1 align-center'
+      class: this.headerClass
     },
     {
       text: 'Coverage',
       value: 'coverage',
       width: '150px',
-      class: 'text-subtitle-1 align-center'
+      class: this.headerClass
     }
   ];
 
@@ -108,14 +109,14 @@ export default class ReportFiles extends Vue {
 ::v-deep table {
   border-collapse: collapse !important;
 }
-::v-deep .v-data-table-header {
-  tr {
-    background-color: $table-header-background !important;
-    th {
-      background-color: inherit !important;
-    }
-  }
-}
+// ::v-deep .v-data-table-header {
+// tr {
+//   background-color: $table-header-background !important;
+//   th {
+//     background-color: inherit !important;
+//   }
+// }
+// }
 
 .file-icon {
   font-size: 20px;

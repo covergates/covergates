@@ -104,7 +104,7 @@ func (store *UserStore) Bind(
 func (u *User) toCoreUser() *core.User {
 	return &core.User{
 		Login:         u.Login,
-		Avater:        u.Avater,
+		Avatar:        u.Avater,
 		Email:         u.Email,
 		GiteaLogin:    u.GiteaLogin,
 		GiteaEmail:    u.GiteaEmail,

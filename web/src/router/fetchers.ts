@@ -32,3 +32,10 @@ export function fetchReportSetting(store: Store<RootState>): RouteHandler {
     next();
   };
 }
+
+export function fetchUserSCM(store: Store<RootState>): RouteHandler {
+  return (to, from, next) => {
+    store.dispatch(Actions.FETCH_USER_SCM);
+    next();
+  };
+}

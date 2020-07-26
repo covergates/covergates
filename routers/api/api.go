@@ -58,6 +58,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 	{
 		g := g.Group("/user")
 		g.GET("", request.CheckLogin(r.Session), user.HandleGet())
+		g.GET("/scm", request.CheckLogin(r.Session), user.HandleGetSCM(r.Config))
 		g.POST("", user.HandleCreate())
 	}
 	{

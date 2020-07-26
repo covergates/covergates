@@ -611,6 +611,28 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/user/scm": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user's SCM binding state",
+                "responses": {
+                    "200": {
+                        "description": "providers",
+                        "schema": {
+                            "$ref": "#/definitions/user.Providers"
+                        }
+                    },
+                    "404": {
+                        "description": "providers",
+                        "schema": {
+                            "$ref": "#/definitions/user.Providers"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -680,9 +702,18 @@ var doc = `{
                 }
             }
         },
+        "user.Providers": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "boolean"
+            }
+        },
         "user.User": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },

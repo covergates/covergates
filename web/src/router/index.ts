@@ -1,6 +1,10 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import { fetchReportSource, fetchCurrentRepository } from './fetchers';
+import {
+  fetchReportSource,
+  fetchCurrentRepository,
+  fetchUserSCM
+} from './fetchers';
 import store from '@/store';
 
 Vue.use(VueRouter);
@@ -17,11 +21,19 @@ const routes: Array<RouteConfig> = [
         component: () => import('@/views/Home.vue')
       },
       {
+        path: '/user',
+        name: 'User',
+        meta: { requiresAuth: true },
+        component: () => import('@/views/User.vue'),
+        beforeEnter: fetchUserSCM(store)
+      },
+      {
         path: '/repo',
         name: 'Repo',
         meta: { requiresAuth: true },
         component: () => import('@/views/Repo.vue')
-      }, {
+      },
+      {
         path: '/report/:scm/:namespace/:name',
         name: 'Report',
         meta: { requiresAuth: true },

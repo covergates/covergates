@@ -13,6 +13,15 @@
         <router-view></router-view>
       </v-container>
     </v-main>
+    <v-footer min-height="60" app fixed dark color="secondary">
+      &copy; 2020 cover-gate
+      <v-divider vertical class="ma-4" />
+      <v-btn text small>license</v-btn>
+      <v-spacer />
+      <v-btn text href="https://github.com/code-devel-cover/CodeCover">
+        <v-icon left large class="mr-5">mdi-github</v-icon>Github
+      </v-btn>
+    </v-footer>
   </v-app>
 </template>
 
@@ -27,7 +36,9 @@ import AccountButton from '@/components/AccountButton.vue';
 })
 export default class Main extends Vue {
   routeTo(to: string) {
-    this.$router.push(to);
+    this.$router.push(to).catch(() => {
+      // do nothing
+    });
   }
 }
 </script>
@@ -39,6 +50,6 @@ export default class Main extends Vue {
 }
 
 .container {
-  height: calc(100vh - 64px);
+  height: calc(100vh - 64px - 60px);
 }
 </style>

@@ -20,3 +20,18 @@ export function fetchUser<S extends UserState, R extends RootState>(context: Act
     });
   });
 }
+
+export function fetchSCM<S extends UserState, R extends RootState>(context: ActionContext<S, R>): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const base = context.rootState.base;
+    context.commit(Mutations.START_USER_LOADING);
+    Axios.get<Record<string, boolean>>(`${base}/api/v1/user/scm`).then(response => {
+      context.commit(Mutations.UPDATE_USER_SCM, response.data);
+    }).catch(reason => {
+      console.warn(reasonToError(reason));
+    }).finally(() => {
+      context.commit(Mutations.STOP_USER_LOADING);
+      resolve();
+    });
+  });
+}

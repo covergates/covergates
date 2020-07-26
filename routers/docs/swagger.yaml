@@ -43,8 +43,14 @@ definitions:
       type:
         type: ReportType
     type: object
+  user.Providers:
+    additionalProperties:
+      type: boolean
+    type: object
   user.User:
     properties:
+      avatar:
+        type: string
       email:
         type: string
       login:
@@ -444,6 +450,20 @@ paths:
           schema:
             type: string
       summary: Get login user
+      tags:
+      - User
+  /user/scm:
+    get:
+      responses:
+        "200":
+          description: providers
+          schema:
+            $ref: '#/definitions/user.Providers'
+        "404":
+          description: providers
+          schema:
+            $ref: '#/definitions/user.Providers'
+      summary: Get user's SCM binding state
       tags:
       - User
 swagger: "2.0"

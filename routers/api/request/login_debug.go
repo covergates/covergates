@@ -14,9 +14,11 @@ func CheckLogin(session core.Session) gin.HandlerFunc {
 		user := &core.User{
 			Login:       os.Getenv("DEBUG_LOGIN"),
 			Email:       os.Getenv("DEBUG_EMAIL"),
-			GithubLogin: os.Getenv("DEBUG_LOGIN"),
+			Avatar:      os.Getenv("DEBUG_AVATAR"),
+			GithubLogin: os.Getenv("DEBUG_GITHUB_LOGIN"),
 			GithubEmail: os.Getenv("DEBUG_EMAIL"),
 			GithubToken: os.Getenv("DEBUG_GITHUB_TOKEN"),
+			GiteaLogin:  os.Getenv("DEBUG_GITEA_LOGIN"),
 			GiteaEmail:  os.Getenv("DEBUG_EMAIL"),
 			GiteaToken:  os.Getenv("DEBUG_GITEA_TOKEN"),
 		}

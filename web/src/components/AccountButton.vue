@@ -1,8 +1,11 @@
 <template>
   <v-menu left bottom offset-y>
     <template v-slot:activator="{ on, attrs }">
-      <v-btn class="mr-10" v-bind="attrs" v-on="on" icon>
-        <v-icon>mdi-account</v-icon>
+      <v-btn class="mr-5" v-bind="attrs" v-on="on" icon>
+        <v-avatar size="36">
+          <v-icon v-if="avatar===''">mdi-account</v-icon>
+          <img :src="avatar" :alt="`${name}-avatar`" v-else />
+        </v-avatar>
       </v-btn>
     </template>
     <v-list>
@@ -34,9 +37,22 @@ export default class AccountButton extends Vue {
     return this.$store.state.user.current;
   }
 
+  get avatar(): string {
+    return this.user && this.user.avatar ? this.user.avatar : '';
+  }
+
+  get name(): string {
+    return this.user && this.user.login ? this.user.login : 'user';
+  }
+
   get actions(): actionItem[] {
     const items = [] as actionItem[];
     if (this.user) {
+      items.push({
+        name: 'Setting',
+        icon: 'mdi-cog',
+        to: '/user'
+      });
       items.push({
         name: 'Logout',
         icon: 'mdi-logout',

@@ -12,7 +12,7 @@ import (
 type User struct {
 	Login         string
 	Email         string
-	Avater        string
+	Avatar        string
 	GiteaLogin    string
 	GiteaEmail    string
 	GiteaToken    string
