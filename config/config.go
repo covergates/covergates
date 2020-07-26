@@ -42,6 +42,7 @@ type Github struct {
 	Scope        []string `default:"repo,repo:status,user:email,read:org" envconfig:"GATES_GITHUB_SCOPE"`
 }
 
+// Environ setup configure from environment variables
 func Environ() (*Config, error) {
 	cfg := &Config{}
 	err := envconfig.Process("", cfg)
