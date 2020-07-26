@@ -16,6 +16,7 @@ type User struct {
 	Avatar string `json:"avatar"`
 }
 
+// Providers defines lined SCM accounts
 type Providers map[string]bool
 
 // HandleCreate new user
