@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/kelseyhightower/envconfig"
 )
 
 // Config of application
@@ -17,28 +18,34 @@ type Config struct {
 
 // Server setting
 type Server struct {
-	Secret string `default:"secret"`
-	Addr   string
-	Base   string
+	Secret string `default:"secret" envconfig:"GATES_SERVER_SECRET"`
+	Addr   string `default:"http://localhost:8080" envconfig:"GATES_SERVER_ADDR"`
+	Base   string `envconfig:"GATES_SERVER_BASE"`
 }
 
 // Gitea connection setting
 type Gitea struct {
-	Server       string
-	ClientID     string
-	ClientSecret string
-	SkipVerity   bool
-	Scope        []string `default:"repo,repo:status,user:email,read:org"`
+	Server       string   `envconfig:"GATES_GITEA_SERVER"`
+	ClientID     string   `envconfig:"GATES_GITEA_CLIENT_ID"`
+	ClientSecret string   `envconfig:"GATES_GITEA_CLIENT_SECRET"`
+	SkipVerity   bool     `envconfig:"GATES_GITEA_SKIP_VERITY"`
+	Scope        []string `default:"repo,repo:status,user:email,read:org" envconfig:"GATES_GITEA_SCOPE"`
 }
 
 // Github connection setting
 type Github struct {
-	Server       string `default:"https://github.com"`
-	APIServer    string
-	ClientID     string
-	ClientSecret string
-	SkipVerity   bool
-	Scope        []string `default:"repo,repo:status,user:email,read:org"`
+	Server       string   `default:"https://github.com" envconfig:"GATES_GITHUB_SERVER"`
+	APIServer    string   `envconfig:"GATES_GITHUB_API_SERVER"`
+	ClientID     string   `envconfig:"GATES_GITHUB_CLIENT_ID"`
+	ClientSecret string   `envconfig:"GATES_GITHUB_CLIENT_SECRET"`
+	SkipVerity   bool     `envconfig:"GATES_GITHUB_SKIP_VERIFY"`
+	Scope        []string `default:"repo,repo:status,user:email,read:org" envconfig:"GATES_GITHUB_SCOPE"`
+}
+
+func Environ() (*Config, error) {
+	cfg := &Config{}
+	err := envconfig.Process("", cfg)
+	return cfg, err
 }
 
 // Providers of all available SCM

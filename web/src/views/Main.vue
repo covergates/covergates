@@ -14,7 +14,7 @@
       </v-container>
     </v-main>
     <v-footer min-height="60" app fixed dark color="secondary">
-      &copy; 2020 cover-gate
+      &copy; 2020 covergates
       <v-divider vertical class="ma-4" />
       <v-btn text small>license</v-btn>
       <v-spacer />

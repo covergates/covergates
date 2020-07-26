@@ -1,9 +1,9 @@
 <template>
   <v-container class="mt-5">
     <v-row justify="center">
-      <span class="text-h2 font-weight-bold">Cover Gate</span>
+      <span class="text-h2 font-weight-bold">Covergates</span>
     </v-row>
-    <v-banner class="text-center primary--text">Manage your coverage report in the easiest way.</v-banner>
+    <v-banner class="text-center primary--text">The portal gates to good code quality.</v-banner>
     <v-row justify="center" class="ma-10">
       <v-col
         cols="4"

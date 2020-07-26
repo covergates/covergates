@@ -24,23 +24,9 @@ func connectDatabase() *gorm.DB {
 
 // Run server
 func Run(c *cli.Context) error {
-	config := &config.Config{
-		Server: config.Server{
-			Addr: "http://localhost:5900",
-			Base: "",
-		},
-		Github: config.Github{
-			ClientID:     "a150e893154bafde8a00",
-			ClientSecret: "59a3f97b6e7569d0b6898bc5fb2e84f93e64113d",
-			Server:       "https://github.com",
-			APIServer:    "https://api.github.com",
-		},
-		Gitea: config.Gitea{
-			ClientID:     "c8c6a2cc-f948-475c-8663-f420c8fc15ab",
-			ClientSecret: "J8YYirhYOZY9a9RepaoORN-8EFcSO-sbwjSGvGo4NwE=",
-			Server:       "http://localhost:3000",
-			SkipVerity:   true,
-		},
+	config, err := config.Environ()
+	if err != nil {
+		return err
 	}
 	db := connectDatabase()
 	app, err := InitializeApplication(config, db)
