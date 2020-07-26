@@ -247,6 +247,21 @@ func (m *MockUserService) EXPECT() *MockUserServiceMockRecorder {
 	return m.recorder
 }
 
+// Bind mocks base method
+func (m *MockUserService) Bind(arg0 context.Context, arg1 *core.User, arg2 *core.Token) (*core.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Bind", arg0, arg1, arg2)
+	ret0, _ := ret[0].(*core.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Bind indicates an expected call of Bind
+func (mr *MockUserServiceMockRecorder) Bind(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Bind", reflect.TypeOf((*MockUserService)(nil).Bind), arg0, arg1, arg2)
+}
+
 // Create mocks base method
 func (m *MockUserService) Create(arg0 context.Context, arg1 *core.Token) (*core.User, error) {
 	m.ctrl.T.Helper()

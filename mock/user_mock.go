@@ -34,8 +34,23 @@ func (m *MockUserStore) EXPECT() *MockUserStoreMockRecorder {
 	return m.recorder
 }
 
+// Bind mocks base method
+func (m *MockUserStore) Bind(arg0 core.SCMProvider, arg1 *core.User, arg2 *scm.User, arg3 *core.Token) (*core.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Bind", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].(*core.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Bind indicates an expected call of Bind
+func (mr *MockUserStoreMockRecorder) Bind(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Bind", reflect.TypeOf((*MockUserStore)(nil).Bind), arg0, arg1, arg2, arg3)
+}
+
 // Create mocks base method
-func (m *MockUserStore) Create(arg0 core.SCMProvider, arg1 *scm.User, arg2 *scm.Token) error {
+func (m *MockUserStore) Create(arg0 core.SCMProvider, arg1 *scm.User, arg2 *core.Token) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
