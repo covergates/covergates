@@ -50,7 +50,7 @@ func TestEnvironConfig(t *testing.T) {
 		"GATES_GITEA_CLIENT_ID":     "c8c6a2cc-f948-475c-8663-f420c8fc15ab",
 		"GATES_GITEA_CLIENT_SECRET": "J8YYirhYOZY9a9RepaoORN-8EFcSO-sbwjSGvGo4NwE=",
 		"GATES_GITEA_SCOPE":         "repo,repo:status",
-		"GATES_GITEA_SKIP_VERITY":   "true",
+		"GATES_GITEA_SKIP_VERIFY":   "true",
 	}
 
 	setEnv(vars)

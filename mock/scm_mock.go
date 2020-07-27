@@ -100,6 +100,20 @@ func (mr *MockClientMockRecorder) Git() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Git", reflect.TypeOf((*MockClient)(nil).Git))
 }
 
+// Issues mocks base method
+func (m *MockClient) Issues() core.IssueService {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Issues")
+	ret0, _ := ret[0].(core.IssueService)
+	return ret0
+}
+
+// Issues indicates an expected call of Issues
+func (mr *MockClientMockRecorder) Issues() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Issues", reflect.TypeOf((*MockClient)(nil).Issues))
+}
+
 // Repositories mocks base method
 func (m *MockClient) Repositories() core.RepoService {
 	m.ctrl.T.Helper()
