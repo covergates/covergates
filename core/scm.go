@@ -19,12 +19,18 @@ type Token struct {
 	Expires time.Time
 }
 
+// Hook defines a created webhook
+type Hook struct {
+	ID string
+}
+
 // Client connects to a SCM provider
 type Client interface {
 	Repositories() RepoService
 	Users() UserService
 	Git() GitService
 	Contents() ContentService
+	Issues() IssueService
 	Token(user *User) Token
 }
 
@@ -35,6 +41,8 @@ type RepoService interface {
 	List(ctx context.Context, user *User) ([]*Repo, error)
 	Find(ctx context.Context, user *User, name string) (*Repo, error)
 	CloneURL(ctx context.Context, user *User, name string) (string, error)
+	CreateHook(ctx context.Context, user *User, name string) (*Hook, error)
+	RemoveHook(ctx context.Context, user *User, name string, hook *Hook) error
 }
 
 // UserService defines operations with SCM
@@ -54,4 +62,10 @@ type GitService interface {
 type ContentService interface {
 	ListAllFiles(ctx context.Context, user *User, repo, ref string) ([]string, error)
 	Find(ctx context.Context, user *User, repo, path, ref string) ([]byte, error)
+}
+
+// IssueService provides operation to repository issue, basically to pull request
+type IssueService interface {
+	CreateComment(ctx context.Context, user *User, repo string, number int, body string) (int, error)
+	RemoveComment(ctx context.Context, user *User, repo string, number int, id int) error
 }

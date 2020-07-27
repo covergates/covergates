@@ -18,9 +18,10 @@ type Config struct {
 
 // Server setting
 type Server struct {
-	Secret string `default:"secret" envconfig:"GATES_SERVER_SECRET"`
-	Addr   string `default:"http://localhost:8080" envconfig:"GATES_SERVER_ADDR"`
-	Base   string `envconfig:"GATES_SERVER_BASE"`
+	Secret     string `default:"secret" envconfig:"GATES_SERVER_SECRET"`
+	Addr       string `default:"http://localhost:8080" envconfig:"GATES_SERVER_ADDR"`
+	Base       string `envconfig:"GATES_SERVER_BASE"`
+	SkipVerity bool   `default:"true" envconfig:"GATES_SERVER_SKIP_VERIFY"`
 }
 
 // Gitea connection setting
@@ -28,7 +29,7 @@ type Gitea struct {
 	Server       string   `envconfig:"GATES_GITEA_SERVER"`
 	ClientID     string   `envconfig:"GATES_GITEA_CLIENT_ID"`
 	ClientSecret string   `envconfig:"GATES_GITEA_CLIENT_SECRET"`
-	SkipVerity   bool     `envconfig:"GATES_GITEA_SKIP_VERITY"`
+	SkipVerity   bool     `envconfig:"GATES_GITEA_SKIP_VERIFY"`
 	Scope        []string `default:"repo,repo:status,user:email,read:org" envconfig:"GATES_GITEA_SCOPE"`
 }
 
@@ -74,4 +75,11 @@ func (server Server) Port() string {
 func (server Server) BaseURL() string {
 	base := strings.Trim(server.Base, "/")
 	return fmt.Sprintf("/%s", base)
+}
+
+// URL of the server
+func (server Server) URL() string {
+	url := strings.TrimRight(server.Addr, "/")
+	url = url + server.BaseURL()
+	return strings.TrimRight(url, "/")
 }

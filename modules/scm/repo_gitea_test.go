@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/gitea"
@@ -42,4 +43,22 @@ func TestGiteaList(t *testing.T) {
 	if len(repos) <= 0 {
 		t.Fail()
 	}
+}
+
+func TestGiteaCreateHook(t *testing.T) {
+	service := repoService{
+		config: &config.Config{
+			Server: config.Server{
+				Addr: "http://localhost:8080",
+			},
+		},
+		client: getGiteaClient(),
+		scm:    core.Gitea,
+	}
+	user := &core.User{
+		GiteaToken: "1749a6106454f05f689051c331680c13d78d81b7",
+	}
+
+	service.CreateHook(context.Background(), user, "gitea/gitea")
+
 }

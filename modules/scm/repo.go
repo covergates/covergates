@@ -2,7 +2,9 @@ package scm
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/drone/go-scm/scm"
 	"github.com/rs/xid"
@@ -10,6 +12,7 @@ import (
 
 // RepoService provides repository operations with SCM
 type repoService struct {
+	config *config.Config
 	client *scm.Client
 	scm    core.SCMProvider
 }
@@ -78,4 +81,37 @@ func (service *repoService) CloneURL(
 		return "", err
 	}
 	return repo.Clone, nil
+}
+
+func (service *repoService) CreateHook(ctx context.Context, user *core.User, name string) (*core.Hook, error) {
+	target := fmt.Sprintf(
+		"%s/repos/%s/%s/hook",
+		service.config.Server.URL(),
+		string(service.scm),
+		name,
+	)
+	input := &scm.HookInput{
+		Name:       "covergates",
+		Target:     target,
+		Secret:     service.config.Server.Secret,
+		SkipVerify: service.config.Server.SkipVerity,
+		Events: scm.HookEvents{
+			Push:        true,
+			PullRequest: true,
+		},
+	}
+	ctx = withUser(ctx, service.scm, user)
+	hook, _, err := service.client.Repositories.CreateHook(ctx, name, input)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Hook{
+		ID: hook.ID,
+	}, nil
+}
+
+func (service *repoService) RemoveHook(ctx context.Context, user *core.User, name string, hook *core.Hook) error {
+	ctx = withUser(ctx, service.scm, user)
+	_, err := service.client.Repositories.DeleteHook(ctx, name, hook.ID)
+	return err
 }

@@ -75,6 +75,7 @@ func (service *Service) Client(s core.SCMProvider) (core.Client, error) {
 	}
 	return &client{
 		scm:       s,
+		config:    service.Config,
 		scmClient: scmClient,
 		userStore: service.UserStore,
 		git:       service.Git,

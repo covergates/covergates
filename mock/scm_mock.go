@@ -180,6 +180,21 @@ func (mr *MockRepoServiceMockRecorder) CloneURL(arg0, arg1, arg2 interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CloneURL", reflect.TypeOf((*MockRepoService)(nil).CloneURL), arg0, arg1, arg2)
 }
 
+// CreateHook mocks base method
+func (m *MockRepoService) CreateHook(arg0 context.Context, arg1 *core.User, arg2 string) (*core.Hook, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateHook", arg0, arg1, arg2)
+	ret0, _ := ret[0].(*core.Hook)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateHook indicates an expected call of CreateHook
+func (mr *MockRepoServiceMockRecorder) CreateHook(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHook", reflect.TypeOf((*MockRepoService)(nil).CreateHook), arg0, arg1, arg2)
+}
+
 // Find mocks base method
 func (m *MockRepoService) Find(arg0 context.Context, arg1 *core.User, arg2 string) (*core.Repo, error) {
 	m.ctrl.T.Helper()
@@ -222,6 +237,20 @@ func (m *MockRepoService) NewReportID(arg0 *core.Repo) string {
 func (mr *MockRepoServiceMockRecorder) NewReportID(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewReportID", reflect.TypeOf((*MockRepoService)(nil).NewReportID), arg0)
+}
+
+// RemoveHook mocks base method
+func (m *MockRepoService) RemoveHook(arg0 context.Context, arg1 *core.User, arg2 string, arg3 *core.Hook) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveHook", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveHook indicates an expected call of RemoveHook
+func (mr *MockRepoServiceMockRecorder) RemoveHook(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveHook", reflect.TypeOf((*MockRepoService)(nil).RemoveHook), arg0, arg1, arg2, arg3)
 }
 
 // MockUserService is a mock of UserService interface

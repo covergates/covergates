@@ -1,11 +1,13 @@
 package scm
 
 import (
+	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/drone/go-scm/scm"
 )
 
 type client struct {
+	config    *config.Config
 	scm       core.SCMProvider
 	scmClient *scm.Client
 	git       core.Git
@@ -14,6 +16,7 @@ type client struct {
 
 func (c *client) Repositories() core.RepoService {
 	return &repoService{
+		config: c.config,
 		client: c.scmClient,
 		scm:    c.scm,
 	}
@@ -40,6 +43,13 @@ func (c *client) Contents() core.ContentService {
 		scm:    c.scm,
 		client: c.scmClient,
 		git:    c.git,
+	}
+}
+
+func (c *client) Issues() core.IssueService {
+	return &issueService{
+		client: c.scmClient,
+		scm:    c.scm,
 	}
 }
 
