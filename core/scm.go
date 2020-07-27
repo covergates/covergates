@@ -24,13 +24,21 @@ type Hook struct {
 	ID string
 }
 
+// PullRequest object
+type PullRequest struct {
+	Number int
+	Commit string
+	Source string
+	Target string
+}
+
 // Client connects to a SCM provider
 type Client interface {
 	Repositories() RepoService
 	Users() UserService
 	Git() GitService
 	Contents() ContentService
-	Issues() IssueService
+	PullRequests() PullRequestService
 	Token(user *User) Token
 }
 
@@ -64,8 +72,9 @@ type ContentService interface {
 	Find(ctx context.Context, user *User, repo, path, ref string) ([]byte, error)
 }
 
-// IssueService provides operation to repository issue, basically to pull request
-type IssueService interface {
+// PullRequestService provides operation to repository issue, basically to pull request
+type PullRequestService interface {
+	Find(ctx context.Context, user *User, repo string, number int) (*PullRequest, error)
 	CreateComment(ctx context.Context, user *User, repo string, number int, body string) (int, error)
 	RemoveComment(ctx context.Context, user *User, repo string, number int, id int) error
 }

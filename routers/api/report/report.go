@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"strconv"
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/routers/api/request"
@@ -14,15 +15,15 @@ import (
 // HandleUpload report
 // @Summary Upload coverage report
 // @Tags Report
-// @Param type path string true "report type"
 // @Param id path string	true "report id"
 // @Param file formData file true "report"
 // @Param commit formData string true "Git commit SHA"
+// @Param type formData string true "report type"
 // @Param branch formData string false "branch ref"
 // @Param tag formData string false "tag ref"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "error message"
-// @Router /reports/{id}/{type} [post]
+// @Router /reports/{id} [post]
 func HandleUpload(
 	scmService core.SCMService,
 	coverageService core.CoverageService,
@@ -30,14 +31,21 @@ func HandleUpload(
 	reportStore core.ReportStore,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		reportID := c.Param("id")
-		reportType := core.ReportType(c.Param("type"))
-		branch := c.PostForm("branch")
-		commit, ok := c.GetPostForm("commit")
-		if !ok {
+
+		if _, ok := c.GetPostForm("type"); !ok {
+			c.String(400, "must have report type")
+			return
+		}
+
+		if _, ok := c.GetPostForm("commit"); !ok {
 			c.String(400, "must have commit SHA")
 			return
 		}
+
+		reportID := c.Param("id")
+		branch := c.PostForm("branch")
+		reportType := core.ReportType(c.PostForm("type"))
+		commit := c.PostForm("commit")
 		ctx := c.Request.Context()
 
 		repo, err := repoStore.Find(&core.Repo{ReportID: reportID})
@@ -179,7 +187,7 @@ func HandleGet(
 // @Param id path string true "report id"
 // @param commit path string true "commit sha"
 // @Success 200 {object} string "treemap svg"
-// @Router /reports/{id}/{commit}/treemap [get]
+// @Router /reports/{id}/treemap/{commit} [get]
 func HandleGetTreeMap(
 	reportStore core.ReportStore,
 	repoStore core.RepoStore,
@@ -209,6 +217,47 @@ func HandleGetTreeMap(
 		}
 		c.Data(200, "image/svg+xml", buffer.Bytes())
 		return
+	}
+}
+
+// HandleComment report summary
+// @Summary Leave a report summary comment on pull request
+// @Tags Report
+// @Param id path string true "report id"
+// @param number path string true "pull request number"
+// @Success 200 {object} string "ok"
+// @Router /reports/{id}/comment/{number} [POST]
+func HandleComment(
+	service core.SCMService,
+	repoStore core.RepoStore,
+	reportStore core.ReportStore,
+) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+		reportID := c.Param("id")
+		number, err := strconv.Atoi(c.Param("number"))
+		if err != nil {
+			c.String(400, "invalid pull request number")
+			return
+		}
+		repo, err := repoStore.Find(&core.Repo{ReportID: reportID})
+		if err != nil {
+			c.String(400, "repository not found")
+			return
+		}
+		user, err := repoStore.Creator(repo)
+		if err != nil {
+			c.String(400, "user not found")
+			return
+		}
+		client, err := service.Client(repo.SCM)
+		pr, err := client.PullRequests().Find(ctx, user, repo.FullName(), number)
+		if err != nil {
+			c.String(400, "cannot find pull request")
+		}
+
+		reportStore.Find(&core.Report{Commit: pr.Commit})
+
 	}
 }
 
@@ -251,7 +300,7 @@ func getLatest(reportStore core.ReportStore, repoStore core.RepoStore, reportID 
 	})
 }
 
-// getAll reports related to gitven reportID
+// getAll reports related to given reportID
 func getAll(store core.ReportStore, reportID string) ([]*core.Report, error) {
 	return store.Finds(&core.Report{
 		ReportID: reportID,

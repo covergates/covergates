@@ -63,14 +63,14 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 	}
 	{
 		g := g.Group("/reports")
-		g.POST("/:id/:type", report.HandleUpload(
+		g.POST("/:id", report.HandleUpload(
 			r.SCMService,
 			r.CoverageService,
 			r.RepoStore,
 			r.ReportStore,
 		))
 		g.GET("/:id", report.HandleGet(r.ReportStore, r.RepoStore, r.SCMService))
-		g.GET("/:id/:commit/treemap", report.HandleGetTreeMap(
+		g.GET("/:id/treemap/:commit", report.HandleGetTreeMap(
 			r.ReportStore,
 			r.RepoStore,
 			r.ChartService,

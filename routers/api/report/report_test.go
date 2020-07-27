@@ -121,7 +121,7 @@ func TestUpload(t *testing.T) {
 	).Return(nil)
 
 	r := gin.Default()
-	r.POST("/reports/:id/:type", HandleUpload(
+	r.POST("/reports/:id", HandleUpload(
 		mockSCMService,
 		mockCoverageService,
 		mockRepoStore,
@@ -131,11 +131,12 @@ func TestUpload(t *testing.T) {
 	buffer := bytes.NewBuffer([]byte{})
 	w := multipart.NewWriter(buffer)
 	w.WriteField("commit", "abcdef")
+	w.WriteField("type", "perl")
 	file := bytes.NewBuffer([]byte("mock"))
 	addFormFile(w, "file", "cover_db.zip", file)
 	w.Close()
 
-	req, _ := http.NewRequest("POST", "/reports/1234/perl", buffer)
+	req, _ := http.NewRequest("POST", "/reports/1234", buffer)
 	req.Header.Set("Content-Type", w.FormDataContentType())
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()
@@ -143,8 +144,8 @@ func TestUpload(t *testing.T) {
 			t.Fail()
 		}
 	})
-	// test empty commit
-	req, _ = http.NewRequest("POST", "/reports/1234/perl", nil)
+	// test empty post
+	req, _ = http.NewRequest("POST", "/reports/1234", nil)
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()
 		if rst.StatusCode != 400 {
@@ -374,14 +375,14 @@ func TestGetTreeMap(t *testing.T) {
 	).Return(nil)
 
 	r := gin.Default()
-	r.GET("/reports/:id/:commit/treemap", HandleGetTreeMap(
+	r.GET("/reports/:id/treemap/:commit", HandleGetTreeMap(
 		reportStore,
 		repoStore,
 		chartService,
 	))
 
 	req, _ := http.NewRequest("GET", fmt.Sprintf(
-		"/reports/%s/%s/treemap",
+		"/reports/%s/treemap/%s",
 		reportID,
 		new.Commit,
 	), nil)

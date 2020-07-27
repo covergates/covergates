@@ -59,6 +59,7 @@ func upload(c *cli.Context) error {
 	}
 
 	form := util.FormData{
+		"type":   c.String("type"),
 		"commit": h.commit,
 		"branch": h.branch,
 		"file": util.FormFile{
@@ -68,10 +69,9 @@ func upload(c *cli.Context) error {
 	}
 
 	url := fmt.Sprintf(
-		"%s/reports/%s/%s",
+		"%s/reports/%s",
 		c.String("url"),
 		c.String("report"),
-		c.String("type"),
 	)
 
 	respond, err := util.PostForm(url, form)

@@ -46,8 +46,8 @@ func (c *client) Contents() core.ContentService {
 	}
 }
 
-func (c *client) Issues() core.IssueService {
-	return &issueService{
+func (c *client) PullRequests() core.PullRequestService {
+	return &prService{
 		client: c.scmClient,
 		scm:    c.scm,
 	}

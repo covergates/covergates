@@ -23,7 +23,7 @@ func (s *mockIssueService) CreateComment(ctx context.Context, repo string, numbe
 
 func TestGiteaIssueCreate(t *testing.T) {
 	mockService := &mockIssueService{}
-	service := &issueService{
+	service := &prService{
 		client: &scm.Client{
 			Issues: mockService,
 		},

@@ -7,12 +7,12 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
-type issueService struct {
+type prService struct {
 	client *scm.Client
 	scm    core.SCMProvider
 }
 
-func (service *issueService) CreateComment(
+func (service *prService) CreateComment(
 	ctx context.Context,
 	user *core.User,
 	repo string,
@@ -35,7 +35,7 @@ func (service *issueService) CreateComment(
 	return comment.ID, nil
 }
 
-func (service *issueService) RemoveComment(
+func (service *prService) RemoveComment(
 	ctx context.Context,
 	user *core.User,
 	repo string,
@@ -51,4 +51,18 @@ func (service *issueService) RemoveComment(
 		_, err = service.client.PullRequests.DeleteComment(ctx, repo, number, id)
 	}
 	return err
+}
+
+func (service *prService) Find(ctx context.Context, user *core.User, repo string, number int) (*core.PullRequest, error) {
+	ctx = withUser(ctx, service.scm, user)
+	pr, _, err := service.client.PullRequests.Find(ctx, repo, number)
+	if err != nil {
+		return nil, err
+	}
+	return &core.PullRequest{
+		Number: pr.Number,
+		Commit: pr.Sha,
+		Source: pr.Source,
+		Target: pr.Target,
+	}, nil
 }

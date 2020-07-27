@@ -58,6 +58,100 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Report"
+                ],
+                "summary": "Upload coverage report",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "report id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "report",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Git commit SHA",
+                        "name": "commit",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "report type",
+                        "name": "type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "branch ref",
+                        "name": "branch",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "tag ref",
+                        "name": "tag",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/reports/{id}/comment/{number}": {
+            "post": {
+                "tags": [
+                    "Report"
+                ],
+                "summary": "Leave a report summary comment on pull request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "report id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "pull request number",
+                        "name": "number",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/reports/{id}/repo": {
@@ -91,7 +185,7 @@ var doc = `{
                 }
             }
         },
-        "/reports/{id}/{commit}/treemap": {
+        "/reports/{id}/treemap/{commit}": {
             "get": {
                 "produces": [
                     "image/svg+xml"
@@ -119,70 +213,6 @@ var doc = `{
                 "responses": {
                     "200": {
                         "description": "treemap svg",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/reports/{id}/{type}": {
-            "post": {
-                "tags": [
-                    "Report"
-                ],
-                "summary": "Upload coverage report",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "report type",
-                        "name": "type",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "report id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "report",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Git commit SHA",
-                        "name": "commit",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "branch ref",
-                        "name": "branch",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "tag ref",
-                        "name": "tag",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "error message",
                         "schema": {
                             "type": "string"
                         }
@@ -650,6 +680,9 @@ var doc = `{
                 },
                 "nameSpace": {
                     "type": "string"
+                },
+                "private": {
+                    "type": "boolean"
                 },
                 "reportID": {
                     "type": "string"
