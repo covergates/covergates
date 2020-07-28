@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/jinzhu/gorm"
@@ -20,6 +21,15 @@ type Report struct {
 	Branch   string `gorm:"index"`
 	Tag      string `gorm:"index"`
 	Commit   string `gorm:"unique_index:report_id_commit"`
+}
+
+// ReportComment defines summary report comment in the pull request
+type ReportComment struct {
+	gorm.Model
+	ReportID string `gorm:"unique_index:report_comment_number"`
+	// Number is the PR number
+	Number  int `gorm:"unique_index:report_comment_number"`
+	Comment int
 }
 
 // ReportStore reports in storage
@@ -67,6 +77,35 @@ func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
 		reports[i] = report.ToCoreReport()
 	}
 	return reports, nil
+}
+
+// CreateComment of the report summary
+func (store *ReportStore) CreateComment(r *core.Report, comment *core.ReportComment) error {
+	if comment.Comment <= 0 || comment.Number <= 0 {
+		return fmt.Errorf("invalid comment")
+	}
+	session := store.DB.Session()
+	condition := &ReportComment{ReportID: r.ReportID, Number: comment.Number}
+	c := &ReportComment{}
+	if err := session.Where(condition).FirstOrCreate(c).Error; err != nil {
+		return err
+	}
+	c.Comment = comment.Comment
+	return session.Save(c).Error
+}
+
+// FindComment summary of given PR number
+func (store *ReportStore) FindComment(r *core.Report, number int) (*core.ReportComment, error) {
+	session := store.DB.Session()
+	condition := &ReportComment{ReportID: r.ReportID, Number: number}
+	comment := &ReportComment{}
+	if err := session.First(comment, condition).Error; err != nil {
+		return nil, err
+	}
+	return &core.ReportComment{
+		Comment: comment.Comment,
+		Number:  comment.Number,
+	}, nil
 }
 
 // CoverageReport un-marshal the coverage data

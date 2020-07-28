@@ -31,6 +31,7 @@ func (store *databaseService) Migrate() error {
 func init() {
 	tables = append(tables,
 		&Report{},
+		&ReportComment{},
 		&User{},
 		&Repo{},
 		&RepoSetting{},

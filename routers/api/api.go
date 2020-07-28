@@ -37,6 +37,7 @@ type Router struct {
 	CoverageService core.CoverageService
 	ChartService    core.ChartService
 	SCMService      core.SCMService
+	ReportService   core.ReportService
 	// store
 	ReportStore core.ReportStore
 	RepoStore   core.RepoStore
@@ -68,6 +69,13 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			r.CoverageService,
 			r.RepoStore,
 			r.ReportStore,
+		))
+		g.POST("/:id/comment/:number", report.HandleComment(
+			r.Config,
+			r.SCMService,
+			r.RepoStore,
+			r.ReportStore,
+			r.ReportService,
 		))
 		g.GET("/:id", report.HandleGet(r.ReportStore, r.RepoStore, r.SCMService))
 		g.GET("/:id/treemap/:commit", report.HandleGetTreeMap(

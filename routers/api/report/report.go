@@ -3,9 +3,11 @@ package report
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"strconv"
 
+	"github.com/code-devel-cover/CodeCover/config"
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/routers/api/request"
 	"github.com/gin-gonic/gin"
@@ -228,10 +230,13 @@ func HandleGetTreeMap(
 // @Success 200 {object} string "ok"
 // @Router /reports/{id}/comment/{number} [POST]
 func HandleComment(
+	config *config.Config,
 	service core.SCMService,
 	repoStore core.RepoStore,
 	reportStore core.ReportStore,
+	reportService core.ReportService,
 ) gin.HandlerFunc {
+	// TODO: Add handle comment unit test
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 		reportID := c.Param("id")
@@ -254,10 +259,66 @@ func HandleComment(
 		pr, err := client.PullRequests().Find(ctx, user, repo.FullName(), number)
 		if err != nil {
 			c.String(400, "cannot find pull request")
+			return
 		}
 
-		reportStore.Find(&core.Report{Commit: pr.Commit})
+		source, err := reportStore.Find(&core.Report{ReportID: reportID, Commit: pr.Commit})
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		target, err := reportStore.Find(&core.Report{ReportID: reportID, Branch: pr.Target})
+		if err != nil {
+			target = &core.Report{}
+		}
 
+		r, err := reportService.MarkdownReport(source, target)
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+
+		buf := &bytes.Buffer{}
+
+		buf.WriteString(fmt.Sprintf(
+			"![treemap](%s/api/v1/reports/%s/treemap/%s?base=%s)\n\n",
+			config.Server.URL(),
+			reportID,
+			source.Commit,
+			target.Commit,
+		),
+		)
+
+		if _, err := io.Copy(buf, r); err != nil {
+			c.String(500, err.Error())
+			return
+		}
+
+		if comment, err := reportStore.FindComment(&core.Report{ReportID: reportID}, number); err == nil {
+			client.PullRequests().RemoveComment(ctx, user, repo.FullName(), number, comment.Comment)
+		}
+
+		commentID, err := client.PullRequests().CreateComment(
+			ctx,
+			user,
+			repo.FullName(),
+			number,
+			string(buf.Bytes()),
+		)
+		log.Println(commentID)
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		comment := &core.ReportComment{
+			Comment: commentID,
+			Number:  number,
+		}
+		if err := reportStore.CreateComment(&core.Report{ReportID: reportID}, comment); err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		c.String(200, "ok")
 	}
 }
 

@@ -2,10 +2,16 @@ package charts
 
 import (
 	"io"
+	"sort"
 
 	svgchart "github.com/blueworrybear/svg-charts"
 	"github.com/code-devel-cover/CodeCover/core"
 )
+
+type diffFiles struct {
+	names []string
+	files map[string]*core.File
+}
 
 const (
 	colorIncrease = "#16C36D"
@@ -40,7 +46,17 @@ func (c *CoverageDiffTreeMap) Render(w io.Writer) error {
 	colors := make([]string, 0)
 	labels := make([]string, 0)
 	data := make([]interface{}, 0)
-	for name, newFile := range c.newFiles {
+	names := make([]string, 0)
+	for name := range c.newFiles {
+		names = append(names, name)
+	}
+	diffFiles := &diffFiles{
+		names: names,
+		files: c.newFiles,
+	}
+	sort.Sort(diffFiles)
+	for _, name := range diffFiles.names {
+		newFile := c.newFiles[name]
 		oldCover := 0.0
 		oldFile, ok := c.oldFiles[name]
 		if ok {
@@ -70,8 +86,8 @@ func (c *CoverageDiffTreeMap) Render(w io.Writer) error {
 			},
 			Chart: &svgchart.ChartOptions{
 				Type:   "treemap",
-				Width:  800,
-				Height: 600,
+				Width:  600,
+				Height: 400,
 			},
 			Labels: labels,
 			LabelOption: &svgchart.LabelOptions{
@@ -84,4 +100,12 @@ func (c *CoverageDiffTreeMap) Render(w io.Writer) error {
 		return err
 	}
 	return svg.Render(w)
+}
+
+func (f *diffFiles) Len() int { return len(f.names) }
+func (f *diffFiles) Less(i, j int) bool {
+	return f.files[f.names[i]].StatementCoverage < f.files[f.names[j]].StatementCoverage
+}
+func (f *diffFiles) Swap(i, j int) {
+	f.names[i], f.names[j] = f.names[j], f.names[i]
 }

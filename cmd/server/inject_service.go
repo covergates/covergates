@@ -5,6 +5,7 @@ import (
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/code-devel-cover/CodeCover/modules/charts"
 	"github.com/code-devel-cover/CodeCover/modules/git"
+	"github.com/code-devel-cover/CodeCover/modules/report"
 	"github.com/code-devel-cover/CodeCover/modules/scm"
 	"github.com/code-devel-cover/CodeCover/modules/session"
 	"github.com/code-devel-cover/CodeCover/service/coverage"
@@ -17,6 +18,7 @@ var serviceSet = wire.NewSet(
 	provideCoverageService,
 	provideChartService,
 	provideGit,
+	provideReportService,
 )
 
 func provideSCMService(
@@ -45,4 +47,8 @@ func provideChartService() core.ChartService {
 
 func provideGit() core.Git {
 	return &git.Service{}
+}
+
+func provideReportService() core.ReportService {
+	return &report.Service{}
 }

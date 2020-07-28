@@ -35,6 +35,20 @@ func (m *MockReportStore) EXPECT() *MockReportStoreMockRecorder {
 	return m.recorder
 }
 
+// CreateComment mocks base method
+func (m *MockReportStore) CreateComment(arg0 *core.Report, arg1 *core.ReportComment) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateComment", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateComment indicates an expected call of CreateComment
+func (mr *MockReportStoreMockRecorder) CreateComment(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateComment", reflect.TypeOf((*MockReportStore)(nil).CreateComment), arg0, arg1)
+}
+
 // Find mocks base method
 func (m *MockReportStore) Find(arg0 *core.Report) (*core.Report, error) {
 	m.ctrl.T.Helper()
@@ -48,6 +62,21 @@ func (m *MockReportStore) Find(arg0 *core.Report) (*core.Report, error) {
 func (mr *MockReportStoreMockRecorder) Find(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockReportStore)(nil).Find), arg0)
+}
+
+// FindComment mocks base method
+func (m *MockReportStore) FindComment(arg0 *core.Report, arg1 int) (*core.ReportComment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindComment", arg0, arg1)
+	ret0, _ := ret[0].(*core.ReportComment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindComment indicates an expected call of FindComment
+func (mr *MockReportStoreMockRecorder) FindComment(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindComment", reflect.TypeOf((*MockReportStore)(nil).FindComment), arg0, arg1)
 }
 
 // Finds mocks base method

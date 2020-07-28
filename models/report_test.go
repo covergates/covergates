@@ -118,3 +118,43 @@ func TestReportUploadFiles(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestReportComment(t *testing.T) {
+	ctrl, service := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &ReportStore{
+		DB: service,
+	}
+
+	report := &core.Report{
+		ReportID: "ABCD",
+	}
+
+	if err := store.CreateComment(report, &core.ReportComment{}); err == nil {
+		t.Fail()
+	}
+
+	if err := store.CreateComment(report, &core.ReportComment{Comment: 1, Number: 1}); err != nil {
+		t.Fatal(err)
+	}
+	comment, err := store.FindComment(report, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if comment.Comment != 1 {
+		t.Fail()
+	}
+	if err := store.CreateComment(report, &core.ReportComment{Comment: 2, Number: 1}); err != nil {
+		t.Fatal(err)
+	}
+	comment, err = store.FindComment(report, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if comment.Comment != 2 {
+		t.Fail()
+	}
+	if _, err := store.FindComment(report, 123); err == nil {
+		t.Fail()
+	}
+}

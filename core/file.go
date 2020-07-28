@@ -7,6 +7,13 @@ type File struct {
 	StatementHits     []*StatementHit
 }
 
+// FileDiff defines the coverage differences of files
+type FileDiff struct {
+	File                  *File
+	StatementCoverageDiff float64
+	Removed               bool
+}
+
 // StatementHit records hit count for a single line
 type StatementHit struct {
 	LineNumber int

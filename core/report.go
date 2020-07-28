@@ -23,10 +23,22 @@ type Report struct {
 	CreatedAt time.Time       `json:"createdAt"`
 }
 
+// ReportComment in the pull request
+type ReportComment struct {
+	Number  int
+	Comment int
+}
+
 // CoverageReport defined the code coverage report
 type CoverageReport struct {
 	Files             []*File
 	StatementCoverage float64
+}
+
+// CoverageReportDiff defines the difference between coverage reports
+type CoverageReportDiff struct {
+	StatementCoverageDiff float64
+	Files                 []*FileDiff
 }
 
 // CoverageService provides CoverReport
@@ -44,4 +56,12 @@ type ReportStore interface {
 	Upload(r *Report) error
 	Find(r *Report) (*Report, error)
 	Finds(r *Report) ([]*Report, error)
+	CreateComment(r *Report, comment *ReportComment) error
+	FindComment(r *Report, number int) (*ReportComment, error)
+}
+
+// ReportService provides reports operations
+type ReportService interface {
+	DiffReports(source, target *Report) (*CoverageReportDiff, error)
+	MarkdownReport(source, target *Report) (io.Reader, error)
 }
