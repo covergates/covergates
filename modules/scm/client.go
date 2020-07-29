@@ -53,6 +53,14 @@ func (c *client) PullRequests() core.PullRequestService {
 	}
 }
 
+func (c *client) Webhooks() core.WebhookService {
+	return &webhookService{
+		config: c.config,
+		client: c.scmClient,
+		scm:    c.scm,
+	}
+}
+
 func (c *client) Token(user *core.User) core.Token {
 	token := userToken(c.scm, user)
 	return core.Token{

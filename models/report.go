@@ -9,18 +9,18 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var errReportID = errors.New("Error Report ID")
+var errReportFields = errors.New("Error Report Fields")
 
 // Report holds the test coverage report
 type Report struct {
 	gorm.Model
 	Data     []byte
 	FileData []byte
-	Type     string
-	ReportID string `gorm:"unique_index:report_id_commit"`
+	Type     string `gorm:"unique_index:report_record"`
+	ReportID string `gorm:"unique_index:report_record"`
 	Branch   string `gorm:"index"`
 	Tag      string `gorm:"index"`
-	Commit   string `gorm:"unique_index:report_id_commit"`
+	Commit   string `gorm:"unique_index:report_record"`
 }
 
 // ReportComment defines summary report comment in the pull request
@@ -41,8 +41,8 @@ type ReportStore struct {
 // If the report id and commit is already existed in the table,
 // the report will be updated instead.
 func (store *ReportStore) Upload(r *core.Report) error {
-	if r.ReportID == "" || r.Commit == "" {
-		return errReportID
+	if r.ReportID == "" || r.Commit == "" || r.Type == "" {
+		return errReportFields
 	}
 	session := store.DB.Session()
 	report := &Report{}
@@ -67,6 +67,7 @@ func (store *ReportStore) Find(r *core.Report) (*core.Report, error) {
 
 // Finds all report with given seed
 func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
+	// TODO: add testcase to find multiple types report with same uniq index
 	session := store.DB.Session()
 	var rst []*Report
 	if err := session.Find(&rst, query(r)).Error; err != nil {

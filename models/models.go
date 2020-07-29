@@ -35,6 +35,7 @@ func init() {
 		&User{},
 		&Repo{},
 		&RepoSetting{},
+		&RepoHook{},
 	)
 }
 

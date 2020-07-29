@@ -81,6 +81,28 @@ func (service *Service) MarkdownReport(source, target *core.Report) (io.Reader, 
 	return buf, nil
 }
 
+// MergeReport of two coverage reports, the report types are not necessary to be equal
+func (service *Service) MergeReport(from, to *core.Report, changes []*core.FileChange) (*core.Report, error) {
+	deleted := make(map[string]bool)
+	for _, change := range changes {
+		if change.Deleted {
+			deleted[change.Path] = true
+		}
+	}
+	target := toFilesMap(to.Coverage.Files)
+	for _, file := range from.Coverage.Files {
+		if _, ok := deleted[file.Name]; ok {
+			continue
+		}
+		if _, ok := target[file.Name]; ok {
+			continue
+		}
+		to.Coverage.Files = append(to.Coverage.Files, file)
+	}
+	to.Coverage.StatementCoverage = to.Coverage.AvgStatementCoverage()
+	return to, nil
+}
+
 func toFilesMap(files []*core.File) filesMap {
 	m := make(filesMap)
 	for _, file := range files {

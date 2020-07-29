@@ -59,10 +59,29 @@ func (service *prService) Find(ctx context.Context, user *core.User, repo string
 	if err != nil {
 		return nil, err
 	}
+
 	return &core.PullRequest{
 		Number: pr.Number,
 		Commit: pr.Sha,
 		Source: pr.Source,
 		Target: pr.Target,
 	}, nil
+}
+
+func (service *prService) ListChanges(ctx context.Context, user *core.User, repo string, number int) ([]*core.FileChange, error) {
+	ctx = withUser(ctx, service.scm, user)
+	changes, _, err := service.client.PullRequests.ListChanges(ctx, repo, number, scm.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*core.FileChange, len(changes))
+	for i, change := range changes {
+		result[i] = &core.FileChange{
+			Path:    change.Path,
+			Added:   change.Added,
+			Deleted: change.Deleted,
+			Renamed: change.Renamed,
+		}
+	}
+	return result, nil
 }

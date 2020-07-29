@@ -262,6 +262,7 @@ func HandleComment(
 			return
 		}
 
+		// TODO: handle multiple language repository
 		source, err := reportStore.Find(&core.Report{ReportID: reportID, Commit: pr.Commit})
 		if err != nil {
 			c.String(500, err.Error())

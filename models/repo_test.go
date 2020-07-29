@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestRepoFind(t *testing.T) {
@@ -222,5 +223,47 @@ func TestPrivateRepository(t *testing.T) {
 		t.Log("repo should be private")
 		t.Fail()
 	}
+}
 
+func TestRepoHook(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &RepoStore{DB: db}
+
+	if err := store.UpdateHook(&core.Repo{}, &core.Hook{}); err == nil {
+		t.Fatal("invalid repo should return error")
+	}
+
+	repo := &core.Repo{
+		ID: uint(123),
+	}
+
+	if err := store.UpdateHook(repo, &core.Hook{}); err == nil {
+		t.Fatal("invalid hook should return error")
+	}
+
+	if _, err := store.FindHook(repo); err == nil {
+		t.Fail()
+	}
+	expectHooks := []*core.Hook{
+		{
+			ID: "1",
+		},
+		{
+			ID: "2",
+		},
+	}
+	for _, expect := range expectHooks {
+		if err := store.UpdateHook(repo, expect); err != nil {
+			t.Fatal(err)
+		}
+		hook, err := store.FindHook(repo)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(hook, expect); diff != "" {
+			t.Log(diff)
+			t.Fail()
+		}
+	}
 }

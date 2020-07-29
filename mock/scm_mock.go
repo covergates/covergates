@@ -156,6 +156,20 @@ func (mr *MockClientMockRecorder) Users() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Users", reflect.TypeOf((*MockClient)(nil).Users))
 }
 
+// Webhooks mocks base method
+func (m *MockClient) Webhooks() core.WebhookService {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Webhooks")
+	ret0, _ := ret[0].(core.WebhookService)
+	return ret0
+}
+
+// Webhooks indicates an expected call of Webhooks
+func (mr *MockClientMockRecorder) Webhooks() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Webhooks", reflect.TypeOf((*MockClient)(nil).Webhooks))
+}
+
 // MockRepoService is a mock of RepoService interface
 type MockRepoService struct {
 	ctrl     *gomock.Controller

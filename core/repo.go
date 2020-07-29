@@ -18,7 +18,9 @@ type Repo struct {
 
 // RepoSetting to customize repository
 type RepoSetting struct {
-	Filters FileNameFilters `json:"filters"`
+	Filters          FileNameFilters    `json:"filters"`
+	MergePullRequest bool               `json:"mergePR"`
+	UpdateAction     ReportUpdateAction `json:"updateAction"`
 }
 
 // RepoStore repository in storage
@@ -31,6 +33,8 @@ type RepoStore interface {
 	Creator(repo *Repo) (*User, error)
 	Setting(repo *Repo) (*RepoSetting, error)
 	UpdateSetting(repo *Repo, setting *RepoSetting) error
+	FindHook(repo *Repo) (*Hook, error)
+	UpdateHook(repo *Repo, hook *Hook) error
 }
 
 // FullName is namespace+name

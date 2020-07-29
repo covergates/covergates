@@ -77,6 +77,21 @@ func (mr *MockRepoStoreMockRecorder) Find(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockRepoStore)(nil).Find), arg0)
 }
 
+// FindHook mocks base method
+func (m *MockRepoStore) FindHook(arg0 *core.Repo) (*core.Hook, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindHook", arg0)
+	ret0, _ := ret[0].(*core.Hook)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindHook indicates an expected call of FindHook
+func (mr *MockRepoStoreMockRecorder) FindHook(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindHook", reflect.TypeOf((*MockRepoStore)(nil).FindHook), arg0)
+}
+
 // Finds mocks base method
 func (m *MockRepoStore) Finds(arg0 ...string) ([]*core.Repo, error) {
 	m.ctrl.T.Helper()
@@ -123,6 +138,20 @@ func (m *MockRepoStore) Update(arg0 *core.Repo) error {
 func (mr *MockRepoStoreMockRecorder) Update(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockRepoStore)(nil).Update), arg0)
+}
+
+// UpdateHook mocks base method
+func (m *MockRepoStore) UpdateHook(arg0 *core.Repo, arg1 *core.Hook) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateHook", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateHook indicates an expected call of UpdateHook
+func (mr *MockRepoStoreMockRecorder) UpdateHook(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateHook", reflect.TypeOf((*MockRepoStore)(nil).UpdateHook), arg0, arg1)
 }
 
 // UpdateSetting mocks base method

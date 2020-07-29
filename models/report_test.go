@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/google/go-cmp/cmp"
 )
 
 type MockCoverReport struct {
@@ -21,6 +23,7 @@ func TestReportStoreUpload(t *testing.T) {
 	m := &core.Report{
 		ReportID: "1234",
 		Commit:   "1234",
+		Type:     core.ReportPerl,
 	}
 	if err := store.Upload(m); err != nil {
 		t.Error(err)
@@ -91,6 +94,41 @@ func TestReportFind(t *testing.T) {
 	}
 }
 
+func TestReportFinds(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &ReportStore{DB: db}
+	// TODO: Add more report types
+	reportID := "find_reports"
+	commit := "abcdefgcomment"
+	now := time.Now()
+	reports := []*core.Report{
+		{
+			ReportID:  reportID,
+			Coverage:  &core.CoverageReport{},
+			Commit:    commit,
+			Type:      core.ReportPerl,
+			CreatedAt: now,
+		},
+	}
+	for _, report := range reports {
+		if err := store.Upload(report); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	found, err := store.Finds(&core.Report{ReportID: reportID, Commit: commit})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, report := range found {
+		report.CreatedAt = now
+	}
+	if diff := cmp.Diff(found, reports); diff != "" {
+		t.Fatal(diff)
+	}
+}
+
 func TestReportUploadFiles(t *testing.T) {
 	ctrl, service := getDatabaseService(t)
 	defer ctrl.Finish()
@@ -101,6 +139,7 @@ func TestReportUploadFiles(t *testing.T) {
 		ReportID: "test_upload_files",
 		Commit:   "test_upload_files",
 		Files:    []string{"a", "b", "c"},
+		Type:     core.ReportPerl,
 	}
 	if err := store.Upload(m); err != nil {
 		t.Error(err)

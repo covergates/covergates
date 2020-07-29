@@ -14,6 +14,14 @@ type FileDiff struct {
 	Removed               bool
 }
 
+// FileChange defines file status
+type FileChange struct {
+	Path    string
+	Added   bool
+	Renamed bool
+	Deleted bool
+}
+
 // StatementHit records hit count for a single line
 type StatementHit struct {
 	LineNumber int

@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/code-devel-cover/CodeCover/core"
 	"github.com/jinzhu/gorm"
@@ -28,6 +29,13 @@ type RepoSetting struct {
 	gorm.Model
 	RepoID uint `gorm:"unique_index"`
 	Config []byte
+}
+
+// RepoHook defines created hooks in a repository
+type RepoHook struct {
+	gorm.Model
+	RepoID uint `gorm:"index"`
+	Hook   string
 }
 
 // RepoStore repositories in storage
@@ -154,6 +162,35 @@ func (store *RepoStore) UpdateSetting(repo *core.Repo, setting *core.RepoSetting
 		return err
 	}
 	return session.Save(repoSetting).Error
+}
+
+// UpdateHook of the repository
+func (store *RepoStore) UpdateHook(repo *core.Repo, hook *core.Hook) error {
+	if repo.ID <= 0 {
+		return fmt.Errorf("invalid repository")
+	}
+	if hook.ID == "" {
+		return fmt.Errorf("invalid hook")
+	}
+	session := store.DB.Session()
+	h := &RepoHook{}
+	if err := session.FirstOrCreate(h, &RepoHook{RepoID: repo.ID}).Error; err != nil {
+		return err
+	}
+	h.Hook = hook.ID
+	return session.Save(h).Error
+}
+
+// FindHook for the repository
+func (store *RepoStore) FindHook(repo *core.Repo) (*core.Hook, error) {
+	session := store.DB.Session()
+	h := &RepoHook{}
+	if err := session.First(h, &RepoHook{RepoID: repo.ID}).Error; err != nil {
+		return nil, err
+	}
+	return &core.Hook{
+		ID: h.Hook,
+	}, nil
 }
 
 func copyRepo(dst *Repo, src *core.Repo) {

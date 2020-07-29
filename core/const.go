@@ -17,3 +17,13 @@ const (
 	// Github SCM
 	Github SCMProvider = "github"
 )
+
+// ReportUpdateAction action type when new report update
+type ReportUpdateAction string
+
+const (
+	// ActionAutoMerge with previous report
+	ActionAutoMerge ReportUpdateAction = "merge"
+	// ActionAppend report to a new record
+	ActionAppend ReportUpdateAction = "append"
+)

@@ -64,4 +64,17 @@ type ReportStore interface {
 type ReportService interface {
 	DiffReports(source, target *Report) (*CoverageReportDiff, error)
 	MarkdownReport(source, target *Report) (io.Reader, error)
+	MergeReport(from, to *Report, changes []*FileChange) (*Report, error)
+}
+
+// AvgStatementCoverage of the report
+func (report *CoverageReport) AvgStatementCoverage() float64 {
+	if len(report.Files) <= 0 {
+		return 0
+	}
+	sum := 0.0
+	for _, file := range report.Files {
+		sum += file.StatementCoverage
+	}
+	return sum / float64(len(report.Files))
 }

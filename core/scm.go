@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"net/http"
 	"time"
 )
 
@@ -24,6 +25,18 @@ type Hook struct {
 	ID string
 }
 
+// HookEvent defines a hook post from SCM
+type HookEvent interface{}
+
+// PullRequestHook event
+type PullRequestHook struct {
+	Number int
+	Merged bool
+	Commit string
+	Source string
+	Target string
+}
+
 // PullRequest object
 type PullRequest struct {
 	Number int
@@ -39,6 +52,7 @@ type Client interface {
 	Git() GitService
 	Contents() ContentService
 	PullRequests() PullRequestService
+	Webhooks() WebhookService
 	Token(user *User) Token
 }
 
@@ -77,4 +91,11 @@ type PullRequestService interface {
 	Find(ctx context.Context, user *User, repo string, number int) (*PullRequest, error)
 	CreateComment(ctx context.Context, user *User, repo string, number int, body string) (int, error)
 	RemoveComment(ctx context.Context, user *User, repo string, number int, id int) error
+	ListChanges(ctx context.Context, user *User, repo string, number int) ([]*FileChange, error)
+}
+
+// WebhookService provides webhook parsing
+type WebhookService interface {
+	Parse(req *http.Request) (HookEvent, error)
+	IsWebhookNotSupport(err error) bool
 }
