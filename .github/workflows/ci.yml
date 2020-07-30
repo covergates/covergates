@@ -104,6 +104,7 @@ jobs:
           github-token: ${{secrets.DEPLOY_KEY}}
           script: |
             const fs = require('fs');
+            const tag = `${process.env.GITHUB_REF}`.split('/').pop();
             const repo = `${process.env.GITHUB_REPOSITORY}`.split('/');
             const release = await github.repos.getReleaseByTag({
               owner: repo[0],
