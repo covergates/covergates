@@ -76,7 +76,6 @@ jobs:
     name: "release ${{matrix.os}}"
     if: github.event_name  == 'release'
     runs-on: ${{ matrix.os }}
-    needs: build
     strategy:
       matrix:
         os: ["ubuntu-latest"]
@@ -116,7 +115,7 @@ jobs:
               repo[0],
               repo[1],
               release.id,
-
+              data
             });
 
       - name: Build Windows Binary
