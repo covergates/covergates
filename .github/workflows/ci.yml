@@ -74,7 +74,7 @@ jobs:
 
   release:
     name: "release ${{matrix.os}}"
-    if: github.event == 'release'
+    if: github.event_name  == 'release'
     runs-on: ${{ matrix.os }}
     needs: build
     strategy:
