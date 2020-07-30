@@ -17,8 +17,14 @@
         <v-row>
           <span>Use this ID to upload report. This ID is used only to identify your report. It can't be used to access repository information.</span>
           <v-spacer></v-spacer>
-          <!-- <v-btn class="mr-5" small>Regenerate</v-btn> -->
         </v-row>
+      </v-card-text>
+    </v-card>
+    <v-card flat>
+      <v-card-title>Webhook</v-card-title>
+      <v-divider />
+      <v-card-text>
+        <hook-button />
       </v-card-text>
     </v-card>
     <v-card flat>
@@ -38,6 +44,7 @@
 <script lang="ts">
 import { Component, Watch } from 'vue-property-decorator';
 import Vue from '@/vue';
+import HookButton from '@/components/HookButton.vue';
 
 const defaultHint = `
 Filter will remove pattern from the path.
@@ -45,7 +52,10 @@ Provide a regular expression each line.
 `;
 
 @Component({
-  name: 'report-setting'
+  name: 'report-setting',
+  components: {
+    HookButton
+  }
 })
 export default class ReportSetting extends Vue {
   private filters: string;
