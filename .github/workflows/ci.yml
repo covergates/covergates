@@ -74,7 +74,7 @@ jobs:
 
   release:
     name: "release ${{matrix.os}}"
-    if: github.event == "release"
+    if: github.event == 'release'
     runs-on: ${{ matrix.os }}
     needs: build
     strategy:
@@ -88,7 +88,7 @@ jobs:
           go-version: "1.14"
 
       - name: Build Linux Binary
-        if: matrix.os == "ubuntu-latest"
+        if: matrix.os == 'ubuntu-latest'
         run: |
           go build -o covergates-server ./cmd/server
           go build -o covergates ./cmd/cli
@@ -96,7 +96,7 @@ jobs:
           zip covergates.linux.zip covergates
 
       - name: Upload Linux Binary
-        if: matrix.os == "ubuntu-latest"
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/github-script@v2
         with:
           github-token: ${{secrets.DEPLOY_KEY}}
@@ -117,7 +117,7 @@ jobs:
             });
 
       - name: Build Windows Binary
-        if: matrix.os == "windows-latest"
+        if: matrix.os == 'windows-latest'
         run: |
           go build -o covergates-server.exe ./cmd/server
           go build -o covergates.exe ./cmd/cli
