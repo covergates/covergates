@@ -7,6 +7,9 @@ on:
   pull_request:
     branches:
       - master
+  release:
+    types:
+      - published
 
 jobs:
   build:
@@ -68,3 +71,55 @@ jobs:
         run: |
           cd web
           npm run test:unit
+
+  release:
+    name: "release ${{matrix.os}}"
+    if: github.event == "release"
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+
+    steps:
+      - name: Setup Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.14"
+
+      - name: Build Linux Binary
+        if: matrix.os == "ubuntu-latest"
+        run: |
+          go build -o covergates-server ./cmd/server
+          go build -o covergates ./cmd/cli
+          zip covergates-server.linux.zip covergates-server
+          zip covergates.linux.zip covergates
+
+      - name: Upload Linux Binary
+        if: matrix.os == "ubuntu-latest"
+        uses: actions/github-script@v2
+        with:
+          github-token: ${{secrets.DEPLOY_KEY}}
+          script: |
+            const fs = require('fs');
+            const repo = `${process.env.GITHUB_REPOSITORY}`.split('/');
+            const release = await github.repos.getReleaseByTag({
+              repo[0],
+              repo[1],
+              `${process.env.GITHUB_REF}`
+            });
+            var data = fs.readFileSync('covergates-server.linux.zip');
+            await github.repos.uploadReleaseAsset({
+              repo[0],
+              repo[1],
+              release.id,
+
+            });
+
+      - name: Build Windows Binary
+        if: matrix.os == "windows-latest"
+        run: |
+          go build -o covergates-server.exe ./cmd/server
+          go build -o covergates.exe ./cmd/cli
+          zip covergates-server.windows.zip covergates-server.exe
+          zip covergates.windows.zip covergates.exe
