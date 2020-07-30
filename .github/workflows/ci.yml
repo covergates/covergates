@@ -74,7 +74,6 @@ jobs:
 
   release:
     name: "release ${{matrix.os}}"
-    if: github.event_name  == 'release'
     runs-on: ${{ matrix.os }}
     needs: build
     strategy:
@@ -90,6 +89,7 @@ jobs:
       - name: Build Linux Binary
         if: matrix.os == 'ubuntu-latest'
         run: |
+          echo ${{github.event_name}}
           go build -o covergates-server ./cmd/server
           go build -o covergates ./cmd/cli
           zip covergates-server.linux.zip covergates-server
