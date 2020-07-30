@@ -33,7 +33,7 @@ func HandleUpload(
 	reportStore core.ReportStore,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		// TODO: need to handle repository update action according to setting
 		if _, ok := c.GetPostForm("type"); !ok {
 			c.String(400, "must have report type")
 			return

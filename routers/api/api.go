@@ -8,7 +8,6 @@ import (
 	"github.com/code-devel-cover/CodeCover/routers/api/repo"
 	"github.com/code-devel-cover/CodeCover/routers/api/report"
 	"github.com/code-devel-cover/CodeCover/routers/api/request"
-	"github.com/code-devel-cover/CodeCover/routers/api/scm"
 	"github.com/code-devel-cover/CodeCover/routers/api/user"
 	"github.com/code-devel-cover/CodeCover/routers/docs"
 	"github.com/gin-gonic/gin"
@@ -38,6 +37,7 @@ type Router struct {
 	ChartService    core.ChartService
 	SCMService      core.SCMService
 	ReportService   core.ReportService
+	HookService     core.HookService
 	// store
 	ReportStore core.ReportStore
 	RepoStore   core.RepoStore
@@ -91,16 +91,16 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 		g.GET("", repo.HandleListAll(r.Config, r.SCMService, r.RepoStore))
 		g.POST("", repo.HandleCreate(r.RepoStore, r.SCMService))
 		g.GET("/:scm", repo.HandleListSCM(r.SCMService, r.RepoStore))
-		g.PATCH("/:scm/:namespace/:name", repo.HandleSync(r.SCMService, r.RepoStore))
-		g.GET("/:scm/:namespace/:name/setting", repo.HandleGetSetting(r.RepoStore))
-		g.POST("/:scm/:namespace/:name/setting", repo.HandleUpdateSetting(r.RepoStore))
-		g.PATCH("/:scm/:namespace/:name/report", repo.HandleReportIDRenew(r.RepoStore, r.SCMService))
-		g.GET("/:scm/:namespace/:name/files", repo.HandleGetFiles(r.SCMService))
-		g.GET("/:scm/:namespace/:name/content/*path", repo.HandleGetFileContent(r.SCMService))
-	}
-	{
-		g := g.Group("/scm")
-		g.Use(request.CheckLogin(r.Session))
-		g.GET("/:scm/repos", scm.HandleListSCM(r.SCMService))
+		{
+			g := g.Group("/:scm/:namespace/:name")
+			g.PATCH("", repo.HandleSync(r.SCMService, r.RepoStore))
+			g.GET("/setting", repo.HandleGetSetting(r.RepoStore))
+			g.POST("/setting", repo.HandleUpdateSetting(r.RepoStore))
+			g.PATCH("/report", repo.HandleReportIDRenew(r.RepoStore, r.SCMService))
+			g.GET("/files", repo.HandleGetFiles(r.SCMService))
+			g.GET("/content/*path", repo.HandleGetFileContent(r.SCMService))
+			g.POST("/hook/create", repo.WithRepo(r.RepoStore), repo.HandleHookCreate(r.HookService))
+			g.POST("/hook", repo.WithRepo(r.RepoStore), repo.HandleHook(r.SCMService, r.HookService))
+		}
 	}
 }

@@ -26,6 +26,7 @@ func provideRouter(
 	coverageService core.CoverageService,
 	chartService core.ChartService,
 	reportService core.ReportService,
+	hookService core.HookService,
 	// store
 	reportStore core.ReportStore,
 	repoStore core.RepoStore,
@@ -38,6 +39,7 @@ func provideRouter(
 		CoverageService: coverageService,
 		ChartService:    chartService,
 		ReportService:   reportService,
+		HookService:     hookService,
 		ReportStore:     reportStore,
 		RepoStore:       repoStore,
 	}

@@ -22,6 +22,7 @@ type Routers struct {
 	CoverageService core.CoverageService
 	ChartService    core.ChartService
 	ReportService   core.ReportService
+	HookService     core.HookService
 	// store
 	ReportStore core.ReportStore
 	RepoStore   core.RepoStore
@@ -46,6 +47,7 @@ func (r *Routers) RegisterRoutes(e *gin.Engine) {
 		ChartService:    r.ChartService,
 		SCMService:      r.SCMService,
 		ReportService:   r.ReportService,
+		HookService:     r.HookService,
 		ReportStore:     r.ReportStore,
 		RepoStore:       r.RepoStore,
 	}

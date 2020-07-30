@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/code-devel-cover/CodeCover/cmd/cli/comment"
 	"github.com/code-devel-cover/CodeCover/cmd/cli/upload"
 	"github.com/urfave/cli/v2"
 )
@@ -13,6 +14,7 @@ func main() {
 		Name: "covergate",
 		Commands: []*cli.Command{
 			upload.Command,
+			comment.Command,
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{

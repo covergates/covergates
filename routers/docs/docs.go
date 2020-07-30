@@ -468,6 +468,84 @@ var doc = `{
                 }
             }
         },
+        "/repos/{scm}/{namespace}/{name}/hook": {
+            "post": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "handle webhook event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/repos/{scm}/{namespace}/{name}/hook/create": {
+            "post": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "create repository webhook",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/repos/{scm}/{namespace}/{name}/report": {
             "patch": {
                 "tags": [
@@ -592,34 +670,6 @@ var doc = `{
                 }
             }
         },
-        "/scm/{scm}/repos": {
-            "get": {
-                "tags": [
-                    "SCM"
-                ],
-                "summary": "Get repositories from SCM",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "SCM source (github, gitea)",
-                        "name": "scm",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "repositories",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/core.Repo"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/user": {
             "get": {
                 "tags": [
@@ -700,6 +750,12 @@ var doc = `{
             "properties": {
                 "filters": {
                     "type": "FileNameFilters"
+                },
+                "mergePR": {
+                    "type": "boolean"
+                },
+                "updateAction": {
+                    "type": "ReportUpdateAction"
                 }
             }
         },

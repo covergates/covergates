@@ -23,6 +23,10 @@ definitions:
     properties:
       filters:
         type: FileNameFilters
+      mergePR:
+        type: boolean
+      updateAction:
+        type: ReportUpdateAction
     type: object
   core.Report:
     properties:
@@ -359,6 +363,58 @@ paths:
       summary: List all files in repository
       tags:
       - Repository
+  /repos/{scm}/{namespace}/{name}/hook:
+    post:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: handle webhook event
+      tags:
+      - Repository
+  /repos/{scm}/{namespace}/{name}/hook/create:
+    post:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: create repository webhook
+      tags:
+      - Repository
   /repos/{scm}/{namespace}/{name}/report:
     patch:
       parameters:
@@ -442,24 +498,6 @@ paths:
       summary: update repository setting
       tags:
       - Repository
-  /scm/{scm}/repos:
-    get:
-      parameters:
-      - description: SCM source (github, gitea)
-        in: path
-        name: scm
-        required: true
-        type: string
-      responses:
-        "200":
-          description: repositories
-          schema:
-            items:
-              $ref: '#/definitions/core.Repo'
-            type: array
-      summary: Get repositories from SCM
-      tags:
-      - SCM
   /user:
     get:
       responses:
