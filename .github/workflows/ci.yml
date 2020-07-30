@@ -104,19 +104,37 @@ jobs:
           github-token: ${{secrets.DEPLOY_KEY}}
           script: |
             const fs = require('fs');
+            const getHeaders = (filePath, fileName) => {
+              const extension = fileName.split('.').pop()
+              const size = fs.statSync(filePath).size
+              const options = {
+                'json': 'text/json',
+                'zip': 'application/zip',
+                'txt': 'text/plain',
+                'ts': 'application/typescript'
+              }
+
+              return {
+                'content-type': options[extension],
+                'content-length': size
+              }
+            }
+
             const tag = `${process.env.GITHUB_REF}`.split('/').pop();
             const repo = `${process.env.GITHUB_REPOSITORY}`.split('/');
-            const release = await github.repos.getReleaseByTag({
+            const response = await github.repos.getReleaseByTag({
               owner: repo[0],
               repo: repo[1],
               tag: tag
             });
-            var data = fs.readFileSync('covergates-server.linux.zip');
+            const release = response.data.id;
+            const url = `https://uploads.github.com/repos/${repo[0]}/${repo[1]}/releases/${release}/assets{?name,label}`;
+            var file = 'covergates-server.linux.zip';
             await github.repos.uploadReleaseAsset({
-              owner: repo[0],
-              repo: repo[1],
-              release_id: release.id,
-              data: data
+              url: url,
+              headers: getHeaders(file, file),
+              file: fs.createReadStream(file),
+              name: file
             });
 
       - name: Build Windows Binary
