@@ -109,7 +109,7 @@ jobs:
             const release = await github.repos.getReleaseByTag({
               owner: repo[0],
               repo: repo[1],
-              tag: `${process.env.GITHUB_REF}`
+              tag: tag
             });
             var data = fs.readFileSync('covergates-server.linux.zip');
             await github.repos.uploadReleaseAsset({
