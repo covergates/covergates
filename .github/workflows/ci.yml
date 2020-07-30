@@ -106,16 +106,16 @@ jobs:
             const fs = require('fs');
             const repo = `${process.env.GITHUB_REPOSITORY}`.split('/');
             const release = await github.repos.getReleaseByTag({
-              repo[0],
-              repo[1],
-              `${process.env.GITHUB_REF}`
+              owner: repo[0],
+              repo: repo[1],
+              tag: `${process.env.GITHUB_REF}`
             });
             var data = fs.readFileSync('covergates-server.linux.zip');
             await github.repos.uploadReleaseAsset({
-              repo[0],
-              repo[1],
-              release.id,
-              data
+              owner: repo[0],
+              repo: repo[1],
+              release_id: release.id,
+              data: data
             });
 
       - name: Build Windows Binary
