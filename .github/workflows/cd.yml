@@ -1,0 +1,71 @@
+name: CD
+on:
+  release:
+    types:
+      - published
+jobs:
+  release:
+    name: "release ${{matrix.os}}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.14"
+
+      - name: Build Ubuntu Binary
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          go build -o covergates-server ./cmd/server
+          go build -o covergates ./cmd/cli
+          zip covergates-server.ubuntu.zip covergates-server
+          zip covergates.ubuntu.zip covergates
+
+      - name: Upload Binary
+        uses: actions/github-script@v2
+        env:
+          OS_TYPE: "${{matrix.os}}"
+        with:
+          github-token: ${{secrets.DEPLOY_KEY}}
+          script: |
+            const fs = require('fs');
+            const getHeaders = (filePath, fileName) => {
+              const extension = fileName.split('.').pop()
+              const size = fs.statSync(filePath).size
+              const options = {
+                'json': 'text/json',
+                'zip': 'application/zip',
+                'txt': 'text/plain',
+                'ts': 'application/typescript'
+              }
+
+              return {
+                'content-type': options[extension],
+                'content-length': size
+              }
+            }
+            const tag = `${process.env.GITHUB_REF}`.split('/').pop();
+            const repo = `${process.env.GITHUB_REPOSITORY}`.split('/');
+            const response = await github.repos.getReleaseByTag({
+              owner: repo[0],
+              repo: repo[1],
+              tag: tag
+            });
+            const release = response.data.id;
+            const url = `https://uploads.github.com/repos/${repo[0]}/${repo[1]}/releases/${release}/assets{?name,label}`;
+            const os = `${process.env.OS_TYPE}`.split('-').shift();
+            const files = ['covergates-server', 'covergates'];
+            for (const file of files) {
+              const name = `${file}.${os}.zip`;
+              await github.repos.uploadReleaseAsset({
+                url: url,
+                headers: getHeaders(name, name),
+                data: fs.createReadStream(name),
+                name: name
+              });
+            }
