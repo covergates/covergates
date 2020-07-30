@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 )
 
 func TestTrimReportFileName(t *testing.T) {

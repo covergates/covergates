@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/code-devel-cover/CodeCover/config"
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/modules/login"
-	"github.com/code-devel-cover/CodeCover/routers"
+	"github.com/covergates/covergates/config"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/modules/login"
+	"github.com/covergates/covergates/routers"
 	"github.com/google/wire"
 )
 

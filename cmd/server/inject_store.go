@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/models"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/models"
 	"github.com/google/wire"
 	"github.com/jinzhu/gorm"
 )

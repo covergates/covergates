@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/modules/git"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/modules/git"
 )
 
 func TestContentGithubListAllFiles(t *testing.T) {

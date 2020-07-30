@@ -3,7 +3,7 @@ package scm
 import (
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 )
 
 func TestNewReportID(t *testing.T) {

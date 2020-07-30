@@ -3,7 +3,7 @@ package models
 import (
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
 	"github.com/google/go-cmp/cmp"
 	"github.com/jinzhu/gorm"

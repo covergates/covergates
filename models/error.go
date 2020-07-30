@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 )
 
 var errUserExist = errors.New("user already exist")

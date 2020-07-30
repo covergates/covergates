@@ -6,8 +6,8 @@ import (
 	"io"
 	"regexp"
 
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/service/perl"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/service/perl"
 )
 
 var errReportTypeNotSupport = errors.New("Report type not support")

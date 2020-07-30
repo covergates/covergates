@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 	"github.com/google/go-cmp/cmp"
 )
 

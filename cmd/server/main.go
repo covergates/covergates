@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/code-devel-cover/CodeCover/config"
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/routers"
+	"github.com/covergates/covergates/config"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/routers"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"

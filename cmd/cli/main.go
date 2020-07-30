@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/code-devel-cover/CodeCover/cmd/cli/comment"
-	"github.com/code-devel-cover/CodeCover/cmd/cli/upload"
+	"github.com/covergates/covergates/cmd/cli/comment"
+	"github.com/covergates/covergates/cmd/cli/upload"
 	"github.com/urfave/cli/v2"
 )
 

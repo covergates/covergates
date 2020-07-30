@@ -5,7 +5,7 @@ import (
 	"sort"
 
 	svgchart "github.com/blueworrybear/svg-charts"
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 )
 
 type diffFiles struct {

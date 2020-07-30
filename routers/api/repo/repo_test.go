@@ -9,9 +9,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/mock"
-	"github.com/code-devel-cover/CodeCover/routers/api/request"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/mock"
+	"github.com/covergates/covergates/routers/api/request"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 )

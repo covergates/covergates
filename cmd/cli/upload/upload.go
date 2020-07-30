@@ -7,9 +7,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/modules/util"
-	"github.com/code-devel-cover/CodeCover/service/coverage"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/modules/util"
+	"github.com/covergates/covergates/service/coverage"
 	"github.com/go-git/go-git/v5"
 	"github.com/urfave/cli/v2"
 )

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 )
 
 const (

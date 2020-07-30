@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 )
 
 func TestCoverDiffTreeMap(t *testing.T) {

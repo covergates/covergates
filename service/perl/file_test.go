@@ -3,7 +3,7 @@ package perl
 import (
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 )
 
 func TestMergeFile(t *testing.T) {

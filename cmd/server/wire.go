@@ -3,7 +3,7 @@
 package main
 
 import (
-	"github.com/code-devel-cover/CodeCover/config"
+	"github.com/covergates/covergates/config"
 	"github.com/google/wire"
 	"github.com/jinzhu/gorm"
 )

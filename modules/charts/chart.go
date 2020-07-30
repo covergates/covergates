@@ -1,6 +1,6 @@
 package charts
 
-import "github.com/code-devel-cover/CodeCover/core"
+import "github.com/covergates/covergates/core"
 
 // ChartService provides charts
 type ChartService struct{}

@@ -5,7 +5,7 @@ package request
 import (
 	"os"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 	"github.com/gin-gonic/gin"
 )
 

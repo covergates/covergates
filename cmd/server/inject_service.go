@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/code-devel-cover/CodeCover/config"
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/modules/charts"
-	"github.com/code-devel-cover/CodeCover/modules/git"
-	"github.com/code-devel-cover/CodeCover/modules/hook"
-	"github.com/code-devel-cover/CodeCover/modules/report"
-	"github.com/code-devel-cover/CodeCover/modules/scm"
-	"github.com/code-devel-cover/CodeCover/modules/session"
-	"github.com/code-devel-cover/CodeCover/service/coverage"
+	"github.com/covergates/covergates/config"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/modules/charts"
+	"github.com/covergates/covergates/modules/git"
+	"github.com/covergates/covergates/modules/hook"
+	"github.com/covergates/covergates/modules/report"
+	"github.com/covergates/covergates/modules/scm"
+	"github.com/covergates/covergates/modules/session"
+	"github.com/covergates/covergates/service/coverage"
 	"github.com/google/wire"
 )
 

@@ -13,9 +13,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/modules/archive"
-	"github.com/code-devel-cover/CodeCover/modules/util"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/modules/archive"
+	"github.com/covergates/covergates/modules/util"
 )
 
 var errCoverDatabaseNotFound = errors.New("Coverage database not found")

@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/mock"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/mock"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 )

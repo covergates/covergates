@@ -7,9 +7,9 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/code-devel-cover/CodeCover/config"
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/routers/api/request"
+	"github.com/covergates/covergates/config"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/routers/api/request"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )

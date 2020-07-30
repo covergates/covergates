@@ -1,6 +1,6 @@
 package perl
 
-import "github.com/code-devel-cover/CodeCover/core"
+import "github.com/covergates/covergates/core"
 
 // FileCollection of Perl source codes
 type FileCollection struct {

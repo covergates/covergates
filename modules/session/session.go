@@ -3,7 +3,7 @@ package session
 import (
 	"encoding/gob"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

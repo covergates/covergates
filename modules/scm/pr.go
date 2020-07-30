@@ -3,7 +3,7 @@ package scm
 import (
 	"context"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
 )
 

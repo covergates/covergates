@@ -1,4 +1,4 @@
-module github.com/code-devel-cover/CodeCover
+module github.com/covergates/covergates
 
 go 1.14
 

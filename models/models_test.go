@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/mock"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/mock"
 	"github.com/golang/mock/gomock"
 	log "github.com/sirupsen/logrus"
 

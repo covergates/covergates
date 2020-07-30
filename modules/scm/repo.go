@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/code-devel-cover/CodeCover/config"
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/config"
+	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
 	"github.com/rs/xid"
 )

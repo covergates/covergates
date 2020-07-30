@@ -18,7 +18,7 @@
       <v-divider vertical class="ma-4" />
       <v-btn text small>license</v-btn>
       <v-spacer />
-      <v-btn text href="https://github.com/code-devel-cover/CodeCover">
+      <v-btn text href="https://github.com/covergates/covergates">
         <v-icon left large class="mr-5">mdi-github</v-icon>Github
       </v-btn>
     </v-footer>

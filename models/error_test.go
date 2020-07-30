@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 )
 
 func TestErrNotSupportSCM(t *testing.T) {

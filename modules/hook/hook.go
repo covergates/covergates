@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/code-devel-cover/CodeCover/core"
+	"github.com/covergates/covergates/core"
 )
 
 var errHookEventNotSupport = errors.New("hook event not support")

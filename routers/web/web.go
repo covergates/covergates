@@ -3,9 +3,9 @@ package web
 import (
 	"net/http"
 
-	"github.com/code-devel-cover/CodeCover/config"
-	"github.com/code-devel-cover/CodeCover/core"
-	"github.com/code-devel-cover/CodeCover/web"
+	"github.com/covergates/covergates/config"
+	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/web"
 	"github.com/gin-gonic/gin"
 )
 
