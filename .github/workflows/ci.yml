@@ -133,7 +133,7 @@ jobs:
             await github.repos.uploadReleaseAsset({
               url: url,
               headers: getHeaders(file, file),
-              file: fs.createReadStream(file),
+              data: fs.createReadStream(file),
               name: file
             });
 
