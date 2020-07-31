@@ -11,7 +11,10 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
         if ((store.state as State).repository.current) {
           store.dispatch(
             Actions.FETCH_REPORT_CURRENT,
-            (store.state as State).repository.current?.ReportID);
+            (store.state as State).repository.current?.ReportID)
+            .then(() => {
+              store.dispatch(Actions.FETCH_REPOSITORY_OWNER);
+            });
           store.dispatch(Actions.FETCH_REPOSITORY_SETTING);
         }
       });

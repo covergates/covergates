@@ -142,3 +142,27 @@ export function fetchRepositorySetting<S extends RepoState, R extends RootState>
       });
   });
 }
+
+export function fetchRepositoryOwner<S extends RepoState, R extends RootState>(
+  context: ActionContext<S, R>
+): Promise<void> {
+  return new Promise((resolve) => {
+    const base = context.rootState.base;
+    const repo = context.state.current;
+    if (repo === undefined) {
+      context.commit(Mutations.SET_REPOSITORY_OWNER, false);
+      resolve();
+      return;
+    }
+    const { SCM, Name, NameSpace } = (repo as Repository);
+    Axios.get<RepositorySetting>(`${base}/api/v1/user/owner/${SCM}/${NameSpace}/${Name}`)
+      .then(() => {
+        context.commit(Mutations.SET_REPOSITORY_OWNER, true);
+      })
+      .catch(() => {
+        context.commit(Mutations.SET_REPOSITORY_OWNER, false);
+      }).finally(() => {
+        resolve();
+      });
+  });
+}

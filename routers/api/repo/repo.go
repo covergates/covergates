@@ -339,16 +339,22 @@ func HandleGetSetting(store core.RepoStore) gin.HandlerFunc {
 // @Router /repos/{scm}/{namespace}/{name}/setting [post]
 func HandleUpdateSetting(store core.RepoStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		repo, err := store.Find(&core.Repo{
-			NameSpace: c.Param("namespace"),
-			Name:      c.Param("name"),
-			SCM:       core.SCMProvider(c.Param("scm")),
-		})
-		if err != nil {
-			c.JSON(404, &core.RepoSetting{})
+		repo := c.MustGet(keyRepo).(*core.Repo)
+		setting := &core.RepoSetting{}
+		user, ok := request.UserFrom(c)
+		if !ok {
+			c.JSON(401, setting)
 			return
 		}
-		setting := &core.RepoSetting{}
+		creator, err := store.Creator(repo)
+		if err != nil {
+			c.JSON(500, setting)
+			return
+		}
+		if user.Login != creator.Login {
+			c.JSON(401, setting)
+			return
+		}
 		if err := c.BindJSON(setting); err != nil {
 			c.JSON(400, setting)
 			return

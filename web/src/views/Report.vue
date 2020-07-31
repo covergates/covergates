@@ -43,6 +43,10 @@ export default class ReportView extends Vue {
     return this.$store.state.repository.current;
   }
 
+  get owner(): boolean {
+    return this.$store.state.repository.owner;
+  }
+
   get title(): string {
     if (this.repo) {
       return `${this.repo.NameSpace}/${this.repo.Name}`;
@@ -75,7 +79,7 @@ export default class ReportView extends Vue {
         }
       });
     }
-    if (this.repo && this.user) {
+    if (this.repo && this.user && this.owner) {
       options.push({
         key: 'Setting',
         link: {

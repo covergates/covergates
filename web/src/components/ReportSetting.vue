@@ -9,14 +9,32 @@
             label="Report ID"
             :readonly="true"
             :value="repo.ReportID"
+            hint="Use this ID to upload report. This ID is used only to identify your report. It can't be used to access repository information."
             outlined
             dense
             flat
+            persistent-hint
           ></v-text-field>
         </v-row>
+        <v-row class="d-flex mt-5">
+          <v-text-field label="Badge" :readonly="true" :value="badge" outlined dense flat>
+            <template v-slot:append>
+              <img :src="badge" alt="badge" />
+            </template>
+          </v-text-field>
+        </v-row>
         <v-row>
-          <span>Use this ID to upload report. This ID is used only to identify your report. It can't be used to access repository information.</span>
-          <v-spacer></v-spacer>
+          <v-textarea
+            name="markdown"
+            :readonly="true"
+            v-model="markdown"
+            hint="copy the text and paste to README.md"
+            rows="2"
+            flat
+            no-resize
+            outlined
+            persistent-hint
+          ></v-textarea>
         </v-row>
       </v-card-text>
     </v-card>
@@ -86,6 +104,33 @@ export default class ReportSetting extends Vue {
     } else {
       return '';
     }
+  }
+
+  get url(): string {
+    let base = this.$store.state.base;
+    if (base !== '') {
+      base = base.replace(/\/$/, '');
+      base = base.replace(/^\//, '');
+      base = `/${base}`;
+    }
+    const protocol = window.location.protocol;
+    const host = window.location.host;
+    return `${protocol}//${host}${base}`;
+  }
+
+  get badge(): string {
+    if (this.repo) {
+      return `${this.url}/api/v1/reports/${this.repo.ReportID}/badge`;
+    }
+    return '';
+  }
+
+  get markdown(): string {
+    if (this.repo) {
+      const { SCM: scm, NameSpace: space, Name: name } = this.repo;
+      return `[![badge](${this.badge})](${this.url}/report/${scm}/${space}/${name})`;
+    }
+    return '';
   }
 
   @Watch('setting', { deep: true })

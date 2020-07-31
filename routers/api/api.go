@@ -59,8 +59,9 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 	{
 		g := g.Group("/user")
 		g.GET("", request.CheckLogin(r.Session), user.HandleGet())
-		g.GET("/scm", request.CheckLogin(r.Session), user.HandleGetSCM(r.Config))
 		g.POST("", user.HandleCreate())
+		g.GET("/scm", request.CheckLogin(r.Session), user.HandleGetSCM(r.Config))
+		g.GET("/owner/:scm/:namespace/:name", request.CheckLogin(r.Session), user.HandleGetOwner(r.RepoStore))
 	}
 	{
 		g := g.Group("/reports")
@@ -83,6 +84,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			r.RepoStore,
 			r.ChartService,
 		))
+		g.GET("/:id/badge", report.HandleGetBadge(r.ReportStore, r.RepoStore))
 	}
 	g.GET("/repos/:scm/:namespace/:name", repo.HandleGet(r.RepoStore))
 	{
@@ -95,7 +97,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			g := g.Group("/:scm/:namespace/:name")
 			g.PATCH("", repo.HandleSync(r.SCMService, r.RepoStore))
 			g.GET("/setting", repo.HandleGetSetting(r.RepoStore))
-			g.POST("/setting", repo.HandleUpdateSetting(r.RepoStore))
+			g.POST("/setting", repo.WithRepo(r.RepoStore), repo.HandleUpdateSetting(r.RepoStore))
 			g.PATCH("/report", repo.HandleReportIDRenew(r.RepoStore, r.SCMService))
 			g.GET("/files", repo.HandleGetFiles(r.SCMService))
 			g.GET("/content/*path", repo.HandleGetFileContent(r.SCMService))

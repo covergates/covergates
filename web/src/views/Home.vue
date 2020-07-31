@@ -1,6 +1,9 @@
 <template>
   <v-container class="mt-5">
-    <v-row justify="center">
+    <v-row justify="center" align="center">
+      <v-avatar size="56" class="mr-5">
+        <img :src="require('@/assets/logo.png')" />
+      </v-avatar>
       <span class="text-h2 font-weight-bold">Covergates</span>
     </v-row>
     <v-banner class="text-center primary--text">The portal gates to good code quality.</v-banner>

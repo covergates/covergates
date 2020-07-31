@@ -107,6 +107,37 @@
                 }
             }
         },
+        "/reports/{id}/badge": {
+            "get": {
+                "tags": [
+                    "Report"
+                ],
+                "summary": "get badge for the report id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "report id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "get latest report in main branch",
+                        "name": "latest",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "badge svg",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/reports/{id}/comment/{number}": {
             "post": {
                 "tags": [
@@ -672,6 +703,45 @@
                         "description": "error",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/owner/{scm}/{namespace}/{name}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get repository's owner",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "owner",
+                        "schema": {
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }

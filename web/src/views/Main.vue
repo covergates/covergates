@@ -1,8 +1,10 @@
 <template>
   <v-app class="app">
     <v-app-bar app color="primary" flat dark clipped-left>
-      <v-app-bar-nav-icon @click="routeTo('/')">
-        <v-icon>mdi-home</v-icon>
+      <v-app-bar-nav-icon class="ml-1" @click="routeTo('/')">
+        <v-avatar tile rounded="false">
+          <img :src="require('@/assets/logo.png')" />
+        </v-avatar>
       </v-app-bar-nav-icon>
       <v-btn class="ml-5" text @click="routeTo('/repo')">Repositories</v-btn>
       <v-spacer></v-spacer>
@@ -16,7 +18,7 @@
     <v-footer min-height="60" app fixed dark color="secondary">
       &copy; 2020 covergates
       <v-divider vertical class="ma-4" />
-      <v-btn text small>license</v-btn>
+      <v-btn text small href="https://github.com/covergates/covergates/blob/master/LICENSE">license</v-btn>
       <v-spacer />
       <v-btn text href="https://github.com/covergates/covergates">
         <v-icon left large class="mr-5">mdi-github</v-icon>Github

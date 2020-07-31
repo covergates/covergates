@@ -1,0 +1,7 @@
+version: "3"
+services:
+  covergates:
+    build: .
+    image: "covergates/covergates:latest"
+    ports:
+      - "8080:8080"

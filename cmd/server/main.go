@@ -13,13 +13,44 @@ import (
 	"github.com/urfave/cli/v2"
 
 	// load sqlite driver
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-func connectDatabase() *gorm.DB {
-	x, _ := gorm.Open("sqlite3", "core.db")
+func connectDatabase(cfg *config.Config) *gorm.DB {
+	var x *gorm.DB
+	var err error
+	switch cfg.Database.Driver {
+	case "sqlite3":
+		x, err = gorm.Open(cfg.Database.Driver, cfg.Database.Name)
+	case "postgres":
+		x, err = gorm.Open(
+			cfg.Database.Driver,
+			fmt.Sprintf(
+				"host=%s port=%s user=%s password=%s database=%s",
+				cfg.Database.Host,
+				cfg.Database.Port,
+				cfg.Database.User,
+				cfg.Database.Password,
+				cfg.Database.Name,
+			))
+	case "cloudrun":
+		x, err = gorm.Open(
+			"postgres",
+			fmt.Sprintf(
+				"user=%s password=%s database=%s host=%s/%s",
+				cfg.CloudRun.User,
+				cfg.CloudRun.Password,
+				cfg.CloudRun.Name,
+				cfg.CloudRun.Socket,
+				cfg.CloudRun.Instance))
+	default:
+		log.Fatal("database driver not support")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
 	return x
-
 }
 
 // Run server
@@ -28,14 +59,19 @@ func Run(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	db := connectDatabase()
+	db := connectDatabase(config)
 	app, err := InitializeApplication(config, db)
 	if err != nil {
 		return err
 	}
+	if config.Database.AutoMigrate {
+		go func() {
+			app.db.Migrate()
+			log.Println("migration done")
+		}()
+	}
 	r := gin.Default()
 	app.routers.RegisterRoutes(r)
-	app.db.Migrate()
 	r.Run(fmt.Sprintf(":%s", config.Server.Port()))
 	return nil
 }

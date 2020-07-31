@@ -28,3 +28,7 @@ export function setError(state: RepoState, error?: Error): void {
 export function setSetting(state: RepoState, setting?: RepositorySetting): void {
   state.setting = setting;
 }
+
+export function setOwner(state: RepoState, owner: boolean): void {
+  state.owner = owner;
+}

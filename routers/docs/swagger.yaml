@@ -135,6 +135,26 @@ paths:
       summary: Upload coverage report
       tags:
       - Report
+  /reports/{id}/badge:
+    get:
+      parameters:
+      - description: report id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: get latest report in main branch
+        in: query
+        name: latest
+        type: boolean
+      responses:
+        "200":
+          description: badge svg
+          schema:
+            type: string
+      summary: get badge for the report id
+      tags:
+      - Report
   /reports/{id}/comment/{number}:
     post:
       parameters:
@@ -510,6 +530,32 @@ paths:
           schema:
             type: string
       summary: Get login user
+      tags:
+      - User
+  /user/owner/{scm}/{namespace}/{name}:
+    get:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: owner
+          schema:
+            $ref: '#/definitions/user.User'
+      summary: Get repository's owner
       tags:
       - User
   /user/scm:

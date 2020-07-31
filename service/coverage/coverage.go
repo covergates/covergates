@@ -5,8 +5,10 @@ import (
 	"errors"
 	"io"
 	"regexp"
+	"strings"
 
 	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/service/golang"
 	"github.com/covergates/covergates/service/perl"
 )
 
@@ -34,6 +36,8 @@ func (s *Service) service(t core.ReportType) (TypeCoverageService, error) {
 	switch t {
 	case core.ReportPerl:
 		return &perl.CoverageService{}, nil
+	case core.ReportGo:
+		return &golang.CoverageService{}, nil
 	default:
 		return nil, errReportTypeNotSupport
 	}
@@ -73,6 +77,7 @@ func (s *Service) TrimFileNames(ctx context.Context, report *core.CoverageReport
 		for _, regex := range regexps {
 			file.Name = regex.ReplaceAllString(file.Name, "")
 		}
+		file.Name = strings.Trim(file.Name, "/")
 	}
 	return nil
 }

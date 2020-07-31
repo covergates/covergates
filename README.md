@@ -1,3 +1,5 @@
+[![CLA assistant](https://cla-assistant.io/readme/badge/covergates/covergates)](https://cla-assistant.io/covergates/covergates)
+
 # TODO
 
 - [x] Public Repository does not require user authorization

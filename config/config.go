@@ -11,9 +11,11 @@ import (
 
 // Config of application
 type Config struct {
-	Server Server
-	Gitea  Gitea
-	Github Github
+	Server   Server
+	Gitea    Gitea
+	Github   Github
+	Database Database
+	CloudRun CloudRun
 }
 
 // Server setting
@@ -22,6 +24,28 @@ type Server struct {
 	Addr       string `default:"http://localhost:8080" envconfig:"GATES_SERVER_ADDR"`
 	Base       string `envconfig:"GATES_SERVER_BASE"`
 	SkipVerity bool   `default:"true" envconfig:"GATES_SERVER_SKIP_VERIFY"`
+	ServerPort string `envconfig:"GATES_SERVER_PORT"`
+	CloudPort  string `envconfig:"PORT"`
+}
+
+// Database setting
+type Database struct {
+	AutoMigrate bool   `default:"true" envconfig:"GATES_DB_AUTO_MIGRATE"`
+	Driver      string `default:"sqlite3" envconfig:"GATES_DB_DRIVER"`
+	Host        string `envconfig:"GATES_DB_HOST"`
+	Port        string `envconfig:"GATES_DB_PORT"`
+	User        string `envconfig:"GATES_DB_USER"`
+	Name        string `default:"core.db" envconfig:"GATES_DB_NAME"`
+	Password    string `envconfig:"GATES_DB_PASSWORD"`
+}
+
+// CloudRun database setting for google cloud run
+type CloudRun struct {
+	User     string `envconfig:"DB_USER"`
+	Password string `envconfig:"DB_PASS"`
+	Socket   string `default:"/cloudsql" envconfig:"DB_SOCKET_DIR"`
+	Instance string `envconfig:"INSTANCE_CONNECTION_NAME"`
+	Name     string `envconfig:"GATES_DB_NAME"`
 }
 
 // Gitea connection setting
@@ -64,9 +88,14 @@ func (c *Config) Providers() []core.SCMProvider {
 
 // Port opened for the current server
 func (server Server) Port() string {
+	if server.ServerPort != "" {
+		return server.ServerPort
+	} else if server.CloudPort != "" {
+		return server.CloudPort
+	}
 	u, err := url.Parse(server.Addr)
 	if err != nil {
-		return ""
+		return "8080"
 	}
 	return u.Port()
 }

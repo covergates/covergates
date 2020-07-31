@@ -44,6 +44,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 	e.Any("/logoff", HandleLogout(r.Config, r.Session))
 	h := gin.WrapH(http.FileServer(web.New()))
 	e.GET("/favicon.ico", h)
+	e.GET("/logo.png", h)
 	e.GET("/js/*filepath", h)
 	e.GET("/css/*filepath", h)
 	e.GET("/img/*filepath", h)
