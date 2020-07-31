@@ -3,7 +3,7 @@ import { ActionContext } from 'vuex';
 import { UserState, Mutations } from '..';
 import { fetchSCM } from '../actions';
 import { RootState } from '@/store';
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 describe('store.module.user', () => {
   let context: ActionContext<UserState, RootState>;

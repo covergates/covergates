@@ -37,7 +37,7 @@ export default class Repo extends Vue {
   get repositories(): Repository[] {
     const repos = [] as Repository[];
     repos.push(...this.$store.state.repository.list);
-    repos.sort(function(a, b): number {
+    repos.sort((a, b) => {
       if (a.ReportID && b.ReportID) {
         return a.URL.localeCompare(b.URL);
       } else if (a.ReportID) {
