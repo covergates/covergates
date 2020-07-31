@@ -3,6 +3,9 @@ on:
   release:
     types:
       - published
+env:
+  PROJECT_ID: ${{ secrets.RUN_PROJECT }}
+
 jobs:
   release:
     name: "release ${{matrix.os}}"
@@ -72,3 +75,28 @@ jobs:
                 name: name
               });
             }
+  cloudrun:
+    name: "google-cloud-deploy"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # Setup gcloud CLI
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: "290.0.1"
+          service_account_key: ${{ secrets.RUN_SA_KEY }}
+          project_id: ${{ secrets.RUN_PROJECT }}
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      - run: |-
+          gcloud --quiet auth configure-docker
+      # Build the Docker image
+      - name: Build
+        run: |-
+          docker build --tag "gcr.io/$PROJECT_ID/covergates" .
+      # Push the Docker image to Google Container Registry
+      - name: Publish
+        run: |-
+          docker push "gcr.io/$PROJECT_ID/covergates"
