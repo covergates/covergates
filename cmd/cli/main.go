@@ -9,9 +9,17 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var (
+	// CoverGatesAPI to covergates API URL
+	CoverGatesAPI = "http://localhost:8080/api/v1"
+	// Version of cli
+	Version = "0.0"
+)
+
 func main() {
 	app := &cli.App{
-		Name: "covergate",
+		Name:    "covergate",
+		Version: Version,
 		Commands: []*cli.Command{
 			upload.Command,
 			comment.Command,
@@ -19,7 +27,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "url",
-				Value:   "http://localhost:5900/api/v1",
+				Value:   CoverGatesAPI,
 				Usage:   "api service url",
 				EnvVars: []string{"API_URL"},
 			},

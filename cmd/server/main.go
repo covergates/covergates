@@ -12,10 +12,13 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 
-	// load sqlite driver
+	// load drivers
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
+
+// Version of covergates server
+var Version = "0.0"
 
 func connectDatabase(cfg *config.Config) *gorm.DB {
 	var x *gorm.DB
@@ -79,8 +82,9 @@ func Run(c *cli.Context) error {
 func main() {
 	log.SetReportCaller(true)
 	app := &cli.App{
-		Name:   "codecover",
-		Action: Run,
+		Name:    "codecover",
+		Version: Version,
+		Action:  Run,
 	}
 	err := app.Run(os.Args)
 	if err != nil {

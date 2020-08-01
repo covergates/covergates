@@ -41,9 +41,9 @@ type Database struct {
 
 // CloudRun database setting for google cloud run
 type CloudRun struct {
-	User     string `envconfig:"DB_USER"`
-	Password string `envconfig:"DB_PASS"`
-	Socket   string `default:"/cloudsql" envconfig:"DB_SOCKET_DIR"`
+	User     string `envconfig:"GATES_DB_USER"`
+	Password string `envconfig:"GATES_DB_PASSWORD"`
+	Socket   string `default:"/cloudsql" envconfig:"GATES_DB_SOCKET_DIR"`
 	Instance string `envconfig:"INSTANCE_CONNECTION_NAME"`
 	Name     string `envconfig:"GATES_DB_NAME"`
 }

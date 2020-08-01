@@ -5,6 +5,7 @@ on:
       - published
 env:
   PROJECT_ID: ${{ secrets.RUN_PROJECT }}
+  SERVER_API_URL: https://covergates.com/api/v1
 
 jobs:
   release:
@@ -27,10 +28,13 @@ jobs:
       - name: Build Ubuntu Binary
         if: matrix.os == 'ubuntu-latest'
         run: |
-          go build -o covergates-server ./cmd/server
-          go build -o covergates ./cmd/cli
-          zip covergates-server.ubuntu.zip covergates-server
-          zip covergates.ubuntu.zip covergates
+          export GITHUB_TAG=$(echo $GITHUB_REF | rev | cut -d '/' -f 1| rev)
+          go mod vendor
+          zip -r covergates.$GITHUB_TAG.src.zip ./ -x "*.git*" -x "*.zip" -x "*node_modules*"
+          go build -o covergates-server -ldflags="-X main.Version=$GITHUB_TAG" ./cmd/server
+          go build -o covergates -ldflags="-X main.Version=$GITHUB_TAG main.CoverGatesAPI=$SERVER_API_URL" ./cmd/cli
+          zip covergates-server.$GITHUB_TAG.ubuntu.zip covergates-server
+          zip covergates.$GITHUB_TAG.ubuntu.zip covergates
 
       - name: Upload Binary
         uses: actions/github-script@v2
@@ -65,9 +69,12 @@ jobs:
             const release = response.data.id;
             const url = `https://uploads.github.com/repos/${repo[0]}/${repo[1]}/releases/${release}/assets{?name,label}`;
             const os = `${process.env.OS_TYPE}`.split('-').shift();
-            const files = ['covergates-server', 'covergates'];
+            const files = [`covergates-server.${tag}.${os}`, `covergates.${tag}.${os}`];
+            if ( process.env.OS_TYPE === 'ubuntu-latest' ) {
+              files.push(`covergates-server.${tag}.src`);
+            }
             for (const file of files) {
-              const name = `${file}.${os}.zip`;
+              const name = `${file}.zip`;
               await github.repos.uploadReleaseAsset({
                 url: url,
                 headers: getHeaders(name, name),
