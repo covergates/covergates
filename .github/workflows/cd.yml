@@ -32,7 +32,7 @@ jobs:
           go mod vendor
           zip -r covergates.$GITHUB_TAG.src.zip ./ -x "*.git*" -x "*.zip" -x "*node_modules*"
           go build -o covergates-server -ldflags="-X main.Version=$GITHUB_TAG" ./cmd/server
-          go build -o covergates -ldflags="-X main.Version=$GITHUB_TAG main.CoverGatesAPI=$SERVER_API_URL" ./cmd/cli
+          go build -o covergates -ldflags="-X main.Version=$GITHUB_TAG -X main.CoverGatesAPI=$SERVER_API_URL" ./cmd/cli
           zip covergates-server.$GITHUB_TAG.ubuntu.zip covergates-server
           zip covergates.$GITHUB_TAG.ubuntu.zip covergates
 
