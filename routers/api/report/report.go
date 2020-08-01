@@ -58,6 +58,7 @@ func HandleUpload(
 
 		setting, err := repoStore.Setting(repo)
 		if err != nil {
+			log.Error(err)
 			c.String(500, err.Error())
 			return
 		}
@@ -72,12 +73,14 @@ func HandleUpload(
 
 		gitRepo, err := getGitRepository(ctx, repoStore, scmService, repo)
 		if err != nil {
+			log.Error(err)
 			c.String(500, err.Error())
 			return
 		}
 
 		files, err := gitRepo.ListAllFiles(commit)
 		if err != nil {
+			log.Error(err)
 			c.String(500, err.Error())
 			return
 		}
@@ -92,6 +95,7 @@ func HandleUpload(
 		reader, err := file.Open()
 		coverage, err := loadCoverageReport(ctx, coverageService, reportType, reader, setting)
 		if err != nil {
+			log.Error(err)
 			c.String(500, err.Error())
 			return
 		}
