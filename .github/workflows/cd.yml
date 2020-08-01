@@ -71,7 +71,7 @@ jobs:
             const os = `${process.env.OS_TYPE}`.split('-').shift();
             const files = [`covergates-server.${tag}.${os}`, `covergates.${tag}.${os}`];
             if ( process.env.OS_TYPE === 'ubuntu-latest' ) {
-              files.push(`covergates-server.${tag}.src`);
+              files.push(`covergates.${tag}.src`);
             }
             for (const file of files) {
               const name = `${file}.zip`;
