@@ -17,6 +17,10 @@
 # Vscode
 .vscode/
 
+# Go
+
+vendor/
+
 # Database
 core.db
 *.zip

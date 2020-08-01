@@ -83,7 +83,7 @@ jobs:
               });
             }
   cloudrun:
-    name: "google-cloud-deploy"
+    name: "Google Cloud Run"
     runs-on: ubuntu-latest
 
     steps:
@@ -107,3 +107,32 @@ jobs:
       - name: Publish
         run: |-
           docker push "gcr.io/$PROJECT_ID/covergates"
+  docker:
+    name: "Build and push Docker"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Checkout Action
+        uses: actions/checkout@v2
+        with:
+          repository: covergates/github-actions
+          path: actions
+
+      - name: Build Server
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: covergates/covergates
+          tags: latest
+
+      - name: Build Action
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: covergates/actions
+          dockerfile: actions/Dockerfile.build
+          tags: latest
