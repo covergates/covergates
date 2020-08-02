@@ -1,6 +1,6 @@
 <h1> <img src="https://covergates.com/logo.png" alt="logo" width="48" height=48> Covergates - Portal Gates to Code Quality</h1>
 
-[![badge](https://covergates.com/api/v1/reports/bsi5dvi23akg00a0tgl0/badge)](https://covergates.com/report/github/covergates/covergates)
+[![badge](https://covergates.com/api/v1/reports/bsi5dvi23akg00a0tgl0/badge?)](https://covergates.com/report/github/covergates/covergates)
 ![CI](https://github.com/covergates/covergates/workflows/CI/badge.svg)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/covergates/covergates)](https://pkg.go.dev/github.com/covergates/covergates)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)

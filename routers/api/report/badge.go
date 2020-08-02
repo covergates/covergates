@@ -35,6 +35,7 @@ func HandleGetBadge(
 			c.String(500, err.Error())
 			return
 		}
+		c.Header("Cache-Control", "max-age=600")
 		c.Data(200, "image/svg+xml", data)
 	}
 }
