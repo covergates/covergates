@@ -45,7 +45,7 @@ It is suggested to have one feature or bug-fix per branch.
 
 **Covergates** requires to connect with SCM to work.
 Although you could connect it with GiHub,
-it is suggest to you setup a self-hosted SCM for testing.
+it is suggest setting a self-hosted SCM for testing.
 It's recommended to choose [Gitea](https://gitea.io/en-us/). You can refer to
 [Installation with Docker](https://docs.gitea.io/en-us/install-with-docker/) for the detail.
 You can also setup Gitea by running our container for testing:
