@@ -123,6 +123,10 @@ paths:
         in: formData
         name: tag
         type: string
+      - description: files list of the repository
+        in: formData
+        name: files
+        type: string
       responses:
         "200":
           description: ok
@@ -196,7 +200,7 @@ paths:
       summary: get repository of the report id
       tags:
       - Report
-  /reports/{id}/treemap/{commit}:
+  /reports/{id}/treemap/{source}:
     get:
       parameters:
       - description: report id
@@ -204,9 +208,9 @@ paths:
         name: id
         required: true
         type: string
-      - description: commit sha
+      - description: source branch
         in: path
-        name: commit
+        name: source
         required: true
         type: string
       produces:

@@ -104,6 +104,12 @@ var doc = `{
                         "description": "tag ref",
                         "name": "tag",
                         "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "files list of the repository",
+                        "name": "files",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -216,7 +222,7 @@ var doc = `{
                 }
             }
         },
-        "/reports/{id}/treemap/{commit}": {
+        "/reports/{id}/treemap/{source}": {
             "get": {
                 "produces": [
                     "image/svg+xml"
@@ -235,8 +241,8 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "commit sha",
-                        "name": "commit",
+                        "description": "source branch",
+                        "name": "source",
                         "in": "path",
                         "required": true
                     }

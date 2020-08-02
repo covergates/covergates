@@ -78,7 +78,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			r.ReportService,
 		))
 		g.GET("/:id", report.HandleGet(r.ReportStore, r.RepoStore, r.SCMService))
-		g.GET("/:id/treemap/:commit", report.HandleGetTreeMap(
+		g.GET("/:id/treemap/:source", report.HandleGetTreeMap(
 			r.ReportStore,
 			r.RepoStore,
 			r.ChartService,

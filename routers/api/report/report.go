@@ -180,9 +180,9 @@ func HandleGet(
 // @Tags Report
 // @Produce image/svg+xml
 // @Param id path string true "report id"
-// @param commit path string true "commit sha"
+// @param source path string true "source branch"
 // @Success 200 {object} string "treemap svg"
-// @Router /reports/{id}/treemap/{commit} [get]
+// @Router /reports/{id}/treemap/{source} [get]
 func HandleGetTreeMap(
 	reportStore core.ReportStore,
 	repoStore core.RepoStore,
@@ -190,10 +190,10 @@ func HandleGetTreeMap(
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		reportID := c.Param("id")
-		commit := c.Param("commit")
+		source := c.Param("source")
 		new, err := reportStore.Find(&core.Report{
 			ReportID: reportID,
-			Commit:   commit,
+			Branch:   source,
 		})
 		if err != nil {
 			c.String(500, err.Error())
@@ -281,8 +281,8 @@ func HandleComment(
 			"![treemap](%s/api/v1/reports/%s/treemap/%s?base=%s)\n\n",
 			config.Server.URL(),
 			reportID,
-			source.Commit,
-			target.Commit,
+			source.Branch,
+			target.Branch,
 		),
 		)
 
