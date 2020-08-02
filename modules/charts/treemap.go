@@ -67,9 +67,10 @@ func (c *CoverageDiffTreeMap) Render(w io.Writer) error {
 		label := ""
 		if diff > 0 {
 			color = colorIncrease
-			label = name
 		} else if diff < 0 {
 			color = colorDecrease
+		}
+		if diff != 0 {
 			label = name
 		}
 		colors = append(colors, color)
@@ -104,7 +105,7 @@ func (c *CoverageDiffTreeMap) Render(w io.Writer) error {
 
 func (f *diffFiles) Len() int { return len(f.names) }
 func (f *diffFiles) Less(i, j int) bool {
-	return f.files[f.names[i]].StatementCoverage < f.files[f.names[j]].StatementCoverage
+	return f.files[f.names[i]].Name < f.files[f.names[j]].Name
 }
 func (f *diffFiles) Swap(i, j int) {
 	f.names[i], f.names[j] = f.names[j], f.names[i]

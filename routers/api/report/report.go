@@ -201,8 +201,9 @@ func HandleGetTreeMap(
 		}
 		old, err := getLatest(reportStore, repoStore, reportID)
 		if err != nil {
-			c.String(500, err.Error())
-			return
+			old = &core.Report{
+				Coverage: &core.CoverageReport{},
+			}
 		}
 		chart := chartService.CoverageDiffTreeMap(old.Coverage, new.Coverage)
 		buffer := bytes.NewBuffer([]byte{})
