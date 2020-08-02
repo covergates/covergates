@@ -7,7 +7,7 @@ It will help you set yourself up with a good development environment.
 ## Signing the CLA
 
 First, please read and sign the
-[Electronic Covergates Contribution License Agreement](https://cla-assistant.io/covergates/covergatesx).
+[Electronic Covergates Contribution License Agreement](https://cla-assistant.io/covergates/covergates).
 By signing a contributor license agreement, it is ensured that the community is free to use your contribution.
 
 ## Discuss your Design
