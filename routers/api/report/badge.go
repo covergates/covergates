@@ -35,6 +35,7 @@ func HandleGetBadge(
 			c.String(500, err.Error())
 			return
 		}
+		c.Header("Cache-Control", "no-cache")
 		c.Data(200, "image/svg+xml", data)
 	}
 }
