@@ -230,6 +230,7 @@ func HandleComment(
 	reportService core.ReportService,
 ) gin.HandlerFunc {
 	// TODO: Add handle comment unit test
+	// TODO: Need to test comment with SHA or branch
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 		reportID := c.Param("id")
@@ -258,8 +259,10 @@ func HandleComment(
 		// TODO: handle multiple language repository
 		source, err := reportStore.Find(&core.Report{ReportID: reportID, Commit: pr.Commit})
 		if err != nil {
-			c.String(500, err.Error())
-			return
+			if source, err = reportStore.Find(&core.Report{ReportID: reportID, Branch: pr.Source}); err != nil {
+				c.String(500, err.Error())
+				return
+			}
 		}
 		target, err := reportStore.Find(&core.Report{ReportID: reportID, Branch: pr.Target})
 		if err != nil {
