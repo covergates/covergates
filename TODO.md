@@ -4,6 +4,9 @@
 - [x] Redirect to login page if unauthorized user accessing to private repository
 - [x] Support Go
 - [ ] Support Python
+- [ ] Support Ruby
+- [ ] Support Javascript (jest)
+- [ ] Support C [googletest](https://testing.googleblog.com/2014/07/measuring-coverage-at-google.html)
 - [x] Enable webhook to create comment on pull request
 - [ ] Enable multiple language coverage report
 - [ ] Enable auto merge with previous coverage report
@@ -12,4 +15,4 @@
 - [ ] Frontend page to review report for given commit
 - [ ] Report upload authorization check
 - [ ] Optimized upload report flow, improve performance
-- [ ] Documentation (Environment setup and contribution guide)
+- [x] Documentation (Environment setup and contribution guide)
