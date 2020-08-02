@@ -73,7 +73,7 @@ Visit [http://localhost:8080](http://localhost:8080) for the `covergates` server
 
 ### Debug
 
-If yor are using `VS code` as your ID, you could setup the `launch.json` as blow and press `F5` to debug:
+If yor are using `VS code` as your IDE, you could setup the `launch.json` as blow and press `F5` to debug:
 
 ```yml
 {
