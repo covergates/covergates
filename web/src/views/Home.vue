@@ -10,7 +10,7 @@
       <v-banner class="text-center primary--text">The portal gates to good code quality.</v-banner>
       <v-row justify="center" class="ma-10">
         <v-col
-          md="12"
+          cols="12"
           lg="4"
           class="d-flex justify-center"
           v-for="(intro, index) in introductions"
