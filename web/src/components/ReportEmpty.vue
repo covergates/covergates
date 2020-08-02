@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <v-col cols="6">
+      <v-col sm="12" md="6">
         <v-card>
           <v-card-title>No Report Found</v-card-title>
           <v-card-text></v-card-text>

@@ -6,7 +6,7 @@
         <v-col cols="6" v-show="loading">
           <v-progress-linear indeterminate rounded height="6"></v-progress-linear>
         </v-col>
-        <v-col cols="6" v-show="!loading">
+        <v-col sm="12" md="6" v-show="!loading">
           <repo-list v-if="!loading" :repos="repositories"></repo-list>
         </v-col>
       </v-row>
