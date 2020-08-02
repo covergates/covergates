@@ -85,7 +85,6 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 		))
 		g.GET("/:id/badge", report.HandleGetBadge(r.ReportStore, r.RepoStore))
 	}
-	g.GET("/repos/:scm/:namespace/:name", repo.HandleGet(r.RepoStore))
 	{
 		g := g.Group("/repos")
 		g.Use(request.CheckLogin(r.Session))
@@ -101,7 +100,12 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			g.GET("/files", repo.HandleGetFiles(r.SCMService))
 			g.GET("/content/*path", repo.HandleGetFileContent(r.SCMService))
 			g.POST("/hook/create", repo.WithRepo(r.RepoStore), repo.HandleHookCreate(r.HookService))
-			g.POST("/hook", repo.WithRepo(r.RepoStore), repo.HandleHook(r.SCMService, r.HookService))
 		}
+	}
+	{
+		// repo api without authorization required
+		g := g.Group("/repos/:scm/:namespace/:name")
+		g.GET("", repo.HandleGet(r.RepoStore))
+		g.POST("/hook", repo.WithRepo(r.RepoStore), repo.HandleHook(r.SCMService, r.HookService))
 	}
 }
