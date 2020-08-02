@@ -60,7 +60,7 @@ type Gitea struct {
 // Github connection setting
 type Github struct {
 	Server       string   `default:"https://github.com" envconfig:"GATES_GITHUB_SERVER"`
-	APIServer    string   `envconfig:"GATES_GITHUB_API_SERVER"`
+	APIServer    string   `default:"https://api.github.com" envconfig:"GATES_GITHUB_API_SERVER"`
 	ClientID     string   `envconfig:"GATES_GITHUB_CLIENT_ID"`
 	ClientSecret string   `envconfig:"GATES_GITHUB_CLIENT_SECRET"`
 	SkipVerity   bool     `envconfig:"GATES_GITHUB_SKIP_VERIFY"`
