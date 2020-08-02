@@ -12,11 +12,22 @@
         <v-btn
           ref="activate"
           small
-          v-show="!activated"
+          v-if="!activated"
           :loading="loading"
           @click="activateRepository"
+          class="d-none d-md-flex"
         >Activate</v-btn>
-        <v-btn ref="goto" icon :to="routeLink" v-show="activated">
+        <v-btn
+          ref="activate"
+          v-if="!activated"
+          :loading="loading"
+          @click="activateRepository"
+          class="d-flex d-md-none align-center"
+          icon
+        >
+          <v-icon>mdi-plus-box-multiple</v-icon>
+        </v-btn>
+        <v-btn ref="goto" icon :to="routeLink" v-if="activated">
           <v-icon color="grey lighten-1">mdi-chevron-right</v-icon>
         </v-btn>
       </v-list-item-action>
