@@ -2,15 +2,16 @@ package upload
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 
 	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/modules/git"
 	"github.com/covergates/covergates/modules/util"
 	"github.com/covergates/covergates/service/coverage"
-	"github.com/go-git/go-git/v5"
 	"github.com/urfave/cli/v2"
 )
 
@@ -33,13 +34,15 @@ var Command = &cli.Command{
 			Value:    "",
 			Required: true,
 		},
+		&cli.StringFlag{
+			Name:     "branch",
+			Usage:    "branch to upload the report",
+			EnvVars:  []string{"GITHUB_HEAD_REF", "DRONE_SOURCE_BRANCH"},
+			Value:    "",
+			Required: false,
+		},
 	},
 	Action: upload,
-}
-
-type head struct {
-	commit string
-	branch string
 }
 
 func upload(c *cli.Context) error {
@@ -53,15 +56,35 @@ func upload(c *cli.Context) error {
 		return err
 	}
 
-	h, err := repoHead()
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	git := &git.Service{}
+	repo, err := git.PlainOpen(c.Context, cwd)
+	if err != nil {
+		return err
+	}
+
+	branch := c.String("branch")
+	if branch == "" {
+		branch = repo.Branch()
+	}
+
+	files, err := repo.ListAllFiles(repo.HeadCommit())
+	if err != nil {
+		return err
+	}
+	filesData, err := json.Marshal(files)
 	if err != nil {
 		return err
 	}
 
 	form := util.FormData{
 		"type":   c.String("type"),
-		"commit": h.commit,
-		"branch": h.branch,
+		"commit": repo.HeadCommit(),
+		"branch": branch,
+		"files":  string(filesData),
 		"file": util.FormFile{
 			Name: "report",
 			Data: data,
@@ -73,6 +96,8 @@ func upload(c *cli.Context) error {
 		c.String("url"),
 		c.String("report"),
 	)
+
+	log.Printf("upload commit %s, %s\n", repo.HeadCommit(), c.String("type"))
 
 	respond, err := util.PostForm(url, form)
 	if err != nil {
@@ -100,34 +125,4 @@ func findReportData(ctx context.Context, reportType, path string) ([]byte, error
 		return nil, err
 	}
 	return ioutil.ReadAll(r)
-}
-
-func repoHead() (*head, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	repo, err := git.PlainOpenWithOptions(cwd, &git.PlainOpenOptions{
-		DetectDotGit: true,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	h, err := repo.Head()
-	if err != nil {
-		return nil, err
-	}
-
-	commit := h.Hash().String()
-	branch := ""
-	if h.Name().IsBranch() {
-		branch = h.Name().Short()
-	}
-	return &head{
-		branch: branch,
-		commit: commit,
-	}, nil
 }

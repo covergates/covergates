@@ -43,15 +43,9 @@ func addFormFile(w *multipart.Writer, k, name string, r io.Reader) {
 func TestUpload(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockSCMService := mock.NewMockSCMService(ctrl)
-	mockClient := mock.NewMockClient(ctrl)
-	mockGitService := mock.NewMockGitService(ctrl)
-	mockGitRepo := mock.NewMockGitRepository(ctrl)
-	mockGitCommit := mock.NewMockGitCommit(ctrl)
 	mockCoverageService := mock.NewMockCoverageService(ctrl)
 	mockReportStore := mock.NewMockReportStore(ctrl)
 	mockRepoStore := mock.NewMockRepoStore(ctrl)
-	user := &core.User{}
 	coverage := &core.CoverageReport{}
 	repo := &core.Repo{
 		NameSpace: "org",
@@ -68,37 +62,11 @@ func TestUpload(t *testing.T) {
 		Files:    []string{"a"},
 	}
 
-	mockSCMService.EXPECT().Client(
-		gomock.Eq(core.Github),
-	).Return(mockClient, nil)
-
-	mockClient.EXPECT().Git().Return(mockGitService)
-
-	mockGitService.EXPECT().GitRepository(
-		gomock.Any(),
-		gomock.Eq(user),
-		gomock.Eq(repo.FullName()),
-	).Return(mockGitRepo, nil)
-
-	mockGitRepo.EXPECT().Commit(
-		gomock.Eq(report.Commit),
-	).Return(mockGitCommit, nil)
-
-	mockGitRepo.EXPECT().ListAllFiles(
-		gomock.Eq(report.Commit),
-	).Return(report.Files, nil)
-
-	mockGitCommit.EXPECT().InDefaultBranch().Return(true)
-
 	mockRepoStore.EXPECT().Find(
 		gomock.Eq(&core.Repo{
 			ReportID: report.ReportID,
 		}),
 	).Return(repo, nil)
-
-	mockRepoStore.EXPECT().Creator(
-		gomock.Eq(repo),
-	).Return(user, nil)
 
 	mockRepoStore.EXPECT().Setting(
 		gomock.Eq(repo),
@@ -122,7 +90,6 @@ func TestUpload(t *testing.T) {
 
 	r := gin.Default()
 	r.POST("/reports/:id", HandleUpload(
-		mockSCMService,
 		mockCoverageService,
 		mockRepoStore,
 		mockReportStore,
@@ -132,6 +99,12 @@ func TestUpload(t *testing.T) {
 	w := multipart.NewWriter(buffer)
 	w.WriteField("commit", "abcdef")
 	w.WriteField("type", "perl")
+	files, err := json.Marshal(report.Files)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w.WriteField("branch", "bear")
+	w.WriteField("files", string(files))
 	file := bytes.NewBuffer([]byte("mock"))
 	addFormFile(w, "file", "cover_db.zip", file)
 	w.Close()

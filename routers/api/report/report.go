@@ -3,6 +3,7 @@ package report
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -23,11 +24,11 @@ import (
 // @Param type formData string true "report type"
 // @Param branch formData string false "branch ref"
 // @Param tag formData string false "tag ref"
+// @Param files formData string false "files list of the repository"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "error message"
 // @Router /reports/{id} [post]
 func HandleUpload(
-	scmService core.SCMService,
 	coverageService core.CoverageService,
 	repoStore core.RepoStore,
 	reportStore core.ReportStore,
@@ -71,24 +72,12 @@ func HandleUpload(
 			return
 		}
 
-		gitRepo, err := getGitRepository(ctx, repoStore, scmService, repo)
-		if err != nil {
-			log.Error(err)
-			c.String(500, err.Error())
-			return
-		}
-
-		files, err := gitRepo.ListAllFiles(commit)
-		if err != nil {
-			log.Error(err)
-			c.String(500, err.Error())
-			return
-		}
-
-		if branch == "" {
-			co, err := gitRepo.Commit(commit)
-			if err == nil && co.InDefaultBranch() {
-				branch = repo.Branch
+		files := make([]string, 0)
+		if c.PostForm("files") != "" {
+			if err := json.Unmarshal([]byte(c.PostForm("files")), &files); err != nil {
+				c.Error(err)
+				c.String(500, err.Error())
+				return
 			}
 		}
 

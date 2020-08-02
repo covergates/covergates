@@ -46,3 +46,18 @@ func (repo *repository) Commit(commit string) (core.GitCommit, error) {
 		hash: plumbing.NewHash(commit),
 	}, nil
 }
+
+func (repo *repository) HeadCommit() string {
+	return repo.headCommit()
+}
+
+func (repo *repository) Branch() string {
+	head, err := repo.gitRepository.Head()
+	if err != nil {
+		return ""
+	}
+	if head.Name().IsBranch() {
+		return head.Name().Short()
+	}
+	return ""
+}

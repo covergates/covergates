@@ -7,7 +7,10 @@ import "context"
 // GitRepository which is cloned from SCM
 type GitRepository interface {
 	ListAllFiles(commit string) ([]string, error)
+	// Commit returns a GitCommit object of the SHA
 	Commit(commit string) (GitCommit, error)
+	HeadCommit() string
+	Branch() string
 }
 
 // GitCommit object
@@ -18,4 +21,5 @@ type GitCommit interface {
 // Git interact with SCM with plain git commands
 type Git interface {
 	Clone(ctx context.Context, URL, token string) (GitRepository, error)
+	PlainOpen(ctx context.Context, path string) (GitRepository, error)
 }

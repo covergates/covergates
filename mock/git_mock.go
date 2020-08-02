@@ -34,6 +34,20 @@ func (m *MockGitRepository) EXPECT() *MockGitRepositoryMockRecorder {
 	return m.recorder
 }
 
+// Branch mocks base method
+func (m *MockGitRepository) Branch() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Branch")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// Branch indicates an expected call of Branch
+func (mr *MockGitRepositoryMockRecorder) Branch() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Branch", reflect.TypeOf((*MockGitRepository)(nil).Branch))
+}
+
 // Commit mocks base method
 func (m *MockGitRepository) Commit(arg0 string) (core.GitCommit, error) {
 	m.ctrl.T.Helper()
@@ -47,6 +61,20 @@ func (m *MockGitRepository) Commit(arg0 string) (core.GitCommit, error) {
 func (mr *MockGitRepositoryMockRecorder) Commit(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Commit", reflect.TypeOf((*MockGitRepository)(nil).Commit), arg0)
+}
+
+// HeadCommit mocks base method
+func (m *MockGitRepository) HeadCommit() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HeadCommit")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// HeadCommit indicates an expected call of HeadCommit
+func (mr *MockGitRepositoryMockRecorder) HeadCommit() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HeadCommit", reflect.TypeOf((*MockGitRepository)(nil).HeadCommit))
 }
 
 // ListAllFiles mocks base method
@@ -100,6 +128,21 @@ func (m *MockGit) Clone(arg0 context.Context, arg1, arg2 string) (core.GitReposi
 func (mr *MockGitMockRecorder) Clone(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clone", reflect.TypeOf((*MockGit)(nil).Clone), arg0, arg1, arg2)
+}
+
+// PlainOpen mocks base method
+func (m *MockGit) PlainOpen(arg0 context.Context, arg1 string) (core.GitRepository, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PlainOpen", arg0, arg1)
+	ret0, _ := ret[0].(core.GitRepository)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PlainOpen indicates an expected call of PlainOpen
+func (mr *MockGitMockRecorder) PlainOpen(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlainOpen", reflect.TypeOf((*MockGit)(nil).PlainOpen), arg0, arg1)
 }
 
 // MockGitCommit is a mock of GitCommit interface

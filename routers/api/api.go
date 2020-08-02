@@ -66,7 +66,6 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 	{
 		g := g.Group("/reports")
 		g.POST("/:id", report.HandleUpload(
-			r.SCMService,
 			r.CoverageService,
 			r.RepoStore,
 			r.ReportStore,

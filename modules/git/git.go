@@ -29,3 +29,14 @@ func (s *Service) Clone(ctx context.Context, URL, token string) (core.GitReposit
 		gitRepository: repo,
 	}, nil
 }
+
+// PlainOpen a repository
+func (s *Service) PlainOpen(ctx context.Context, path string) (core.GitRepository, error) {
+	repo, err := git.PlainOpenWithOptions(path, &git.PlainOpenOptions{DetectDotGit: true})
+	if err != nil {
+		return nil, err
+	}
+	return &repository{
+		gitRepository: repo,
+	}, nil
+}

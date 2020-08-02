@@ -32,6 +32,7 @@ type HookEvent interface{}
 type PullRequestHook struct {
 	Number int
 	Merged bool
+	// Commit SHA of source branch head
 	Commit string
 	Source string
 	Target string

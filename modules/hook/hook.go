@@ -93,7 +93,13 @@ func (s *Service) resolvePullRequest(ctx context.Context, repo *core.Repo, hook 
 		Commit:   hook.Commit,
 	})
 	if err != nil {
-		return err
+		reports, err = s.ReportStore.Finds(&core.Report{
+			ReportID: repo.ReportID,
+			Branch:   hook.Source,
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	for _, report := range reports {
@@ -102,14 +108,13 @@ func (s *Service) resolvePullRequest(ctx context.Context, repo *core.Repo, hook 
 			Branch:   hook.Target,
 			Type:     report.Type,
 		})
-		if err != nil {
-			report.Branch = hook.Target
-		} else {
-			report, err = s.ReportService.MergeReport(previous, report, changes)
-			if err != nil {
+		if err == nil {
+			if report, err = s.ReportService.MergeReport(previous, report, changes); err != nil {
 				return err
 			}
 		}
+		report.Branch = hook.Target
+		report.Commit = hook.Commit
 		// TODO: need to use transation to prevent error occur in the middle
 		if err := s.ReportStore.Upload(report); err != nil {
 			return err
