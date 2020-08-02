@@ -49,7 +49,16 @@ jobs:
         env:
           GITEA_SECRET: ${{ secrets.GITEA_SECRET }}
         run: |
-          go test -tags="gitea" ./...
+          go test -tags="gitea" -coverprofile=coverage.out ./...
+
+      - name: Go Report
+        if: env.BUILD_TYPE == 'BACKEND'
+        uses: covergates/github-actions@v1
+        with:
+          report-id: "bsi5dvi23akg00a0tgl0"
+          report-type: "go"
+          report-file: "./coverage.out"
+          pull-request: "true"
 
       - name: Setup NPM
         if: env.BUILD_TYPE == 'FRONTEND'
