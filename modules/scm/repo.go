@@ -85,7 +85,7 @@ func (service *repoService) CloneURL(
 
 func (service *repoService) CreateHook(ctx context.Context, user *core.User, name string) (*core.Hook, error) {
 	target := fmt.Sprintf(
-		"%s/repos/%s/%s/hook",
+		"%s/api/v1/repos/%s/%s/hook",
 		service.config.Server.URL(),
 		string(service.scm),
 		name,
