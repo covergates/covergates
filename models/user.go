@@ -49,8 +49,29 @@ func (store *UserStore) Create(scm core.SCMProvider, user *scm.User, token *core
 	return session.Create(u).Error
 }
 
+// Update user with new token
+func (store *UserStore) Update(scm core.SCMProvider, user *scm.User, token *core.Token) error {
+	session := store.DB.Session()
+	u, err := store.findWithSCM(scm, user)
+	if err != nil {
+		return err
+	}
+	if err := u.updateWithSCM(scm, user, token); err != nil {
+		return err
+	}
+	return session.Save(u).Error
+}
+
 // Find user with SCM information
 func (store *UserStore) Find(scm core.SCMProvider, user *scm.User) (*core.User, error) {
+	u, err := store.findWithSCM(scm, user)
+	if err != nil {
+		return nil, err
+	}
+	return u.toCoreUser(), nil
+}
+
+func (store *UserStore) findWithSCM(scm core.SCMProvider, user *scm.User) (*User, error) {
 	session := store.DB.Session()
 	var condition *User
 	switch scm {
@@ -71,7 +92,7 @@ func (store *UserStore) Find(scm core.SCMProvider, user *scm.User) (*core.User, 
 	if err := session.Where(condition).First(u).Error; err != nil {
 		return nil, err
 	}
-	return u.toCoreUser(), nil
+	return u, nil
 }
 
 // Bind a new user from another SCM to registered user
