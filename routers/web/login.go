@@ -41,7 +41,7 @@ func HandleLogin(
 			user, err = client.Users().Bind(ctx, user, token)
 			session.EndBindUser(c)
 		} else {
-			user, err = createUser(ctx, client, token)
+			user, err = createOrUpdateUser(ctx, client, token)
 		}
 
 		if err != nil {
@@ -57,10 +57,12 @@ func HandleLogin(
 	}
 }
 
-func createUser(ctx context.Context, client core.Client, token *core.Token) (*core.User, error) {
+func createOrUpdateUser(ctx context.Context, client core.Client, token *core.Token) (*core.User, error) {
 	user, err := client.Users().Find(ctx, token)
 	if err != nil {
 		user, err = client.Users().Create(ctx, token)
+	} else {
+		user, err = client.Users().Update(ctx, token)
 	}
 	return user, err
 }

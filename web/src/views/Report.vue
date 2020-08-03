@@ -67,7 +67,8 @@ export default class ReportView extends Vue {
       {
         key: 'Overview',
         link: {
-          name: 'report-overview'
+          name: 'report-overview',
+          query: this.$route.query
         }
       }
     ];
@@ -75,11 +76,17 @@ export default class ReportView extends Vue {
       options.push({
         key: 'Code',
         link: {
-          name: 'report-code'
+          name: 'report-code',
+          query: this.$route.query
         }
       });
     }
-    if (this.repo && this.user && this.owner) {
+    if (
+      this.repo &&
+      this.user &&
+      this.owner &&
+      Object.keys(this.$route.query).length === 0
+    ) {
       options.push({
         key: 'Setting',
         link: {

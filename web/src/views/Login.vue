@@ -3,7 +3,7 @@
     <v-main>
       <v-container class="fill-height">
         <v-row align="center" justify="center">
-          <v-col cols="4">
+          <v-col cols="12" md="4">
             <v-card>
               <v-card-title>Login</v-card-title>
               <v-card-text class="d-flex flex-column">

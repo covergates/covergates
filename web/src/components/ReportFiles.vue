@@ -14,7 +14,7 @@
     >
       <template v-slot:item.name="{ item }">
         <span class="file-icon fiv-viv mr-5" :class="[fileIcon(item.name)]"></span>
-        <router-link :append="true" :to="item.name">{{item.name}}</router-link>
+        <router-link :append="true" :to="fileLink(item)">{{item.name}}</router-link>
       </template>
     </v-data-table>
   </v-container>
@@ -22,6 +22,7 @@
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
+import { Location } from 'vue-router';
 import Vue from '@/vue';
 
 type FileInfo = {
@@ -100,6 +101,13 @@ export default class ReportFiles extends Vue {
     const ext = name.split('.').pop();
     return `fiv-icon-${ext}`;
   }
+
+  fileLink(file: FileInfo): Location {
+    return {
+      path: file.name,
+      query: this.$route.query
+    };
+  }
 }
 </script>
 
@@ -109,14 +117,6 @@ export default class ReportFiles extends Vue {
 ::v-deep table {
   border-collapse: collapse !important;
 }
-// ::v-deep .v-data-table-header {
-// tr {
-//   background-color: $table-header-background !important;
-//   th {
-//     background-color: inherit !important;
-//   }
-// }
-// }
 
 .file-icon {
   font-size: 20px;

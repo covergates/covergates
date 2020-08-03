@@ -1,4 +1,4 @@
-<h1> <img src="https://covergates.com/logo.png" alt="logo" width="48" height=48> Covergates - Portal Gates to Code Quality</h1>
+<h1> <img src="https://covergates.com/logo.png" alt="logo" width="48" height=48> Covergates - Portal Gates to Coverage Reports</h1>
 
 [![badge](https://covergates.com/api/v1/reports/bsi5dvi23akg00a0tgl0/badge?)](https://covergates.com/report/github/covergates/covergates)
 ![CI](https://github.com/covergates/covergates/workflows/CI/badge.svg)

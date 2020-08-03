@@ -41,27 +41,35 @@ describe('RepoListItem.vue', () => {
     expect(icons.at(0).text()).toBe('mdi-source-repository');
   });
 
-  it('route to root if repository undefined', () => {
+  it('route to root if repository undefined', async () => {
     const wrapper = shallowMount(RepoListItem, {
       localVue,
-      vuetify
+      vuetify,
+      propsData: {
+        repo: {
+          ReportID: 'abc'
+        } as Repository
+      }
     });
+    await wrapper.vm.$nextTick();
     const button = wrapper.findComponent({
       ref: 'goto'
     });
     expect(button.attributes('to')).toBe('/');
   });
 
-  it('route to root if repository has no name', () => {
+  it('route to root if repository has no name', async () => {
     const wrapper = shallowMount(RepoListItem, {
       localVue,
       vuetify,
       propsData: {
         repo: {
-          SCM: 'gitea'
-        }
+          SCM: 'gitea',
+          ReportID: 'abc'
+        } as Repository
       }
     });
+    await wrapper.vm.$nextTick();
     const button = wrapper.findComponent({
       ref: 'goto'
     });
@@ -73,7 +81,7 @@ describe('RepoListItem.vue', () => {
       localVue,
       vuetify
     });
-    const activateBtn = wrapper.findComponent({
+    let activateBtn = wrapper.findComponent({
       ref: 'activate'
     });
     expect(activateBtn.element).toBeVisible();
@@ -82,7 +90,11 @@ describe('RepoListItem.vue', () => {
         ReportID: '1234'
       } as Repository
     });
-    expect(activateBtn.element).not.toBeVisible();
+    await wrapper.vm.$nextTick();
+    activateBtn = wrapper.findComponent({
+      ref: 'activate'
+    });
+    expect(activateBtn.element).not.toBeDefined();
   });
 
   it('handle repository activation fails', async () => {
@@ -126,7 +138,7 @@ describe('RepoListItem.vue', () => {
     expect(snackBar.element).toHaveTextContent(/500/);
   });
 
-  it('show route link button when activate successfully', () => {
+  it('show route link button when activate successfully', async () => {
     const wrapper = shallowMount(RepoListItem, {
       localVue,
       vuetify,
@@ -139,20 +151,23 @@ describe('RepoListItem.vue', () => {
         } as Repository
       }
     });
+    await wrapper.vm.$nextTick();
     const mockGet = jest.spyOn(axios, 'get');
     const mockPatch = jest.spyOn(axios, 'patch');
     mockGet.mockResolvedValueOnce({});
     mockPatch.mockResolvedValueOnce({});
 
-    const activateBtn = wrapper.findComponent({ ref: 'activate' });
-    const routeBtn = wrapper.findComponent({ ref: 'goto' });
-    expect(routeBtn.element).not.toBeVisible();
+    let activateBtn = wrapper.findComponent({ ref: 'activate' });
+    let routeBtn = wrapper.findComponent({ ref: 'goto' });
+    expect(routeBtn.element).not.toBeDefined();
     activateBtn.vm.$emit('click');
     return flushPromises().then(() => {
+      routeBtn = wrapper.findComponent({ ref: 'goto' });
+      activateBtn = wrapper.findComponent({ ref: 'activate' });
       expect(mockGet).toHaveBeenCalled();
       expect(mockPatch).toHaveBeenCalled();
       expect(routeBtn.element).toBeVisible();
-      expect(activateBtn.element).not.toBeVisible();
+      expect(activateBtn.element).not.toBeDefined();
     });
   });
 });

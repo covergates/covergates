@@ -1,8 +1,6 @@
 package login
 
 import (
-	"strings"
-
 	"github.com/covergates/covergates/config"
 	"github.com/covergates/covergates/core"
 	"github.com/drone/go-login/login"
@@ -38,7 +36,7 @@ func (m *middleware) Handler(scm core.SCMProvider) login.Middleware {
 			ClientSecret: m.config.Gitea.ClientSecret,
 			Server:       m.config.Gitea.Server,
 			Scope:        m.config.Gitea.Scope,
-			RedirectURL:  strings.Trim(m.config.Server.Addr, "/") + "/login/gitea",
+			RedirectURL:  m.config.Server.URL() + "/login/gitea",
 			Client:       BasicClient(m.config.Gitea.SkipVerity),
 		}
 	}

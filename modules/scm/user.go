@@ -61,3 +61,14 @@ func (service *userService) Bind(ctx context.Context, user *core.User, token *co
 	}
 	return service.store.Bind(service.scm, user, scmUser, token)
 }
+
+func (service *userService) Update(ctx context.Context, token *core.Token) (*core.User, error) {
+	user, err := service.find(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+	if err := service.store.Update(service.scm, user, token); err != nil {
+		return nil, err
+	}
+	return service.store.Find(service.scm, user)
+}

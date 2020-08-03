@@ -41,8 +41,16 @@
     <v-card flat>
       <v-card-title>Webhook</v-card-title>
       <v-divider />
-      <v-card-text>
+      <v-card-text class="d-flex align-center">
         <hook-button />
+        <v-switch
+          :loading="loading"
+          value
+          v-model="autoMerge"
+          label="Auto Merge Report"
+          class="mx-5"
+          @change="saveAutoMerge"
+        ></v-switch>
       </v-card-text>
     </v-card>
     <v-card flat>
@@ -53,7 +61,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn class="mr-5" @click="saveSetting" :loading="loading" :disabled="!repo" small>save</v-btn>
+        <v-btn class="mr-5" @click="saveFilters" :loading="loading" :disabled="!repo" small>save</v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -78,16 +86,20 @@ Provide a regular expression each line.
 export default class ReportSetting extends Vue {
   private filters: string;
   private hint: string;
+  private autoMerge: boolean;
   private loading: boolean;
   constructor() {
     super();
     this.filters = '';
     this.hint = defaultHint;
     this.loading = false;
+    this.autoMerge = false;
   }
 
   mounted() {
     this.filters = this.filterText;
+    this.autoMerge =
+      this.setting && this.setting.mergePR ? this.setting.mergePR : false;
   }
 
   get repo(): Repository | undefined {
@@ -136,18 +148,32 @@ export default class ReportSetting extends Vue {
   @Watch('setting', { deep: true })
   onSettingUpdate() {
     this.filters = this.filterText;
+    this.autoMerge =
+      this.setting && this.setting.mergePR ? this.setting.mergePR : false;
   }
 
-  saveSetting() {
+  saveFilters() {
+    const setting = this.setting
+      ? this.setting
+      : ({ filters: [] } as RepositorySetting);
+    setting.filters = this.filters.trim().split('\n');
+    this.saveSetting(setting);
+  }
+
+  saveAutoMerge() {
+    const setting = this.setting
+      ? this.setting
+      : ({ mergePR: false } as RepositorySetting);
+    setting.mergePR = this.autoMerge;
+    this.saveSetting(setting);
+  }
+
+  saveSetting(setting: RepositorySetting) {
     if (this.repo === undefined) {
       return;
     }
     const base = this.$store.state.base;
-    const setting = this.setting
-      ? this.setting
-      : ({ filters: [] } as RepositorySetting);
     const { SCM, NameSpace, Name } = this.repo;
-    setting.filters = this.filters.trim().split('\n');
     this.loading = true;
     this.$http
       .post(`${base}/api/v1/repos/${SCM}/${NameSpace}/${Name}/setting`, setting)

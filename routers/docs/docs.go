@@ -48,6 +48,18 @@ var doc = `{
                         "description": "get latest report in main branch",
                         "name": "latest",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "get report for given commit SHA",
+                        "name": "commit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "get latest report for given branch",
+                        "name": "branch",
+                        "in": "query"
                     }
                 ],
                 "responses": {
