@@ -184,7 +184,7 @@ func HandleGet(
 		}
 		if err != nil {
 			c.Error(err)
-			c.JSON(400, []*core.Report{})
+			c.JSON(404, []*core.Report{})
 			return
 		}
 		c.JSON(200, reports)
