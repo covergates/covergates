@@ -129,8 +129,7 @@ func HandleRepo(store core.RepoStore) gin.HandlerFunc {
 
 type getOptions struct {
 	Latest bool   `form:"latest"`
-	Commit string `form:"commit"`
-	Branch string `form:"branch"`
+	Ref    string `form:"ref"`
 }
 
 // HandleGet for the report id
@@ -138,8 +137,7 @@ type getOptions struct {
 // @Tags Report
 // @Param id path string true "report id"
 // @Param latest query bool false "get latest report in main branch"
-// @Param commit query string false "get report for given commit SHA"
-// @Param branch query string false "get latest report for given branch"
+// @Param ref query string false "get report for git ref"
 // @Success 200 {object} core.Report "coverage report"
 // @Router /reports/{id} [get]
 func HandleGet(
@@ -167,16 +165,9 @@ func HandleGet(
 			if report, err = getLatest(reportStore, repoStore, reportID); err == nil {
 				reports = []*core.Report{report}
 			}
-		} else if option.Commit != "" {
+		} else if option.Ref != "" {
 			var report *core.Report
-			seed := &core.Report{ReportID: reportID, Commit: option.Commit}
-			if report, err = reportStore.Find(seed); err == nil {
-				reports = []*core.Report{report}
-			}
-		} else if option.Branch != "" {
-			var report *core.Report
-			seed := &core.Report{ReportID: reportID, Branch: option.Branch}
-			if report, err = reportStore.Find(seed); err == nil {
+			if report, err = getRef(reportStore, reportID, option.Ref); err == nil {
 				reports = []*core.Report{report}
 			}
 		} else {
@@ -374,6 +365,20 @@ func getLatest(reportStore core.ReportStore, repoStore core.RepoStore, reportID 
 		ReportID: reportID,
 		Branch:   repo.Branch,
 	})
+}
+
+func getRef(store core.ReportStore, reportID, ref string) (*core.Report, error) {
+	var report *core.Report
+	var err error
+	seed := &core.Report{ReportID: reportID, Commit: ref}
+	if report, err = store.Find(seed); err == nil {
+		return report, err
+	}
+	seed = &core.Report{ReportID: reportID, Branch: ref}
+	if report, err = store.Find(seed); err == nil {
+		return report, err
+	}
+	return nil, err
 }
 
 // getAll reports related to given reportID

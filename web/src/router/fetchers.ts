@@ -13,7 +13,8 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
           store.dispatch(
             Actions.FETCH_REPORT_CURRENT,
             {
-              ReportID: (store.state as State).repository.current?.ReportID
+              ReportID: (store.state as State).repository.current?.ReportID,
+              Ref: to.query.ref
             } as FetchReportOption
           )
             .then(() => {

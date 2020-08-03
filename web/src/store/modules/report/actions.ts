@@ -7,18 +7,15 @@ import { reasonToError } from '@/plugins/http';
 
 export type FetchReportOption = {
   ReportID: string;
-  Commit?: string;
-  Branch?: string;
+  Ref?: string;
 };
 
 export function fetchCurrentReport<S extends ReportState, R extends RootState>(context: ActionContext<S, R>, option: FetchReportOption): Promise<void> {
   return new Promise((resolve) => {
     context.commit(Mutations.START_REPORT_LOADING);
     const params: Record<string, string | boolean> = {};
-    if (option.Branch) {
-      params.branch = option.Branch;
-    } else if (option.Commit) {
-      params.commit = option.Commit;
+    if (option.Ref) {
+      params.ref = option.Ref;
     } else {
       params.latest = true;
     }

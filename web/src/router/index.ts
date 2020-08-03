@@ -41,7 +41,7 @@ const routes: Array<RouteConfig> = [
         beforeEnter: fetchCurrentRepository(store),
         children: [
           {
-            path: '',
+            path: '/report/:scm/:namespace/:name',
             name: 'report-overview',
             component: () => import('@/components/ReportOverview.vue')
           },
