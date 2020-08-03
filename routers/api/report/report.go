@@ -128,7 +128,9 @@ func HandleRepo(store core.RepoStore) gin.HandlerFunc {
 }
 
 type getOptions struct {
-	Latest bool `form:"latest"`
+	Latest bool   `form:"latest"`
+	Commit string `form:"commit"`
+	Branch string `form:"branch"`
 }
 
 // HandleGet for the report id
@@ -136,6 +138,8 @@ type getOptions struct {
 // @Tags Report
 // @Param id path string true "report id"
 // @Param latest query bool false "get latest report in main branch"
+// @Param commit query string false "get report for given commit SHA"
+// @Param branch query string false "get latest report for given branch"
 // @Success 200 {object} core.Report "coverage report"
 // @Router /reports/{id} [get]
 func HandleGet(
@@ -156,22 +160,34 @@ func HandleGet(
 			return
 		}
 		// TODO: support multiple type (language) reports in one repository
+		var err error
+		var reports []*core.Report
 		if option.Latest {
-			report, err := getLatest(reportStore, repoStore, reportID)
-			if err != nil {
-				c.JSON(404, []*core.Report{})
-			} else {
-				c.JSON(200, []*core.Report{report})
+			var report *core.Report
+			if report, err = getLatest(reportStore, repoStore, reportID); err == nil {
+				reports = []*core.Report{report}
+			}
+		} else if option.Commit != "" {
+			var report *core.Report
+			seed := &core.Report{ReportID: reportID, Commit: option.Commit}
+			if report, err = reportStore.Find(seed); err == nil {
+				reports = []*core.Report{report}
+			}
+		} else if option.Branch != "" {
+			var report *core.Report
+			seed := &core.Report{ReportID: reportID, Branch: option.Branch}
+			if report, err = reportStore.Find(seed); err == nil {
+				reports = []*core.Report{report}
 			}
 		} else {
-			reports, err := getAll(reportStore, reportID)
-			if err != nil {
-				c.JSON(400, []*core.Report{})
-			} else {
-				c.JSON(200, reports)
-			}
+			reports, err = getAll(reportStore, reportID)
 		}
-		return
+		if err != nil {
+			c.Error(err)
+			c.JSON(400, []*core.Report{})
+			return
+		}
+		c.JSON(200, reports)
 	}
 }
 

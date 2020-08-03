@@ -5,13 +5,25 @@ import { ReportState, Mutations } from '.';
 import { RootState } from '@/store';
 import { reasonToError } from '@/plugins/http';
 
-export function fetchCurrentReport<S extends ReportState, R extends RootState>(context: ActionContext<S, R>, reportID: string): Promise<void> {
+export type FetchReportOption = {
+  ReportID: string;
+  Commit?: string;
+  Branch?: string;
+};
+
+export function fetchCurrentReport<S extends ReportState, R extends RootState>(context: ActionContext<S, R>, option: FetchReportOption): Promise<void> {
   return new Promise((resolve) => {
     context.commit(Mutations.START_REPORT_LOADING);
-    Axios.get<Report[]>(`${context.rootState.base}/api/v1/reports/${reportID}`, {
-      params: {
-        latest: true
-      }
+    const params: Record<string, string | boolean> = {};
+    if (option.Branch) {
+      params.branch = option.Branch;
+    } else if (option.Commit) {
+      params.commit = option.Commit;
+    } else {
+      params.latest = true;
+    }
+    Axios.get<Report[]>(`${context.rootState.base}/api/v1/reports/${option.ReportID}`, {
+      params: params
     })
       .then((response) => {
         if (response.data.length <= 0) {
