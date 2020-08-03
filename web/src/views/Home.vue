@@ -7,7 +7,7 @@
         </v-avatar>
         <span class="text-h2 font-weight-bold">Covergates</span>
       </v-row>
-      <v-banner class="text-center primary--text">The portal gates to good code quality.</v-banner>
+      <v-banner class="text-center primary--text">The portal gates to coverage reports.</v-banner>
       <v-row justify="center" class="ma-10">
         <v-col
           cols="12"
