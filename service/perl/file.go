@@ -1,6 +1,9 @@
 package perl
 
-import "github.com/covergates/covergates/core"
+import (
+	"github.com/covergates/covergates/core"
+	log "github.com/sirupsen/logrus"
+)
 
 // FileCollection of Perl source codes
 type FileCollection struct {
@@ -19,7 +22,15 @@ func newStatementHits(digest *coverDigest) []*core.StatementHit {
 
 func newFile(name string, count *coverCount, digest *coverDigest) *core.File {
 	statements := newStatementHits(digest)
+	if len(count.Statement) > len(statements) {
+		log.Warningf("%s statement count does match to digest, will ignore extra statements", name)
+		log.Debug(count)
+		log.Debug(digest)
+	}
 	for i, c := range count.Statement {
+		if i >= len(statements) {
+			continue
+		}
 		statements[i].Hits = c
 	}
 	return &core.File{

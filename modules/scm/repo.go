@@ -30,12 +30,19 @@ func (service *repoService) List(
 ) ([]*core.Repo, error) {
 	client := service.client
 	ctx = withUser(ctx, service.scm, user)
-	result, _, err := client.Repositories.List(ctx, scm.ListOptions{Size: 100})
-	if err != nil {
-		return nil, err
+	results := make([]*scm.Repository, 0)
+	for i := 0; i < 5; i++ {
+		repos, _, err := client.Repositories.List(ctx, scm.ListOptions{Size: 50, Page: i})
+		if err != nil {
+			return nil, err
+		}
+		if len(repos) <= 0 {
+			break
+		}
+		results = append(results, repos...)
 	}
-	repositories := make([]*core.Repo, len(result))
-	for i, r := range result {
+	repositories := make([]*core.Repo, len(results))
+	for i, r := range results {
 		repositories[i] = &core.Repo{
 			NameSpace: r.Namespace,
 			Name:      r.Name,

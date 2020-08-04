@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 
 	"github.com/covergates/covergates/config"
 	"github.com/covergates/covergates/core"
@@ -198,6 +199,7 @@ func HandleGetTreeMap(
 	return func(c *gin.Context) {
 		reportID := c.Param("id")
 		source := c.Param("source")
+		source = strings.TrimLeft(source, "/")
 		new, err := reportStore.Find(&core.Report{
 			ReportID: reportID,
 			Branch:   source,
