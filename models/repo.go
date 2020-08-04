@@ -116,7 +116,7 @@ func (store *RepoStore) Creator(repo *core.Repo) (*core.User, error) {
 	user := &User{
 		Login: r.Creator,
 	}
-	if err := session.First(user).Error; err != nil {
+	if err := session.First(user, user).Error; err != nil {
 		return nil, err
 	}
 	return user.toCoreUser(), nil
