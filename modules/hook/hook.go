@@ -85,7 +85,8 @@ func (s *Service) resolvePullRequest(ctx context.Context, repo *core.Repo, hook 
 	}
 	changes, err := client.PullRequests().ListChanges(ctx, user, repo.FullName(), hook.Number)
 	if err != nil {
-		return err
+		// TODO: Gitea does not support ListChanges, need to find alternative solution
+		changes = []*core.FileChange{}
 	}
 
 	reports, err := s.ReportStore.Finds(&core.Report{

@@ -36,6 +36,14 @@ func (service *webhookService) Parse(req *http.Request) (core.HookEvent, error) 
 				Source: event.PullRequest.Source,
 				Target: event.PullRequest.Target,
 			}, nil
+		} else if service.scm == core.Gitea && event.Action == scm.ActionClose {
+			return &core.PullRequestHook{
+				Number: event.PullRequest.Number,
+				Merged: true,
+				Commit: event.PullRequest.Sha,
+				Source: event.PullRequest.Source,
+				Target: event.PullRequest.Target,
+			}, nil
 		}
 	}
 	return nil, errWebhookNotSuport
