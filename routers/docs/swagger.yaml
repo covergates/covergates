@@ -85,6 +85,14 @@ paths:
         in: query
         name: latest
         type: boolean
+      - description: get report for given commit SHA
+        in: query
+        name: commit
+        type: string
+      - description: get latest report for given branch
+        in: query
+        name: branch
+        type: string
       responses:
         "200":
           description: coverage report

@@ -1,6 +1,7 @@
 import { Route, NavigationGuardNext } from 'vue-router';
 import { Store } from 'vuex';
 import { RootState, Actions, State } from '@/store';
+import { FetchReportOption } from '@/store/modules/report/actions';
 
 type RouteHandler = (to: Route, from: Route, next: NavigationGuardNext) => void;
 
@@ -11,7 +12,11 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
         if ((store.state as State).repository.current) {
           store.dispatch(
             Actions.FETCH_REPORT_CURRENT,
-            (store.state as State).repository.current?.ReportID)
+            {
+              ReportID: (store.state as State).repository.current?.ReportID,
+              Ref: to.query.ref
+            } as FetchReportOption
+          )
             .then(() => {
               store.dispatch(Actions.FETCH_REPOSITORY_OWNER);
             });

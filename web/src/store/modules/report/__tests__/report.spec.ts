@@ -21,7 +21,7 @@ describe('store.module.report.actions', () => {
       status: 200,
       data: [report]
     } as AxiosResponse);
-    return fetchCurrentReport(context, '1234').then(() => {
+    return fetchCurrentReport(context, { ReportID: '1234' }).then(() => {
       expect(context.commit).toHaveBeenCalledWith(Mutations.SET_REPORT_CURRENT, report);
     });
   });
@@ -33,7 +33,7 @@ describe('store.module.report.actions', () => {
         status: 404
       }
     } as AxiosError);
-    return fetchCurrentReport(context, '1234').then(() => {
+    return fetchCurrentReport(context, { ReportID: '1234' }).then(() => {
       expect(context.commit).toHaveBeenNthCalledWith(1, Mutations.START_REPORT_LOADING);
       expect(context.commit).toHaveBeenCalledWith(
         Mutations.SET_REPORT_ERROR, expect.any(Error));
