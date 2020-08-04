@@ -31,7 +31,7 @@ func (service *repoService) List(
 	client := service.client
 	ctx = withUser(ctx, service.scm, user)
 	results := make([]*scm.Repository, 0)
-	for i := 0; i < 5; i++ {
+	for i := 1; i < 5; i++ {
 		repos, _, err := client.Repositories.List(ctx, scm.ListOptions{Size: 50, Page: i})
 		if err != nil {
 			return nil, err
