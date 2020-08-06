@@ -9,10 +9,14 @@
 - [ ] Support C [googletest](https://testing.googleblog.com/2014/07/measuring-coverage-at-google.html)
 - [x] Enable webhook to create comment on pull request
 - [ ] Enable multiple language coverage report
-- [ ] Enable auto merge with previous coverage report
-- [ ] Provide a way to update SCM account's authorization
+- [x] Enable auto merge with previous coverage report
+
+    enable webhook, need testing
+
+- [x] Provide a way to update SCM account's authorization
 - [ ] Support ignore pattern for the repository
 - [ ] Frontend page to review report for given commit
 - [ ] Report upload authorization check
-- [ ] Optimized upload report flow, improve performance
+- [x] Optimized upload report flow, improve performance
 - [x] Documentation (Environment setup and contribution guide)
+- [ ] Database Migration

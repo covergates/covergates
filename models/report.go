@@ -12,6 +12,8 @@ import (
 
 var errReportFields = errors.New("Error Report Fields")
 
+type reportList []*Report
+
 // Report holds the test coverage report
 type Report struct {
 	gorm.Model
@@ -92,7 +94,7 @@ func (store *ReportStore) Find(r *core.Report) (*core.Report, error) {
 		}
 		ref := &Reference{ReportID: r.ReportID, Name: r.Reference}
 		session = session.Preload("Reports", func(db *gorm.DB) *gorm.DB {
-			return db.Where(query(r)).Order("created_at desc")
+			return db.Where(query(r)).Order("created_at desc").Limit(50)
 		}).First(ref, &ref)
 		if err := session.Error; err != nil {
 			return nil, err
@@ -113,7 +115,7 @@ func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
 	var rst []*Report
 
 	if r.Reference == "" {
-		if err := session.Where(query(r)).Find(&rst).Error; err != nil {
+		if err := session.Where(query(r)).Order("created_at desc").Limit(100).Find(&rst).Error; err != nil {
 			return nil, err
 		}
 	} else {
@@ -123,7 +125,7 @@ func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
 		}
 		ref := &Reference{ReportID: r.ReportID, Name: r.Reference}
 		session = session.Preload("Reports", func(db *gorm.DB) *gorm.DB {
-			return db.Where(query(r)).Order("created_at desc")
+			return db.Where(query(r)).Order("created_at desc").Limit(100)
 		}).First(ref, &ref)
 		if err := session.Error; err != nil {
 			return nil, err
@@ -139,6 +141,35 @@ func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
 		reports[i].Reference = r.Reference
 	}
 	return reports, nil
+}
+
+// List reports with reference
+//
+// reference (ref) could be commit SHA, branch or tag name.
+// The files and data field will be remove from result to reduce memory usage.
+func (store *ReportStore) List(reportID, ref string) ([]*core.Report, error) {
+	session := store.DB.Session()
+	var reports reportList
+	condition := &Report{ReportID: reportID, Commit: ref}
+	err := session.Where(condition).Order(
+		"created_at desc",
+	).Limit(100).Find(&reports).Error
+	if err == nil && len(reports) > 0 {
+		return reports.ToCoreReports(""), nil
+	}
+	reference := &Reference{ReportID: reportID, Name: ref}
+	session = store.DB.Session().Preload("Reports", func(db *gorm.DB) *gorm.DB {
+		return db.Order(
+			"created_at desc",
+		).Limit(200)
+	}).First(reference, &reference)
+	if err := session.Error; err != nil {
+		return nil, err
+	}
+	if len(reference.Reports) <= 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+	return reportList(reference.Reports).ToCoreReports(ref), nil
 }
 
 // CreateComment of the report summary
@@ -203,6 +234,26 @@ func (r *Report) ToCoreReport() *core.Report {
 		CreatedAt: r.CreatedAt,
 	}
 	return report
+}
+
+func (r reportList) ToCoreReports(ref string) []*core.Report {
+	result := make([]*core.Report, len(r))
+	for i, report := range r {
+		cov, err := report.CoverageReport()
+		if err != nil {
+			cov = &core.CoverageReport{}
+		}
+		result[i] = &core.Report{
+			Commit:    report.Commit,
+			Reference: ref,
+			ReportID:  report.ReportID,
+			Type:      core.ReportType(report.Type),
+			Coverage: &core.CoverageReport{
+				StatementCoverage: cov.StatementCoverage,
+			},
+		}
+	}
+	return result
 }
 
 func query(r *core.Report) *Report {
