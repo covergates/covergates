@@ -30,8 +30,6 @@ definitions:
     type: object
   core.Report:
     properties:
-      branch:
-        type: string
       commit:
         type: string
       coverage:
@@ -42,9 +40,9 @@ definitions:
         items:
           type: string
         type: array
-      reportID:
+      reference:
         type: string
-      tag:
+      reportID:
         type: string
       type:
         type: ReportType
@@ -85,13 +83,9 @@ paths:
         in: query
         name: latest
         type: boolean
-      - description: get report for given commit SHA
+      - description: get report for git ref
         in: query
-        name: commit
-        type: string
-      - description: get latest report for given branch
-        in: query
-        name: branch
+        name: ref
         type: string
       responses:
         "200":
@@ -123,13 +117,9 @@ paths:
         name: type
         required: true
         type: string
-      - description: branch ref
+      - description: ref
         in: formData
-        name: branch
-        type: string
-      - description: tag ref
-        in: formData
-        name: tag
+        name: ref
         type: string
       - description: files list of the repository
         in: formData
@@ -208,7 +198,7 @@ paths:
       summary: get repository of the report id
       tags:
       - Report
-  /reports/{id}/treemap/{source}:
+  /reports/{id}/treemap/{ref}:
     get:
       parameters:
       - description: report id

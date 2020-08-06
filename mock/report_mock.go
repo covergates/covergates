@@ -94,6 +94,21 @@ func (mr *MockReportStoreMockRecorder) Finds(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Finds", reflect.TypeOf((*MockReportStore)(nil).Finds), arg0)
 }
 
+// List mocks base method
+func (m *MockReportStore) List(arg0, arg1 string) ([]*core.Report, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", arg0, arg1)
+	ret0, _ := ret[0].([]*core.Report)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List
+func (mr *MockReportStoreMockRecorder) List(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockReportStore)(nil).List), arg0, arg1)
+}
+
 // Upload mocks base method
 func (m *MockReportStore) Upload(arg0 *core.Report) error {
 	m.ctrl.T.Helper()

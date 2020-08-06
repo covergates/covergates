@@ -29,6 +29,22 @@ func (r reportSlice) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
 
+func testExpectReports(t *testing.T, expect, results reportSlice) {
+	now := time.Now()
+	for _, report := range results {
+		report.CreatedAt = now
+		report.Coverage = nil
+	}
+	for _, report := range expect {
+		report.CreatedAt = now
+	}
+	sort.Sort(results)
+	sort.Sort(expect)
+	if diff := cmp.Diff(expect, results); diff != "" {
+		t.Fatal(diff)
+	}
+}
+
 func TestReportStoreUpload(t *testing.T) {
 	ctrl, service := getDatabaseService(t)
 	defer ctrl.Finish()
@@ -251,7 +267,6 @@ func TestReportFinds(t *testing.T) {
 	defer ctrl.Finish()
 	store := &ReportStore{DB: db}
 	id := "TestReportFinds"
-	now := time.Now()
 	reports := reportSlice{
 		{
 			ReportID: id + "1",
@@ -354,19 +369,95 @@ func TestReportFinds(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			for _, result := range results {
-				result.CreatedAt = now
-				result.Coverage = nil
-			}
-			for _, r := range expect {
-				r.CreatedAt = now
-			}
-			sort.Sort(reportSlice(results))
-			sort.Sort(expect)
-			if diff := cmp.Diff(expect, reportSlice(results)); diff != "" {
-				t.Fatal(diff)
-			}
+			testExpectReports(t, expect, reportSlice(results))
 		})
+	}
+}
+
+func TestReportList(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &ReportStore{DB: db}
+	id := "TestReportList"
+	reports := reportSlice{
+		{
+			ReportID: id + "1",
+			Commit:   "commit1",
+			Type:     core.ReportPerl,
+		},
+		{
+			ReportID: id + "1",
+			Commit:   "commit1",
+			Type:     core.ReportGo,
+		},
+		{
+			ReportID:  id + "2",
+			Commit:    "commit1",
+			Type:      core.ReportGo,
+			Reference: "master",
+		},
+		{
+			ReportID:  id + "2",
+			Commit:    "commit2",
+			Type:      core.ReportGo,
+			Reference: "master",
+		},
+	}
+
+	queries := [][]string{
+		{id + "1", "commit1"},
+		{id + "2", "commit2"},
+		{id + "2", "master"},
+	}
+
+	expectations := []reportSlice{
+		{
+			{
+				ReportID: id + "1",
+				Commit:   "commit1",
+				Type:     core.ReportPerl,
+			},
+			{
+				ReportID: id + "1",
+				Commit:   "commit1",
+				Type:     core.ReportGo,
+			},
+		},
+		{
+			{
+				ReportID: id + "2",
+				Commit:   "commit2",
+				Type:     core.ReportGo,
+			},
+		},
+		{
+			{
+				ReportID:  id + "2",
+				Commit:    "commit1",
+				Type:      core.ReportGo,
+				Reference: "master",
+			},
+			{
+				ReportID:  id + "2",
+				Commit:    "commit2",
+				Type:      core.ReportGo,
+				Reference: "master",
+			},
+		},
+	}
+
+	for _, report := range reports {
+		if err := store.Upload(report); err != nil {
+			t.Fatal(err)
+		}
+	}
+	base := 0
+	for i, query := range queries[base:] {
+		result, err := store.List(query[0], query[1])
+		if err != nil {
+			t.Fatal(err)
+		}
+		testExpectReports(t, expectations[i+base], reportSlice(result))
 	}
 }
 

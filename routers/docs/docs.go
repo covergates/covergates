@@ -51,14 +51,8 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "get report for given commit SHA",
-                        "name": "commit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "get latest report for given branch",
-                        "name": "branch",
+                        "description": "get report for git ref",
+                        "name": "ref",
                         "in": "query"
                     }
                 ],
@@ -107,14 +101,8 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "branch ref",
-                        "name": "branch",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "tag ref",
-                        "name": "tag",
+                        "description": "ref",
+                        "name": "ref",
                         "in": "formData"
                     },
                     {
@@ -234,7 +222,7 @@ var doc = `{
                 }
             }
         },
-        "/reports/{id}/treemap/{source}": {
+        "/reports/{id}/treemap/{ref}": {
             "get": {
                 "produces": [
                     "image/svg+xml"
@@ -850,9 +838,6 @@ var doc = `{
         "core.Report": {
             "type": "object",
             "properties": {
-                "branch": {
-                    "type": "string"
-                },
                 "commit": {
                     "type": "string"
                 },
@@ -868,10 +853,10 @@ var doc = `{
                         "type": "string"
                     }
                 },
-                "reportID": {
+                "reference": {
                     "type": "string"
                 },
-                "tag": {
+                "reportID": {
                     "type": "string"
                 },
                 "type": {

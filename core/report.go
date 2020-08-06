@@ -55,6 +55,8 @@ type ReportStore interface {
 	Upload(r *Report) error
 	Find(r *Report) (*Report, error)
 	Finds(r *Report) ([]*Report, error)
+	// List reports with reference (commit, branch or tag)
+	List(reportID, ref string) ([]*Report, error)
 	CreateComment(r *Report, comment *ReportComment) error
 	FindComment(r *Report, number int) (*ReportComment, error)
 }
