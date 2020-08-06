@@ -17,9 +17,8 @@ type Report struct {
 	Files     []string        `json:"files"`
 	Type      ReportType      `json:"type"`
 	ReportID  string          `json:"reportID"`
-	Branch    string          `json:"branch"`
-	Tag       string          `json:"tag"`
 	Commit    string          `json:"commit"`
+	Reference string          `json:"reference"`
 	CreatedAt time.Time       `json:"createdAt"`
 }
 

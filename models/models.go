@@ -32,6 +32,7 @@ func init() {
 	tables = append(tables,
 		&Report{},
 		&ReportComment{},
+		&Reference{},
 		&User{},
 		&Repo{},
 		&RepoSetting{},

@@ -54,12 +54,12 @@ func TestUpload(t *testing.T) {
 		Branch:    "bear",
 	}
 	report := &core.Report{
-		ReportID: "1234",
-		Type:     core.ReportPerl,
-		Coverage: coverage,
-		Commit:   "abcdef",
-		Branch:   "bear",
-		Files:    []string{"a"},
+		ReportID:  "1234",
+		Type:      core.ReportPerl,
+		Coverage:  coverage,
+		Commit:    "abcdef",
+		Reference: "bear",
+		Files:     []string{"a"},
 	}
 
 	mockRepoStore.EXPECT().Find(
@@ -103,7 +103,7 @@ func TestUpload(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	w.WriteField("branch", "bear")
+	w.WriteField("ref", "bear")
 	w.WriteField("files", string(files))
 	file := bytes.NewBuffer([]byte("mock"))
 	addFormFile(w, "file", "cover_db.zip", file)
@@ -169,8 +169,8 @@ func TestGet(t *testing.T) {
 	}
 
 	report := &core.Report{
-		ReportID: "1234",
-		Branch:   "master",
+		ReportID:  "1234",
+		Reference: "master",
 	}
 
 	reportStore := mock.NewMockReportStore(ctrl)
@@ -181,8 +181,8 @@ func TestGet(t *testing.T) {
 		ReportID: repo.ReportID,
 	})).AnyTimes().Return(repo, nil)
 	reportStore.EXPECT().Find(gomock.Eq(&core.Report{
-		ReportID: report.ReportID,
-		Branch:   repo.Branch,
+		ReportID:  report.ReportID,
+		Reference: repo.Branch,
 	})).Return(report, nil)
 	r := gin.Default()
 	r.GET("/reports/:id", HandleGet(reportStore, repoStore, service))
@@ -312,16 +312,16 @@ func TestGetTreeMap(t *testing.T) {
 		Branch:   "master",
 	}
 	old := &core.Report{
-		Coverage: &core.CoverageReport{},
-		ReportID: reportID,
-		Branch:   "master",
-		Commit:   "old",
+		Coverage:  &core.CoverageReport{},
+		ReportID:  reportID,
+		Reference: "master",
+		Commit:    "old",
 	}
 	new := &core.Report{
-		Coverage: &core.CoverageReport{},
-		ReportID: reportID,
-		Branch:   "new",
-		Commit:   "new",
+		Coverage:  &core.CoverageReport{},
+		ReportID:  reportID,
+		Reference: "new",
+		Commit:    "new",
 	}
 
 	repoStore.EXPECT().Find(gomock.Eq(&core.Repo{
@@ -329,13 +329,13 @@ func TestGetTreeMap(t *testing.T) {
 	})).Return(repo, nil)
 
 	reportStore.EXPECT().Find(gomock.Eq(&core.Report{
-		ReportID: reportID,
-		Branch:   repo.Branch,
+		ReportID:  reportID,
+		Reference: repo.Branch,
 	})).Return(old, nil)
 
 	reportStore.EXPECT().Find(gomock.Eq(&core.Report{
-		ReportID: reportID,
-		Branch:   new.Branch,
+		ReportID:  reportID,
+		Reference: new.Reference,
 	})).Return(new, nil)
 	chartService.EXPECT().CoverageDiffTreeMap(
 		gomock.Eq(old.Coverage),
@@ -350,7 +350,7 @@ func TestGetTreeMap(t *testing.T) {
 	).Return(nil)
 
 	r := gin.Default()
-	r.GET("/reports/:id/treemap/:source", HandleGetTreeMap(
+	r.GET("/reports/:id/treemap/*ref", HandleGetTreeMap(
 		reportStore,
 		repoStore,
 		chartService,
@@ -359,7 +359,7 @@ func TestGetTreeMap(t *testing.T) {
 	req, _ := http.NewRequest("GET", fmt.Sprintf(
 		"/reports/%s/treemap/%s",
 		reportID,
-		new.Branch,
+		new.Reference,
 	), nil)
 	testRequest(r, req, func(w *httptest.ResponseRecorder) {
 		rst := w.Result()

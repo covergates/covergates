@@ -83,7 +83,7 @@ func upload(c *cli.Context) error {
 	form := util.FormData{
 		"type":   c.String("type"),
 		"commit": repo.HeadCommit(),
-		"branch": branch,
+		"ref":    branch,
 		"files":  string(filesData),
 		"file": util.FormFile{
 			Name: "report",
