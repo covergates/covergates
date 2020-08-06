@@ -7,6 +7,7 @@ import (
 
 	"github.com/covergates/covergates/core"
 	"github.com/jinzhu/gorm"
+	log "github.com/sirupsen/logrus"
 )
 
 var errReportFields = errors.New("Error Report Fields")
@@ -14,13 +15,20 @@ var errReportFields = errors.New("Error Report Fields")
 // Report holds the test coverage report
 type Report struct {
 	gorm.Model
-	Data     []byte
-	FileData []byte
-	Type     string `gorm:"unique_index:report_record"`
-	ReportID string `gorm:"unique_index:report_record"`
-	Branch   string `gorm:"index"`
-	Tag      string `gorm:"index"`
-	Commit   string `gorm:"unique_index:report_record"`
+	Data       []byte
+	FileData   []byte
+	Type       string       `gorm:"unique_index:report_record"`
+	ReportID   string       `gorm:"unique_index:report_record"`
+	References []*Reference `gorm:"many2many:report_reference"`
+	Commit     string       `gorm:"unique_index:report_record"`
+}
+
+// Reference of Report, such as branch or tag name
+type Reference struct {
+	gorm.Model
+	ReportID string    `gorm:"unique_index:reference_record"`
+	Name     string    `gorm:"unique_index:reference_record"`
+	Reports  []*Report `gorm:"many2many:report_reference"`
 }
 
 // ReportComment defines summary report comment in the pull request
@@ -45,11 +53,25 @@ func (store *ReportStore) Upload(r *core.Report) error {
 		return errReportFields
 	}
 	session := store.DB.Session()
+	if r.Reference != "" {
+		session = session.Preload("References", "name=?", r.Reference)
+	}
 	report := &Report{}
 	session.FirstOrCreate(report, &Report{
 		ReportID: r.ReportID,
 		Commit:   r.Commit,
+		Type:     string(r.Type),
 	})
+	if len(report.References) <= 0 && r.Reference != "" {
+		session := store.DB.Session()
+		ref := &Reference{Name: r.Reference, ReportID: r.ReportID}
+		if err := session.FirstOrCreate(ref, &ref).Error; err != nil {
+			return err
+		}
+		if err := session.Model(&report).Association("References").Append(ref).Error; err != nil {
+			return err
+		}
+	}
 	copyReport(report, r)
 	return session.Save(report).Error
 }
@@ -57,25 +79,64 @@ func (store *ReportStore) Upload(r *core.Report) error {
 // Find report with the input seed. No-empty filed will use as where condition
 func (store *ReportStore) Find(r *core.Report) (*core.Report, error) {
 	session := store.DB.Session()
-	rst := &Report{}
-	session = session.Order("created_at desc").First(rst, query(r))
-	if err := session.Error; err != nil {
-		return nil, err
+	target := &Report{}
+	if r.Reference == "" {
+		session = session.Order("created_at desc").First(target, query(r))
+		if err := session.Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if r.ReportID == "" {
+			log.Warning("report id should not be empty when search with reference")
+			return nil, gorm.ErrRecordNotFound
+		}
+		ref := &Reference{ReportID: r.ReportID, Name: r.Reference}
+		session = session.Preload("Reports", func(db *gorm.DB) *gorm.DB {
+			return db.Where(query(r)).Order("created_at desc")
+		}).First(ref, &ref)
+		if err := session.Error; err != nil {
+			return nil, err
+		}
+		if len(ref.Reports) <= 0 {
+			return nil, gorm.ErrRecordNotFound
+		}
+		target = ref.Reports[0]
 	}
-	return rst.ToCoreReport(), nil
+	report := target.ToCoreReport()
+	report.Reference = r.Reference
+	return report, nil
 }
 
 // Finds all report with given seed
 func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
-	// TODO: add testcase to find multiple types report with same uniq index
 	session := store.DB.Session()
 	var rst []*Report
-	if err := session.Find(&rst, query(r)).Error; err != nil {
-		return nil, err
+
+	if r.Reference == "" {
+		if err := session.Where(query(r)).Find(&rst).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if r.ReportID == "" {
+			log.Warning("report id should not be empty when search with reference")
+			return nil, gorm.ErrRecordNotFound
+		}
+		ref := &Reference{ReportID: r.ReportID, Name: r.Reference}
+		session = session.Preload("Reports", func(db *gorm.DB) *gorm.DB {
+			return db.Where(query(r)).Order("created_at desc")
+		}).First(ref, &ref)
+		if err := session.Error; err != nil {
+			return nil, err
+		}
+		if len(ref.Reports) <= 0 {
+			return nil, gorm.ErrRecordNotFound
+		}
+		rst = ref.Reports
 	}
 	reports := make([]*core.Report, len(rst))
 	for i, report := range rst {
 		reports[i] = report.ToCoreReport()
+		reports[i].Reference = r.Reference
 	}
 	return reports, nil
 }
@@ -135,10 +196,8 @@ func (r *Report) ToCoreReport() *core.Report {
 	}
 	report := &core.Report{
 		Coverage:  coverage,
-		Branch:    r.Branch,
 		Commit:    r.Commit,
 		ReportID:  r.ReportID,
-		Tag:       r.Tag,
 		Files:     files,
 		Type:      core.ReportType(r.Type),
 		CreatedAt: r.CreatedAt,
@@ -148,10 +207,8 @@ func (r *Report) ToCoreReport() *core.Report {
 
 func query(r *core.Report) *Report {
 	return &Report{
-		Branch:   r.Branch,
 		Commit:   r.Commit,
 		ReportID: r.ReportID,
-		Tag:      r.Tag,
 		Type:     string(r.Type),
 	}
 }
@@ -165,8 +222,6 @@ func copyReport(dst *Report, src *core.Report) {
 	if err != nil {
 		files = []byte{}
 	}
-	dst.Branch = src.Branch
-	dst.Tag = src.Tag
 	dst.Commit = src.Commit
 	dst.ReportID = src.ReportID
 	dst.Type = string(src.Type)

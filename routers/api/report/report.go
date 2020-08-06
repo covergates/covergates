@@ -23,8 +23,7 @@ import (
 // @Param file formData file true "report"
 // @Param commit formData string true "Git commit SHA"
 // @Param type formData string true "report type"
-// @Param branch formData string false "branch ref"
-// @Param tag formData string false "tag ref"
+// @Param ref formData string false "ref"
 // @Param files formData string false "files list of the repository"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "error message"
@@ -47,7 +46,7 @@ func HandleUpload(
 		}
 
 		reportID := c.Param("id")
-		branch := c.PostForm("branch")
+		ref := c.PostForm("ref")
 		reportType := core.ReportType(c.PostForm("type"))
 		commit := c.PostForm("commit")
 		ctx := c.Request.Context()
@@ -91,13 +90,12 @@ func HandleUpload(
 		}
 
 		report := &core.Report{
-			ReportID: reportID,
-			Coverage: coverage,
-			Files:    files,
-			Type:     reportType,
-			Branch:   branch,
-			Tag:      c.PostForm("tag"),
-			Commit:   commit,
+			ReportID:  reportID,
+			Coverage:  coverage,
+			Files:     files,
+			Type:      reportType,
+			Reference: ref,
+			Commit:    commit,
 		}
 		if err := reportStore.Upload(report); err != nil {
 			c.Error(err)
@@ -190,7 +188,7 @@ func HandleGet(
 // @Param id path string true "report id"
 // @param source path string true "source branch"
 // @Success 200 {object} string "treemap svg"
-// @Router /reports/{id}/treemap/{source} [get]
+// @Router /reports/{id}/treemap/{ref} [get]
 func HandleGetTreeMap(
 	reportStore core.ReportStore,
 	repoStore core.RepoStore,
@@ -198,11 +196,10 @@ func HandleGetTreeMap(
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		reportID := c.Param("id")
-		source := c.Param("source")
-		source = strings.TrimLeft(source, "/")
+		ref := strings.Trim(c.Param("ref"), "/")
 		new, err := reportStore.Find(&core.Report{
-			ReportID: reportID,
-			Branch:   source,
+			ReportID:  reportID,
+			Reference: ref,
 		})
 		if err != nil {
 			c.String(500, err.Error())
@@ -270,12 +267,12 @@ func HandleComment(
 		// TODO: handle multiple language repository
 		source, err := reportStore.Find(&core.Report{ReportID: reportID, Commit: pr.Commit})
 		if err != nil {
-			if source, err = reportStore.Find(&core.Report{ReportID: reportID, Branch: pr.Source}); err != nil {
+			if source, err = reportStore.Find(&core.Report{ReportID: reportID, Reference: pr.Source}); err != nil {
 				c.String(500, err.Error())
 				return
 			}
 		}
-		target, err := reportStore.Find(&core.Report{ReportID: reportID, Branch: pr.Target})
+		target, err := reportStore.Find(&core.Report{ReportID: reportID, Reference: pr.Target})
 		if err != nil {
 			target = &core.Report{}
 		}
@@ -292,8 +289,8 @@ func HandleComment(
 			"![treemap](%s/api/v1/reports/%s/treemap/%s?base=%s)\n\n",
 			config.Server.URL(),
 			reportID,
-			source.Branch,
-			target.Branch,
+			source.Reference,
+			target.Reference,
 		),
 		)
 
@@ -364,8 +361,8 @@ func getLatest(reportStore core.ReportStore, repoStore core.RepoStore, reportID 
 		return nil, err
 	}
 	return reportStore.Find(&core.Report{
-		ReportID: reportID,
-		Branch:   repo.Branch,
+		ReportID:  reportID,
+		Reference: repo.Branch,
 	})
 }
 
@@ -376,7 +373,7 @@ func getRef(store core.ReportStore, reportID, ref string) (*core.Report, error) 
 	if report, err = store.Find(seed); err == nil {
 		return report, err
 	}
-	seed = &core.Report{ReportID: reportID, Branch: ref}
+	seed = &core.Report{ReportID: reportID, Reference: ref}
 	if report, err = store.Find(seed); err == nil {
 		return report, err
 	}
