@@ -13,13 +13,12 @@ type FileNameFilters []string
 
 // Report defined the code report structure
 type Report struct {
-	Coverage  *CoverageReport `json:"coverage"`
-	Files     []string        `json:"files"`
-	Type      ReportType      `json:"type"`
-	ReportID  string          `json:"reportID"`
-	Commit    string          `json:"commit"`
-	Reference string          `json:"reference"`
-	CreatedAt time.Time       `json:"createdAt"`
+	Files     []string          `json:"files"`
+	Coverages []*CoverageReport `json:"coverages"`
+	ReportID  string            `json:"reportID"`
+	Commit    string            `json:"commit"`
+	Reference string            `json:"reference"`
+	CreatedAt time.Time         `json:"createdAt"`
 }
 
 // ReportComment in the pull request
@@ -30,8 +29,9 @@ type ReportComment struct {
 
 // CoverageReport defined the code coverage report
 type CoverageReport struct {
-	Files             []*File
-	StatementCoverage float64
+	Files             []*File    `json:"files"`
+	Type              ReportType `json:"type"`
+	StatementCoverage float64    `json:"statementCoverage"`
 }
 
 // CoverageReportDiff defines the difference between coverage reports

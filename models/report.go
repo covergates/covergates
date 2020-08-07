@@ -14,15 +14,24 @@ var errReportFields = errors.New("Error Report Fields")
 
 type reportList []*Report
 
-// Report holds the test coverage report
+// Report holds the report
 type Report struct {
 	gorm.Model
-	Data       []byte
+	// Data       []byte
+	// Type       string       `gorm:"unique_index:report_record"`
 	FileData   []byte
-	Type       string       `gorm:"unique_index:report_record"`
-	ReportID   string       `gorm:"unique_index:report_record"`
+	ReportID   string `gorm:"unique_index:report_record"`
+	Coverages  []*Coverage
 	References []*Reference `gorm:"many2many:report_reference"`
 	Commit     string       `gorm:"unique_index:report_record"`
+}
+
+// Coverage defines test coverage report
+type Coverage struct {
+	gorm.Model
+	Data     []byte
+	Type     string
+	ReportID uint
 }
 
 // Reference of Report, such as branch or tag name
@@ -51,7 +60,7 @@ type ReportStore struct {
 // If the report id and commit is already existed in the table,
 // the report will be updated instead.
 func (store *ReportStore) Upload(r *core.Report) error {
-	if r.ReportID == "" || r.Commit == "" || r.Type == "" {
+	if r.ReportID == "" || r.Commit == "" {
 		return errReportFields
 	}
 	session := store.DB.Session()
@@ -59,18 +68,17 @@ func (store *ReportStore) Upload(r *core.Report) error {
 		session = session.Preload("References", "name=?", r.Reference)
 	}
 	report := &Report{}
-	session.FirstOrCreate(report, &Report{
+	session.Preload("Coverages").FirstOrCreate(report, &Report{
 		ReportID: r.ReportID,
 		Commit:   r.Commit,
-		Type:     string(r.Type),
 	})
 	if len(report.References) <= 0 && r.Reference != "" {
-		session := store.DB.Session()
-		ref := &Reference{Name: r.Reference, ReportID: r.ReportID}
-		if err := session.FirstOrCreate(ref, &ref).Error; err != nil {
+		if err := store.appendReference(report, r.Reference); err != nil {
 			return err
 		}
-		if err := session.Model(&report).Association("References").Append(ref).Error; err != nil {
+	}
+	for _, coverage := range r.Coverages {
+		if err := store.updateCoverage(report, coverage); err != nil {
 			return err
 		}
 	}
@@ -115,7 +123,11 @@ func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
 	var rst []*Report
 
 	if r.Reference == "" {
-		if err := session.Where(query(r)).Order("created_at desc").Limit(100).Find(&rst).Error; err != nil {
+		if err := session.Preload(
+			"Coverages",
+		).Where(query(r)).Order(
+			"created_at desc",
+		).Limit(100).Find(&rst).Error; err != nil {
 			return nil, err
 		}
 	} else {
@@ -126,7 +138,7 @@ func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
 		ref := &Reference{ReportID: r.ReportID, Name: r.Reference}
 		session = session.Preload("Reports", func(db *gorm.DB) *gorm.DB {
 			return db.Where(query(r)).Order("created_at desc").Limit(100)
-		}).First(ref, &ref)
+		}).Preload("Reports.Coverages").First(ref, &ref)
 		if err := session.Error; err != nil {
 			return nil, err
 		}
@@ -151,7 +163,7 @@ func (store *ReportStore) List(reportID, ref string) ([]*core.Report, error) {
 	session := store.DB.Session()
 	var reports reportList
 	condition := &Report{ReportID: reportID, Commit: ref}
-	err := session.Where(condition).Order(
+	err := session.Preload("Coverages").Where(condition).Order(
 		"created_at desc",
 	).Limit(100).Find(&reports).Error
 	if err == nil && len(reports) > 0 {
@@ -162,7 +174,7 @@ func (store *ReportStore) List(reportID, ref string) ([]*core.Report, error) {
 		return db.Order(
 			"created_at desc",
 		).Limit(200)
-	}).First(reference, &reference)
+	}).Preload("Reports.Coverages").First(reference, &reference)
 	if err := session.Error; err != nil {
 		return nil, err
 	}
@@ -201,11 +213,27 @@ func (store *ReportStore) FindComment(r *core.Report, number int) (*core.ReportC
 	}, nil
 }
 
-// CoverageReport un-marshal the coverage data
-func (r *Report) CoverageReport() (*core.CoverageReport, error) {
-	cover := &core.CoverageReport{}
-	err := json.Unmarshal(r.Data, cover)
-	return cover, err
+func (store *ReportStore) updateCoverage(r *Report, cov *core.CoverageReport) error {
+	c, ok := r.find(cov.Type)
+	if err := copyCoverage(c, cov); err != nil {
+		return err
+	}
+	if !ok {
+		r.Coverages = append(r.Coverages, c)
+	}
+	return nil
+}
+
+func (store *ReportStore) appendReference(r *Report, name string) error {
+	if r.ReportID == "" {
+		return errReportFields
+	}
+	session := store.DB.Session()
+	ref := &Reference{Name: name, ReportID: r.ReportID}
+	if err := session.FirstOrCreate(ref, &ref).Error; err != nil {
+		return err
+	}
+	return session.Model(r).Association("References").Append(ref).Error
 }
 
 // Files of the report
@@ -217,41 +245,53 @@ func (r *Report) Files() ([]string, error) {
 
 // ToCoreReport object
 func (r *Report) ToCoreReport() *core.Report {
-	coverage, err := r.CoverageReport()
-	if err != nil {
-		coverage = &core.CoverageReport{}
+	coverages := make([]*core.CoverageReport, len(r.Coverages))
+	for i, coverage := range r.Coverages {
+		c, _ := coverage.ToCoreCoverage()
+		coverages[i] = c
 	}
 	files, err := r.Files()
 	if err != nil {
 		files = []string{}
 	}
 	report := &core.Report{
-		Coverage:  coverage,
 		Commit:    r.Commit,
 		ReportID:  r.ReportID,
 		Files:     files,
-		Type:      core.ReportType(r.Type),
+		Coverages: coverages,
 		CreatedAt: r.CreatedAt,
 	}
 	return report
 }
 
+func (r *Report) find(t core.ReportType) (*Coverage, bool) {
+	for _, coverage := range r.Coverages {
+		if coverage.Type == string(t) {
+			return coverage, true
+		}
+	}
+	return &Coverage{}, false
+}
+
+// ToCoreCoverage unmarshal Coverage Data
+func (c *Coverage) ToCoreCoverage() (*core.CoverageReport, error) {
+	cover := &core.CoverageReport{}
+	cover.Type = core.ReportType(c.Type)
+	if err := json.Unmarshal(c.Data, cover); err != nil {
+		return cover, err
+	}
+	return cover, nil
+}
+
 func (r reportList) ToCoreReports(ref string) []*core.Report {
 	result := make([]*core.Report, len(r))
 	for i, report := range r {
-		cov, err := report.CoverageReport()
-		if err != nil {
-			cov = &core.CoverageReport{}
+		report.FileData = nil
+		for _, coverage := range report.Coverages {
+			coverage.Data = nil
 		}
-		result[i] = &core.Report{
-			Commit:    report.Commit,
-			Reference: ref,
-			ReportID:  report.ReportID,
-			Type:      core.ReportType(report.Type),
-			Coverage: &core.CoverageReport{
-				StatementCoverage: cov.StatementCoverage,
-			},
-		}
+		result[i] = report.ToCoreReport()
+		result[i].Reference = ref
 	}
 	return result
 }
@@ -260,22 +300,25 @@ func query(r *core.Report) *Report {
 	return &Report{
 		Commit:   r.Commit,
 		ReportID: r.ReportID,
-		Type:     string(r.Type),
 	}
 }
 
 func copyReport(dst *Report, src *core.Report) {
-	data, err := json.Marshal(src.Coverage)
-	if err != nil {
-		data = []byte{}
-	}
 	files, err := json.Marshal(src.Files)
 	if err != nil {
 		files = []byte{}
 	}
 	dst.Commit = src.Commit
 	dst.ReportID = src.ReportID
-	dst.Type = string(src.Type)
-	dst.Data = data
 	dst.FileData = files
+}
+
+func copyCoverage(dst *Coverage, src *core.CoverageReport) error {
+	cov, err := json.Marshal(src)
+	if err != nil {
+		return err
+	}
+	dst.Data = cov
+	dst.Type = string(src.Type)
+	return nil
 }
