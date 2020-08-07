@@ -20,12 +20,9 @@ type Service struct{}
 
 // DiffReports coverage differences
 func (service *Service) DiffReports(source, target *core.Report) (*core.CoverageReportDiff, error) {
-	var m filesMap
-	if target != nil && target.Coverage != nil {
-		m = toFilesMap(target.Coverage.Files)
-	}
-	diffFiles := make([]*core.FileDiff, 0, len(source.Coverage.Files))
-	for _, file := range source.Coverage.Files {
+	m := toFilesMap(target)
+	diffFiles := make([]*core.FileDiff, 0)
+	for _, file := range fileSlice(source) {
 		diff := &core.FileDiff{
 			File:                  file,
 			StatementCoverageDiff: file.StatementCoverage,
@@ -44,9 +41,9 @@ func (service *Service) DiffReports(source, target *core.Report) (*core.Coverage
 		}
 		diffFiles = append(diffFiles, diff)
 	}
-	coverageDiff := source.Coverage.StatementCoverage
-	if target != nil && target.Coverage != nil {
-		coverageDiff -= target.Coverage.StatementCoverage
+	coverageDiff := source.StatementCoverage()
+	if target != nil {
+		coverageDiff -= target.StatementCoverage()
 	}
 
 	return &core.CoverageReportDiff{
@@ -58,7 +55,7 @@ func (service *Service) DiffReports(source, target *core.Report) (*core.Coverage
 // MarkdownReport generates coverage summary report in markdown format
 func (service *Service) MarkdownReport(source, target *core.Report) (io.Reader, error) {
 	buf := &bytes.Buffer{}
-	buf.WriteString(fmt.Sprintf("### Coverage: %.1f%%\n\n", source.Coverage.StatementCoverage*100))
+	buf.WriteString(fmt.Sprintf("### Coverage: %.1f%%\n\n", source.StatementCoverage()*100))
 	buf.WriteString("||File|Coverage|\n")
 	buf.WriteString("|--|--|--------|\n")
 	diff, err := service.DiffReports(source, target)
@@ -89,24 +86,47 @@ func (service *Service) MergeReport(from, to *core.Report, changes []*core.FileC
 			deleted[change.Path] = true
 		}
 	}
-	target := toFilesMap(to.Coverage.Files)
-	for _, file := range from.Coverage.Files {
-		if _, ok := deleted[file.Name]; ok {
+	target := toFilesMap(to)
+
+	for _, coverage := range from.Coverages {
+		targetCoverage, ok := to.Find(coverage.Type)
+		if !ok {
+			to.Coverages = append(to.Coverages, coverage)
 			continue
 		}
-		if _, ok := target[file.Name]; ok {
-			continue
+		for _, file := range coverage.Files {
+			if _, ok := deleted[file.Name]; ok {
+				continue
+			}
+			if _, ok := target[file.Name]; ok {
+				continue
+			}
+			targetCoverage.Files = append(targetCoverage.Files, file)
 		}
-		to.Coverage.Files = append(to.Coverage.Files, file)
+		targetCoverage.StatementCoverage = targetCoverage.ComputeStatementCoverage()
 	}
-	to.Coverage.StatementCoverage = to.Coverage.AvgStatementCoverage()
 	return to, nil
 }
 
-func toFilesMap(files []*core.File) filesMap {
+func toFilesMap(r *core.Report) filesMap {
 	m := make(filesMap)
-	for _, file := range files {
-		m[file.Name] = file
+	if r == nil || r.Coverages == nil {
+		return m
+	}
+	for _, coverage := range r.Coverages {
+		for _, file := range coverage.Files {
+			m[file.Name] = file
+		}
 	}
 	return m
+}
+
+func fileSlice(r *core.Report) []*core.File {
+	s := make([]*core.File, 0)
+	for _, coverage := range r.Coverages {
+		for _, file := range coverage.Files {
+			s = append(s, file)
+		}
+	}
+	return s
 }

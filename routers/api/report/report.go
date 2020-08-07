@@ -90,10 +90,11 @@ func HandleUpload(
 		}
 
 		report := &core.Report{
-			ReportID:  reportID,
-			Coverage:  coverage,
+			ReportID: reportID,
+			Coverages: []*core.CoverageReport{
+				coverage,
+			},
 			Files:     files,
-			Type:      reportType,
 			Reference: ref,
 			Commit:    commit,
 		}
@@ -208,10 +209,10 @@ func HandleGetTreeMap(
 		old, err := getLatest(reportStore, repoStore, reportID)
 		if err != nil {
 			old = &core.Report{
-				Coverage: &core.CoverageReport{},
+				Coverages: []*core.CoverageReport{},
 			}
 		}
-		chart := chartService.CoverageDiffTreeMap(old.Coverage, new.Coverage)
+		chart := chartService.CoverageDiffTreeMap(old, new)
 		buffer := bytes.NewBuffer([]byte{})
 		if err := chart.Render(buffer); err != nil {
 			c.String(500, err.Error())
@@ -402,6 +403,7 @@ func loadCoverageReport(
 	if err := service.TrimFileNames(ctx, coverage, setting.Filters); err != nil {
 		return nil, err
 	}
+	coverage.Type = reportType
 	return coverage, nil
 }
 

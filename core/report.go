@@ -68,14 +68,36 @@ type ReportService interface {
 	MergeReport(from, to *Report, changes []*FileChange) (*Report, error)
 }
 
-// AvgStatementCoverage of the report
-func (report *CoverageReport) AvgStatementCoverage() float64 {
-	if len(report.Files) <= 0 {
+// StatementCoverage of the report
+func (report *Report) StatementCoverage() float64 {
+	if len(report.Coverages) <= 0 {
+		return 0.0
+	}
+	sum := 0.0
+	for _, coverage := range report.Coverages {
+		sum += coverage.ComputeStatementCoverage()
+	}
+	return sum / float64(len(report.Coverages))
+}
+
+// Find coverage report of given type
+func (report *Report) Find(t ReportType) (*CoverageReport, bool) {
+	for _, coverage := range report.Coverages {
+		if coverage.Type == t {
+			return coverage, true
+		}
+	}
+	return nil, false
+}
+
+// ComputeStatementCoverage of the report
+func (cov *CoverageReport) ComputeStatementCoverage() float64 {
+	if len(cov.Files) <= 0 {
 		return 0
 	}
 	sum := 0.0
-	for _, file := range report.Files {
+	for _, file := range cov.Files {
 		sum += file.StatementCoverage
 	}
-	return sum / float64(len(report.Files))
+	return sum / float64(len(cov.Files))
 }

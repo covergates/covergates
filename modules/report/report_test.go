@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-const expectMarkdown = `### Coverage: 80.0%
+const expectMarkdown = `### Coverage: 50.0%
 
 ||File|Coverage|
 |--|--|--------|
@@ -17,7 +17,7 @@ const expectMarkdown = `### Coverage: 80.0%
 ||C|0.50|
 `
 
-const expectMarkdownNoTarget = `### Coverage: 80.0%
+const expectMarkdownNoTarget = `### Coverage: 50.0%
 
 ||File|Coverage|
 |--|--|--------|
@@ -28,43 +28,49 @@ const expectMarkdownNoTarget = `### Coverage: 80.0%
 
 func TestMarkdownReport(t *testing.T) {
 	source := &core.Report{
-		Coverage: &core.CoverageReport{
-			StatementCoverage: 0.8,
-			Files: []*core.File{
-				{
-					Name:              "A",
-					StatementCoverage: 1.0,
-				},
-				{
-					Name:              "B",
-					StatementCoverage: 0,
-				},
-				{
-					Name:              "C",
-					StatementCoverage: 0.5,
+		Coverages: []*core.CoverageReport{
+			{
+				StatementCoverage: 0.8,
+				Files: []*core.File{
+					{
+						Name:              "A",
+						StatementCoverage: 1.0,
+					},
+					{
+						Name:              "B",
+						StatementCoverage: 0,
+					},
+					{
+						Name:              "C",
+						StatementCoverage: 0.5,
+					},
 				},
 			},
 		},
 	}
+
 	target := &core.Report{
-		Coverage: &core.CoverageReport{
-			StatementCoverage: 0.8,
-			Files: []*core.File{
-				{
-					Name:              "A",
-					StatementCoverage: 0.8,
-				},
-				{
-					Name:              "B",
-					StatementCoverage: 0.8,
-				},
-				{
-					Name:              "C",
-					StatementCoverage: 0.5,
+		Coverages: []*core.CoverageReport{
+			{
+				StatementCoverage: 0.8,
+				Files: []*core.File{
+					{
+						Name:              "A",
+						StatementCoverage: 0.8,
+					},
+					{
+						Name:              "B",
+						StatementCoverage: 0.8,
+					},
+					{
+						Name:              "C",
+						StatementCoverage: 0.5,
+					},
 				},
 			},
 		},
 	}
+
 	service := &Service{}
 	reader, err := service.MarkdownReport(source, target)
 	if err != nil {
@@ -74,7 +80,7 @@ func TestMarkdownReport(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := cmp.Diff(string(data), expectMarkdown); diff != "" {
+	if diff := cmp.Diff(expectMarkdown, string(data)); diff != "" {
 		t.Log(diff)
 		t.Fail()
 	}
@@ -87,7 +93,7 @@ func TestMarkdownReport(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := cmp.Diff(string(data), expectMarkdownNoTarget); diff != "" {
+	if diff := cmp.Diff(expectMarkdownNoTarget, string(data)); diff != "" {
 		t.Log(diff)
 		t.Fail()
 	}
