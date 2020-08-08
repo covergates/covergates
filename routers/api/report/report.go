@@ -200,10 +200,7 @@ func HandleGetTreeMap(
 	return func(c *gin.Context) {
 		reportID := c.Param("id")
 		ref := strings.Trim(c.Param("ref"), "/")
-		new, err := reportStore.Find(&core.Report{
-			ReportID:  reportID,
-			Reference: ref,
-		})
+		new, err := getRef(reportStore, reportID, ref)
 		if err != nil {
 			c.String(500, err.Error())
 			return
