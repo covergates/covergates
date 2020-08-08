@@ -3,7 +3,8 @@ import VueRouter, { RouteConfig } from 'vue-router';
 import {
   fetchReportSource,
   fetchCurrentRepository,
-  fetchUserSCM
+  fetchUserSCM,
+  fetchNewRepository
 } from './fetchers';
 import store from '@/store';
 
@@ -46,6 +47,11 @@ const routes: Array<RouteConfig> = [
             component: () => import('@/components/ReportOverview.vue')
           },
           {
+            path: 'history',
+            name: 'report-history',
+            component: () => import('@/components/ReportHistory.vue')
+          },
+          {
             path: 'code',
             name: 'report-code',
             meta: { requiresAuth: true },
@@ -85,5 +91,6 @@ const router = new VueRouter({
   base: process.env.NODE_ENV === 'production' ? VUE_BASE : process.env.BASE_URL,
   routes
 });
+router.beforeEach(fetchNewRepository(store));
 
 export default router;
