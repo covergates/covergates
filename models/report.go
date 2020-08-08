@@ -91,7 +91,7 @@ func (store *ReportStore) Find(r *core.Report) (*core.Report, error) {
 	session := store.DB.Session()
 	target := &Report{}
 	if r.Reference == "" {
-		session = session.Order("created_at desc").First(target, query(r))
+		session = session.Preload("Coverages").Order("created_at desc").First(target, query(r))
 		if err := session.Error; err != nil {
 			return nil, err
 		}
@@ -103,7 +103,7 @@ func (store *ReportStore) Find(r *core.Report) (*core.Report, error) {
 		ref := &Reference{ReportID: r.ReportID, Name: r.Reference}
 		session = session.Preload("Reports", func(db *gorm.DB) *gorm.DB {
 			return db.Where(query(r)).Order("created_at desc").Limit(50)
-		}).First(ref, &ref)
+		}).Preload("Reports.Coverages").First(ref, &ref)
 		if err := session.Error; err != nil {
 			return nil, err
 		}
@@ -280,6 +280,7 @@ func (c *Coverage) ToCoreCoverage() (*core.CoverageReport, error) {
 	if err := json.Unmarshal(c.Data, cover); err != nil {
 		return cover, err
 	}
+	cover.StatementCoverage = cover.ComputeStatementCoverage()
 	return cover, nil
 }
 
@@ -287,11 +288,12 @@ func (r reportList) ToCoreReports(ref string) []*core.Report {
 	result := make([]*core.Report, len(r))
 	for i, report := range r {
 		report.FileData = nil
-		for _, coverage := range report.Coverages {
-			coverage.Data = nil
+		coreReport := report.ToCoreReport()
+		for _, coverage := range coreReport.Coverages {
+			coverage.Files = nil
 		}
-		result[i] = report.ToCoreReport()
-		result[i].Reference = ref
+		coreReport.Reference = ref
+		result[i] = coreReport
 	}
 	return result
 }

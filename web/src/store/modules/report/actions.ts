@@ -14,10 +14,9 @@ export function fetchCurrentReport<S extends ReportState, R extends RootState>(c
   return new Promise((resolve) => {
     context.commit(Mutations.START_REPORT_LOADING);
     const params: Record<string, string | boolean> = {};
+    params.latest = true;
     if (option.Ref) {
       params.ref = option.Ref;
-    } else {
-      params.latest = true;
     }
     Axios.get<Report[]>(`${context.rootState.base}/api/v1/reports/${option.ReportID}`, {
       params: params

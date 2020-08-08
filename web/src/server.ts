@@ -99,25 +99,28 @@ if ($s =~ /^t/) {
     const report: Report = {
       commit: '123456',
       reportID: `report${request.params.id}`,
-      coverage: {
-        Files: [
-          {
-            Name: 'main.pl',
-            StatementCoverage: 0.8,
-            StatementHits: [
-              {
-                LineNumber: 1,
-                Hits: 1
-              },
-              {
-                LineNumber: 2,
-                Hits: 1
-              }
-            ]
-          }
-        ],
-        StatementCoverage: 0.8
-      },
+      coverages: [
+        {
+          files: [
+            {
+              Name: 'main.pl',
+              StatementCoverage: 0.8,
+              StatementHits: [
+                {
+                  LineNumber: 1,
+                  Hits: 1
+                },
+                {
+                  LineNumber: 2,
+                  Hits: 1
+                }
+              ]
+            }
+          ],
+          statementCoverage: 0.8,
+          type: 'perl'
+        }
+      ],
       files: ['a', 'b', 'c', 'main.pl']
     };
     return [report];

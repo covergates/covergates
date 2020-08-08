@@ -1,6 +1,8 @@
 package perl
 
 import (
+	"sort"
+
 	"github.com/covergates/covergates/core"
 	log "github.com/sirupsen/logrus"
 )
@@ -9,6 +11,12 @@ import (
 type FileCollection struct {
 	collect map[string][]*core.File
 }
+
+type statementSlice []*core.StatementHit
+
+func (s statementSlice) Len() int           { return len(s) }
+func (s statementSlice) Less(i, j int) bool { return s[i].LineNumber < s[j].LineNumber }
+func (s statementSlice) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func newStatementHits(digest *coverDigest) []*core.StatementHit {
 	statements := make([]*core.StatementHit, len(digest.Statement))
@@ -91,7 +99,25 @@ func mergeFiles(files []*core.File) *core.File {
 func (c *FileCollection) mergedFiles() []*core.File {
 	files := make([]*core.File, 0)
 	for _, collect := range c.collect {
-		files = append(files, mergeFiles(collect))
+		merged := mergeFiles(collect)
+		mergeStatementHist(merged)
+		files = append(files, merged)
 	}
 	return files
+}
+
+func mergeStatementHist(file *core.File) {
+	hitMap := make(map[int]*core.StatementHit)
+	for _, hit := range file.StatementHits {
+		if h, ok := hitMap[hit.LineNumber]; ok {
+			hit.Hits += h.Hits
+		}
+		hitMap[hit.LineNumber] = hit
+	}
+	statements := make(statementSlice, 0)
+	for _, hit := range hitMap {
+		statements = append(statements, hit)
+	}
+	sort.Sort(statements)
+	file.StatementHits = statements
 }

@@ -20,11 +20,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch } from 'vue-property-decorator';
+import { Component, Watch, Mixins } from 'vue-property-decorator';
 import Vue from '@/vue';
+import ReportMixin from '@/mixins/report';
 
 @Component
-export default class ReportSource extends Vue {
+export default class ReportSource extends ((Mixins(
+  ReportMixin
+) as typeof Vue) && ReportMixin) {
   hitMap = {} as { [key: number]: boolean };
 
   mounted() {
@@ -50,14 +53,10 @@ export default class ReportSource extends Vue {
 
   updateHitMap() {
     this.hitMap = {};
-    if (this.report && this.report.coverage && this.report.coverage.Files) {
-      const file = this.report.coverage.Files.find(file => {
-        return file.Name === this.filePath;
-      });
-      if (file) {
-        for (const hit of file.StatementHits) {
-          this.hitMap[hit.LineNumber] = hit.Hits > 0;
-        }
+    const file = this.findSourceFile(this.filePath);
+    if (file) {
+      for (const hit of file.StatementHits) {
+        this.hitMap[hit.LineNumber] = hit.Hits > 0;
       }
     }
   }

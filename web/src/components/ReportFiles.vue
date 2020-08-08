@@ -21,9 +21,10 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator';
+import { Component, Mixins } from 'vue-property-decorator';
 import { Location } from 'vue-router';
 import Vue from '@/vue';
+import ReportMixin from '@/mixins/report';
 
 type FileInfo = {
   name: string;
@@ -32,7 +33,8 @@ type FileInfo = {
 };
 
 @Component
-export default class ReportFiles extends Vue {
+export default class ReportFiles extends ((Mixins(ReportMixin) as typeof Vue) &&
+  ReportMixin) {
   /**
    * Table Headers
    */
@@ -76,20 +78,21 @@ export default class ReportFiles extends Vue {
         };
       }
     }
-    if (this.report.coverage && this.report.coverage.Files) {
-      for (const file of this.report.coverage.Files) {
-        const coverage = Math.round(file.StatementCoverage * 10000) / 100;
-        const hitLine = file.StatementHits.length;
-        if (info[file.Name]) {
-          info[file.Name].coverage = coverage;
-          info[file.Name].hits = hitLine;
-        } else {
-          info[file.Name] = {
-            name: file.Name,
-            coverage: coverage,
-            hits: hitLine
-          };
-        }
+    for (const name in this.$sourceFiles) {
+      const file = this.$sourceFiles[name];
+      const coverage = Math.round(file.StatementCoverage * 10000) / 100;
+      const hitLine = file.StatementHits.filter(hit => {
+        return hit.Hits > 0;
+      }).length;
+      if (info[file.Name]) {
+        info[file.Name].coverage = coverage;
+        info[file.Name].hits = hitLine;
+      } else {
+        info[file.Name] = {
+          name: file.Name,
+          coverage: coverage,
+          hits: hitLine
+        };
       }
     }
     return Object.values(info).sort((a, b) => {

@@ -136,7 +136,7 @@ type getOptions struct {
 // @Summary get reports for the report id
 // @Tags Report
 // @Param id path string true "report id"
-// @Param latest query bool false "get latest report in main branch"
+// @Param latest query bool false "get only the latest report"
 // @Param ref query string false "get report for git ref"
 // @Success 200 {object} core.Report "coverage report"
 // @Router /reports/{id} [get]
@@ -160,16 +160,18 @@ func HandleGet(
 		// TODO: support multiple type (language) reports in one repository
 		var err error
 		var reports []*core.Report
-		if option.Latest {
+		if option.Latest && option.Ref == "" {
 			var report *core.Report
 			if report, err = getLatest(reportStore, repoStore, reportID); err == nil {
 				reports = []*core.Report{report}
 			}
-		} else if option.Ref != "" {
+		} else if option.Latest && option.Ref != "" {
 			var report *core.Report
 			if report, err = getRef(reportStore, reportID, option.Ref); err == nil {
 				reports = []*core.Report{report}
 			}
+		} else if option.Ref != "" {
+			reports, err = reportStore.List(reportID, option.Ref)
 		} else {
 			reports, err = getAll(reportStore, reportID)
 		}
