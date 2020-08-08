@@ -8,6 +8,8 @@ const (
 	ReportPerl ReportType = "perl"
 	// ReportGo language
 	ReportGo ReportType = "go"
+	// ReportPython language
+	ReportPython ReportType = "python"
 )
 
 // SCMProvider of Git service
