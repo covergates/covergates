@@ -17,8 +17,6 @@ type reportList []*Report
 // Report holds the report
 type Report struct {
 	gorm.Model
-	// Data       []byte
-	// Type       string       `gorm:"unique_index:report_record"`
 	FileData   []byte
 	ReportID   string `gorm:"unique_index:report_record"`
 	Coverages  []*Coverage
