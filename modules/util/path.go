@@ -1,6 +1,8 @@
 package util
 
-import "os"
+import (
+	"os"
+)
 
 // IsDir path
 func IsDir(path string) bool {

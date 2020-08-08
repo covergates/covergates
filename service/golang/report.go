@@ -2,19 +2,15 @@ package golang
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"errors"
-	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/covergates/covergates/core"
-	"github.com/covergates/covergates/modules/util"
+	"github.com/covergates/covergates/service/common"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -64,43 +60,12 @@ func (s *CoverageService) Report(ctx context.Context, data io.Reader) (*core.Cov
 
 // Find the golang coverage report
 func (s *CoverageService) Find(ctx context.Context, path string) (string, error) {
-	if !util.IsDir(path) {
-		return path, nil
-	}
-	report := ""
-	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if !info.IsDir() && filepath.Base(path) == "coverage.out" {
-			report = path
-			return io.EOF
-		}
-		return nil
-	})
-	if err != nil && err != io.EOF {
-		return "", err
-	}
-	if report == "" {
-		return report, fmt.Errorf("go coverage report not found")
-	}
-	return report, nil
+	return common.FindReport(path, "coverage.out")
 }
 
 // Open reader of report with given path
 func (s *CoverageService) Open(ctx context.Context, path string) (io.Reader, error) {
-	info, err := os.Stat(path)
-	if err != nil {
-		return nil, err
-	}
-	if info.IsDir() {
-		return nil, fmt.Errorf("%s is not file", path)
-	}
-	file, err := os.Open(path)
-	defer file.Close()
-	buf := &bytes.Buffer{}
-	io.Copy(buf, file)
-	return buf, nil
+	return common.OpenFileReader(path)
 }
 
 func newRecord(line string) (*record, error) {
