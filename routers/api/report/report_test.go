@@ -339,6 +339,13 @@ func TestGetTreeMap(t *testing.T) {
 		ReportID: reportID,
 	})).Return(repo, nil)
 
+	reportStore.EXPECT().Find(gomock.Eq(
+		&core.Report{
+			Commit:   new.Reference,
+			ReportID: new.ReportID,
+		},
+	)).Return(nil, fmt.Errorf(""))
+
 	reportStore.EXPECT().Find(gomock.Eq(&core.Report{
 		ReportID:  reportID,
 		Reference: repo.Branch,
