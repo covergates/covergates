@@ -28,7 +28,7 @@ func HandleGetBadge(
 		}
 		data, err := badge.RenderBytes(
 			"Covergates",
-			fmt.Sprintf("%d%%", int(report.Coverage.StatementCoverage*100)),
+			fmt.Sprintf("%d%%", int(report.StatementCoverage()*100)),
 			"#00838F",
 		)
 		if err != nil {

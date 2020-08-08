@@ -6,6 +6,6 @@ import "github.com/covergates/covergates/core"
 type ChartService struct{}
 
 // CoverageDiffTreeMap of two coverage reports
-func (service *ChartService) CoverageDiffTreeMap(old, new *core.CoverageReport) core.Chart {
+func (service *ChartService) CoverageDiffTreeMap(old, new *core.Report) core.Chart {
 	return NewCoverageDiffTreeMap(old, new)
 }

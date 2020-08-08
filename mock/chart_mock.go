@@ -35,7 +35,7 @@ func (m *MockChartService) EXPECT() *MockChartServiceMockRecorder {
 }
 
 // CoverageDiffTreeMap mocks base method
-func (m *MockChartService) CoverageDiffTreeMap(arg0, arg1 *core.CoverageReport) core.Chart {
+func (m *MockChartService) CoverageDiffTreeMap(arg0, arg1 *core.Report) core.Chart {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CoverageDiffTreeMap", arg0, arg1)
 	ret0, _ := ret[0].(core.Chart)

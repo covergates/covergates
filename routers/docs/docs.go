@@ -45,7 +45,7 @@ var doc = `{
                     },
                     {
                         "type": "boolean",
-                        "description": "get latest report in main branch",
+                        "description": "get only the latest report",
                         "name": "latest",
                         "in": "query"
                     },
@@ -841,8 +841,11 @@ var doc = `{
                 "commit": {
                     "type": "string"
                 },
-                "coverage": {
-                    "type": "CoverageReport"
+                "coverages": {
+                    "type": "array",
+                    "items": {
+                        "type": "CoverageReport"
+                    }
                 },
                 "createdAt": {
                     "type": "string"
@@ -858,9 +861,6 @@ var doc = `{
                 },
                 "reportID": {
                     "type": "string"
-                },
-                "type": {
-                    "type": "ReportType"
                 }
             }
         },

@@ -46,7 +46,9 @@ func TestUpload(t *testing.T) {
 	mockCoverageService := mock.NewMockCoverageService(ctrl)
 	mockReportStore := mock.NewMockReportStore(ctrl)
 	mockRepoStore := mock.NewMockRepoStore(ctrl)
-	coverage := &core.CoverageReport{}
+	coverage := &core.CoverageReport{
+		Type: core.ReportPerl,
+	}
 	repo := &core.Repo{
 		NameSpace: "org",
 		Name:      "repo",
@@ -54,9 +56,10 @@ func TestUpload(t *testing.T) {
 		Branch:    "bear",
 	}
 	report := &core.Report{
-		ReportID:  "1234",
-		Type:      core.ReportPerl,
-		Coverage:  coverage,
+		ReportID: "1234",
+		Coverages: []*core.CoverageReport{
+			coverage,
+		},
 		Commit:    "abcdef",
 		Reference: "bear",
 		Files:     []string{"a"},
@@ -312,13 +315,21 @@ func TestGetTreeMap(t *testing.T) {
 		Branch:   "master",
 	}
 	old := &core.Report{
-		Coverage:  &core.CoverageReport{},
+		Coverages: []*core.CoverageReport{
+			{
+				Type: core.ReportGo,
+			},
+		},
 		ReportID:  reportID,
 		Reference: "master",
 		Commit:    "old",
 	}
 	new := &core.Report{
-		Coverage:  &core.CoverageReport{},
+		Coverages: []*core.CoverageReport{
+			{
+				Type: core.ReportGo,
+			},
+		},
 		ReportID:  reportID,
 		Reference: "new",
 		Commit:    "new",
@@ -338,8 +349,8 @@ func TestGetTreeMap(t *testing.T) {
 		Reference: new.Reference,
 	})).Return(new, nil)
 	chartService.EXPECT().CoverageDiffTreeMap(
-		gomock.Eq(old.Coverage),
-		gomock.Eq(new.Coverage),
+		gomock.Eq(old),
+		gomock.Eq(new),
 	).Return(chart)
 	chart.EXPECT().Render(gomock.Any()).Do(
 		func(w io.Writer) {

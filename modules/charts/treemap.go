@@ -26,19 +26,29 @@ type CoverageDiffTreeMap struct {
 }
 
 // NewCoverageDiffTreeMap with two coverage reports
-func NewCoverageDiffTreeMap(old, new *core.CoverageReport) *CoverageDiffTreeMap {
+func NewCoverageDiffTreeMap(old, new *core.Report) *CoverageDiffTreeMap {
 	oldFiles := make(map[string]*core.File)
 	newFiles := make(map[string]*core.File)
-	for _, file := range old.Files {
+	for _, file := range reportFileSlice(old) {
 		oldFiles[file.Name] = file
 	}
-	for _, file := range new.Files {
+	for _, file := range reportFileSlice(new) {
 		newFiles[file.Name] = file
 	}
 	return &CoverageDiffTreeMap{
 		oldFiles: oldFiles,
 		newFiles: newFiles,
 	}
+}
+
+func reportFileSlice(r *core.Report) []*core.File {
+	s := make([]*core.File, 0)
+	for _, cov := range r.Coverages {
+		for _, file := range cov.Files {
+			s = append(s, file)
+		}
+	}
+	return s
 }
 
 // Render chart to writer

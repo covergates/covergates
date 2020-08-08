@@ -43,15 +43,17 @@ describe('ReportOverview.vue', () => {
       localVue,
       vuetify,
       store
-    }) as Wrapper<ReportOverview & { coverage: number }>;
+    }) as Wrapper<ReportOverview & { $coverage: number }>;
     expect(wrapper.vm.$store.state.report.current).toBeUndefined();
-    expect(wrapper.vm.coverage).toEqual(0);
+    expect(wrapper.vm.$coverage).toEqual(0);
     wrapper.vm.$store.commit(Mutations.SET_REPORT_CURRENT, {
-      coverage: {
-        StatementCoverage: 0.8995
-      }
+      coverages: [
+        {
+          statementCoverage: 0.8995
+        }
+      ]
     } as Report);
     await flushPromises();
-    expect(wrapper.vm.coverage).toEqual(89.95);
+    expect(wrapper.vm.$coverage).toEqual(89.95);
   });
 });

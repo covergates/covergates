@@ -32,17 +32,16 @@ declare interface SourceFile {
 }
 
 declare interface Coverage {
-  Files?: SourceFile[];
-  StatementCoverage: number | 0;
+  files?: SourceFile[];
+  type: string;
+  statementCoverage: number | 0;
 }
 
 declare interface Report {
-  branch?: string;
+  ref?: string;
   commit: string;
-  coverage?: Coverage;
+  coverages: Coverage[];
   reportID: string;
-  tag?: string;
-  type?: string;
   files?: string[];
   createdAt?: string;
 }

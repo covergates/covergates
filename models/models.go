@@ -33,6 +33,7 @@ func init() {
 		&Report{},
 		&ReportComment{},
 		&Reference{},
+		&Coverage{},
 		&User{},
 		&Repo{},
 		&RepoSetting{},

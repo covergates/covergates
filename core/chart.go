@@ -6,7 +6,7 @@ import "io"
 
 // ChartService provides charts
 type ChartService interface {
-	CoverageDiffTreeMap(old, new *CoverageReport) Chart
+	CoverageDiffTreeMap(old, new *Report) Chart
 }
 
 // Chart renders image to writer

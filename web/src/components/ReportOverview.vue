@@ -33,9 +33,9 @@
             :size="100"
             :width="15"
             :rotate="-90"
-            :value="coverage"
+            :value="$coverage"
             color="primary"
-          >{{coverage}}</v-progress-circular>
+          >{{$coverage}}</v-progress-circular>
         </v-sheet>
       </v-row>
     </v-container>
@@ -43,11 +43,12 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator';
+import { Component, Mixins } from 'vue-property-decorator';
 import ICountUp from 'vue-countup-v2';
 import Vue from '@/vue';
 import ReportEmpty from '@/components/ReportEmpty.vue';
 import CommitButton from '@/components/CommitButton.vue';
+import ReportMixin from '@/mixins/report';
 
 @Component({
   name: 'report-overview',
@@ -57,7 +58,9 @@ import CommitButton from '@/components/CommitButton.vue';
     CommitButton
   }
 })
-export default class ReportOverview extends Vue {
+export default class ReportOverview extends ((Mixins(
+  ReportMixin
+) as typeof Vue) && ReportMixin) {
   get repo(): Repository | undefined {
     return this.$store.state.repository.current;
   }
@@ -68,13 +71,6 @@ export default class ReportOverview extends Vue {
 
   get branch(): string {
     return this.repo ? this.repo.Branch : 'Master';
-  }
-
-  get coverage(): number {
-    if (this.report !== undefined && this.report.coverage !== undefined) {
-      return Math.round(this.report.coverage.StatementCoverage * 10000) / 100;
-    }
-    return 0;
   }
 
   get filesCount(): number {

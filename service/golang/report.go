@@ -169,7 +169,7 @@ func (m fileMap) toCoverage() *core.CoverageReport {
 	report := &core.CoverageReport{
 		Files: files,
 	}
-	report.StatementCoverage = report.AvgStatementCoverage()
+	report.StatementCoverage = report.ComputeStatementCoverage()
 	return report
 }
 

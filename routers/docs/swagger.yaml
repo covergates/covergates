@@ -32,8 +32,10 @@ definitions:
     properties:
       commit:
         type: string
-      coverage:
-        type: CoverageReport
+      coverages:
+        items:
+          type: CoverageReport
+        type: array
       createdAt:
         type: string
       files:
@@ -44,8 +46,6 @@ definitions:
         type: string
       reportID:
         type: string
-      type:
-        type: ReportType
     type: object
   user.Providers:
     additionalProperties:
@@ -79,7 +79,7 @@ paths:
         name: id
         required: true
         type: string
-      - description: get latest report in main branch
+      - description: get only the latest report
         in: query
         name: latest
         type: boolean

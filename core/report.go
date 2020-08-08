@@ -13,13 +13,12 @@ type FileNameFilters []string
 
 // Report defined the code report structure
 type Report struct {
-	Coverage  *CoverageReport `json:"coverage"`
-	Files     []string        `json:"files"`
-	Type      ReportType      `json:"type"`
-	ReportID  string          `json:"reportID"`
-	Commit    string          `json:"commit"`
-	Reference string          `json:"reference"`
-	CreatedAt time.Time       `json:"createdAt"`
+	Files     []string          `json:"files"`
+	Coverages []*CoverageReport `json:"coverages"`
+	ReportID  string            `json:"reportID"`
+	Commit    string            `json:"commit"`
+	Reference string            `json:"reference"`
+	CreatedAt time.Time         `json:"createdAt"`
 }
 
 // ReportComment in the pull request
@@ -30,8 +29,9 @@ type ReportComment struct {
 
 // CoverageReport defined the code coverage report
 type CoverageReport struct {
-	Files             []*File
-	StatementCoverage float64
+	Files             []*File    `json:"files"`
+	Type              ReportType `json:"type"`
+	StatementCoverage float64    `json:"statementCoverage"`
 }
 
 // CoverageReportDiff defines the difference between coverage reports
@@ -68,14 +68,36 @@ type ReportService interface {
 	MergeReport(from, to *Report, changes []*FileChange) (*Report, error)
 }
 
-// AvgStatementCoverage of the report
-func (report *CoverageReport) AvgStatementCoverage() float64 {
-	if len(report.Files) <= 0 {
+// StatementCoverage of the report
+func (report *Report) StatementCoverage() float64 {
+	if len(report.Coverages) <= 0 {
+		return 0.0
+	}
+	sum := 0.0
+	for _, coverage := range report.Coverages {
+		sum += coverage.ComputeStatementCoverage()
+	}
+	return sum / float64(len(report.Coverages))
+}
+
+// Find coverage report of given type
+func (report *Report) Find(t ReportType) (*CoverageReport, bool) {
+	for _, coverage := range report.Coverages {
+		if coverage.Type == t {
+			return coverage, true
+		}
+	}
+	return nil, false
+}
+
+// ComputeStatementCoverage of the report
+func (cov *CoverageReport) ComputeStatementCoverage() float64 {
+	if len(cov.Files) <= 0 {
 		return 0
 	}
 	sum := 0.0
-	for _, file := range report.Files {
+	for _, file := range cov.Files {
 		sum += file.StatementCoverage
 	}
-	return sum / float64(len(report.Files))
+	return sum / float64(len(cov.Files))
 }
