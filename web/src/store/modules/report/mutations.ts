@@ -4,6 +4,11 @@ export function setCurrent(state: ReportState, report: Report): void {
   state.current = report;
 }
 
+export function setHistory(state: ReportState, reports: Report[]): void {
+  state.history.splice(0, state.history.length);
+  state.history.push(...reports);
+}
+
 export function startLoading(state: ReportState): void {
   state.loading = true;
 }

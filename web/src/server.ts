@@ -96,34 +96,54 @@ if ($s =~ /^t/) {
     if (request.params.id === 'report1') {
       return new Response(404);
     }
-    const report: Report = {
-      commit: '123456',
-      reportID: `report${request.params.id}`,
-      coverages: [
-        {
-          files: [
-            {
-              Name: 'main.pl',
-              StatementCoverage: 0.8,
-              StatementHits: [
-                {
-                  LineNumber: 1,
-                  Hits: 1
-                },
-                {
-                  LineNumber: 2,
-                  Hits: 1
-                }
-              ]
-            }
-          ],
-          statementCoverage: 0.8,
-          type: 'perl'
-        }
-      ],
-      files: ['a', 'b', 'c', 'main.pl']
-    };
-    return [report];
+    const reports = [] as Report[];
+    if (request.queryParams.latest === 'true') {
+      reports.push({
+        commit: '123456',
+        reportID: `${request.params.id}`,
+        coverages: [
+          {
+            files: [
+              {
+                Name: 'main.pl',
+                StatementCoverage: 0.8,
+                StatementHits: [
+                  {
+                    LineNumber: 1,
+                    Hits: 1
+                  },
+                  {
+                    LineNumber: 2,
+                    Hits: 1
+                  }
+                ]
+              }
+            ],
+            statementCoverage: 0.8,
+            type: 'perl'
+          }
+        ],
+        files: ['a', 'b', 'c', 'main.pl']
+      });
+    } else {
+      for (let i = 10; i >= 0; i--) {
+        reports.push(
+          {
+            commit: `d53dc5fef2832f3846aa1249406d7ddc6fa8fc4${i}`,
+            coverages: [
+              {
+                statementCoverage: i / 10,
+                type: 'perl'
+              }
+            ],
+            reportID: `report${request.params.id}`,
+            createdAt: '2020-07-24 10:40:46.6532307+08:00'
+          }
+        );
+      }
+    }
+
+    return reports;
   });
 }
 

@@ -2,9 +2,15 @@
   <perfect-scrollbar class="page-container">
     <v-container>
       <v-card flat>
-        <v-card-title>
+        <v-card-title class="d-flow align-center">
           <v-icon class="mr-5" size="36">{{avatar}}</v-icon>
-          {{title}}
+          <router-link
+            :to="{name: 'report-overview', query: {}}"
+            class="black--text text-h5 font-weight-bold"
+          >{{title}}</router-link>
+          <v-btn icon class="ml-5" :href="repoURL">
+            <v-icon small>mdi-open-in-new</v-icon>
+          </v-btn>
         </v-card-title>
         <v-tabs v-show="!loading">
           <v-tab v-for="tab in tabs" :key="tab.key" :to="tab.link">{{tab.key}}</v-tab>
@@ -58,8 +64,16 @@ export default class ReportView extends Vue {
     return this.$store.state.report.current;
   }
 
+  get history(): Report[] {
+    return this.$store.state.report.history;
+  }
+
   get user(): User | undefined {
     return this.$store.state.user.current;
+  }
+
+  get repoURL(): string {
+    return this.repo ? this.repo.URL : '';
   }
 
   get tabs(): tabOptions[] {
@@ -77,6 +91,15 @@ export default class ReportView extends Vue {
         key: 'Code',
         link: {
           name: 'report-code',
+          query: this.$route.query
+        }
+      });
+    }
+    if (this.history.length > 0) {
+      options.push({
+        key: 'History',
+        link: {
+          name: 'report-history',
           query: this.$route.query
         }
       });

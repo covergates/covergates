@@ -68,3 +68,23 @@ export function fetchSource<S extends ReportState, R extends RootState>(context:
       });
   });
 }
+
+export function fetchHistory<S extends ReportState, R extends RootState>(context: ActionContext<S, R>, option: FetchReportOption): Promise<void> {
+  return new Promise(resolve => {
+    context.commit(Mutations.START_REPORT_LOADING);
+    const params: Record<string, string | boolean> = {};
+    if (option.Ref) {
+      params.ref = option.Ref;
+    }
+    Axios.get<Report[]>(`${context.rootState.base}/api/v1/reports/${option.ReportID}`, {
+      params: params
+    }).then(response => {
+      context.commit(Mutations.SET_REPORT_HISTORY, response.data);
+    }).catch(() => {
+      context.commit(Mutations.SET_REPORT_HISTORY, []);
+    }).finally(() => {
+      context.commit(Mutations.STOP_REPORT_LOADING);
+      resolve();
+    });
+  });
+}
