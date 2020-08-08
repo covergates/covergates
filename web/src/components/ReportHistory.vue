@@ -10,8 +10,8 @@
         :key="index"
       >
         <v-row class="pt-1">
-          <v-col cols="6" md="2" lg="1" align-self="center" class="text-h4">{{coverage(report)}}%</v-col>
-          <v-col cols="6" md="2" xl="1" class="text-md-center text-xl-left" align-self="center">
+          <v-col cols="6" md="2" xl="1" align-self="center" class="text-h4">{{coverage(report)}}%</v-col>
+          <v-col cols="6" md="3" xl="1" class="text-md-center text-xl-left" align-self="center">
             <v-btn small color="primary" :to="reportLink(report)">{{shortSHA(report)}}</v-btn>
           </v-col>
           <v-col cols="12" md="2" align-self="center">
