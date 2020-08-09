@@ -6,10 +6,11 @@ on:
 env:
   PROJECT_ID: ${{ secrets.RUN_PROJECT }}
   SERVER_API_URL: https://covergates.com/api/v1
+  RELEASE_BRANCH: release
 
 jobs:
   release:
-    name: "release ${{matrix.os}}"
+    name: "Release"
     timeout-minutes: 30
     runs-on: ${{ matrix.os }}
     strategy:
@@ -19,22 +20,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          path: ./go/src/github.com/covergates/covergates
 
       - name: Setup Golang
         uses: actions/setup-go@v2
         with:
           go-version: "1.14"
 
-      - name: Build Ubuntu Binary
-        if: matrix.os == 'ubuntu-latest'
+      - run: go get github.com/karalabe/xgo
+
+      - name: Build Binary
+        working-directory: "./go/src/github.com/covergates/covergates"
         run: |
+          export GOPATH="$GITHUB_WORKSPACE/go"
           export GITHUB_TAG=$(echo $GITHUB_REF | rev | cut -d '/' -f 1| rev)
           go mod vendor
-          zip -r covergates.$GITHUB_TAG.src.zip ./ -x "*.git*" -x "*.zip" -x "*node_modules*"
-          go build -o covergates-server -ldflags="-X main.Version=$GITHUB_TAG" ./cmd/server
-          go build -o covergates -ldflags="-X main.Version=$GITHUB_TAG -X main.CoverGatesAPI=$SERVER_API_URL" ./cmd/cli
-          zip covergates-server.$GITHUB_TAG.ubuntu.zip covergates-server
-          zip covergates.$GITHUB_TAG.ubuntu.zip covergates
+          zip -r "$GITHUB_WORKSPACE/covergates.$GITHUB_TAG.src.zip" ./ -x "*.git*" -x "*.zip" -x "*node_modules*"
+          targets="windows/amd64,windows/386,darwin/amd64,darwin/386,linux/amd64,linux/386"
+          server_flag="-X main.Version=$GITHUB_TAG"
+          cli_flag="-X main.Version=$GITHUB_TAG -X main.CoverGatesAPI=$SERVER_API_URL"
+          xgo -ldflags="$server_flag" --targets="$targets" -out covergates-server ./cmd/server
+          xgo -ldflags="$cli_flag" --targets="$targets" -out covergates ./cmd/cli
+          outputs=(covergates covergates-server)
+          archs=(darwin-10.6-386 darwin-10.6-amd64 linux-386 linux-amd64 windows-4.0-386.exe windows-4.0-amd64.exe)
+          mkdir -p dist
+          for arch in ${archs[@]};do
+            rm -rf ./dist/*
+            for output in ${outputs[@]};do
+              filename="${output}-$arch"
+              ext=$([[ "$filename" != darwin* ]]  && [[ "$filename" = *.* ]] && echo ".${filename##*.}" || echo '')
+              mv -f $filename "./dist/${output}${ext}"
+            done
+            arch=$(echo $arch | sed 's/\.exe//g')
+            cd dist && zip -r "$GITHUB_WORKSPACE/covergates-${GITHUB_TAG}-${arch}.zip" ./ && cd ..
+          done
 
       - name: Upload Binary
         uses: actions/github-script@v2
@@ -68,13 +88,9 @@ jobs:
             });
             const release = response.data.id;
             const url = `https://uploads.github.com/repos/${repo[0]}/${repo[1]}/releases/${release}/assets{?name,label}`;
-            const os = `${process.env.OS_TYPE}`.split('-').shift();
-            const files = [`covergates-server.${tag}.${os}`, `covergates.${tag}.${os}`];
-            if ( process.env.OS_TYPE === 'ubuntu-latest' ) {
-              files.push(`covergates.${tag}.src`);
-            }
-            for (const file of files) {
-              const name = `${file}.zip`;
+            const archs = ['darwin-10.6-386', 'darwin-10.6-amd64', 'linux-386', 'linux-amd64', 'windows-4.0-386', 'windows-4.0-amd64'];
+            for (const arch of archs) {
+              const name = `covergates-${tag}-${arch}.zip`;
               await github.repos.uploadReleaseAsset({
                 url: url,
                 headers: getHeaders(name, name),
@@ -82,6 +98,14 @@ jobs:
                 name: name
               });
             }
+            const src = `covergates.${tag}.src.zip`;
+            await github.repos.uploadReleaseAsset({
+              url: url,
+              headers: getHeaders(src, src),
+              data: fs.createReadStream(src),
+              name: src
+            });
+
   cloudrun:
     name: "Google Cloud Run"
     runs-on: ubuntu-latest
