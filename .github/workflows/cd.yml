@@ -28,10 +28,9 @@ jobs:
       - run: go get github.com/karalabe/xgo
 
       - name: Build Binary
-        env:
-          GOPATH: "${{ env.GITHUB_WORKSPACE }}/go"
         working-directory: "./go/src/github.com/covergates/covergates"
         run: |
+          export GOPATH="$GITHUB_WORKSPACE/go"
           # export GITHUB_TAG=$(echo $GITHUB_REF | rev | cut -d '/' -f 1| rev)
           echo $(pwd)
           export GITHUB_TAG="v0.0.1"
