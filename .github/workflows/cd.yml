@@ -3,6 +3,7 @@ on: push
 env:
   PROJECT_ID: ${{ secrets.RUN_PROJECT }}
   SERVER_API_URL: https://covergates.com/api/v1
+  RELEASE_BRANCH: release-test
 
 jobs:
   release:
@@ -24,10 +25,27 @@ jobs:
 
       - run: go get github.com/karalabe/xgo
 
-      - name: Build Ubuntu Binary
+      - name: Build Binary
         run: |
-          xgo --branch release-test --targets=windows/amd64 -out covergates-server github.com/covergates/covergates/cmd/server
-          zip covergates-server-windows-4.0-amd64.zip covergates-server-windows-4.0-amd64.exe
+          # export GITHUB_TAG=$(echo $GITHUB_REF | rev | cut -d '/' -f 1| rev)
+          export GITHUB_TAG="v0.0.1"
+          targets="windows/amd64,windows/386,darwin/amd64,darwin/386,linux/amd64,linux/386"
+          server_flag="-X main.Version=$GITHUB_TAG"
+          cli_flag="-X main.Version=$GITHUB_TAG -X main.CoverGatesAPI=$SERVER_API_URL"
+          xgo --branch $RELEASE_BRANCH -ldflags=$server_flag --targets=$targets -out covergates-server github.com/covergates/covergates/cmd/server
+          xgo --branch $RELEASE_BRANCH -ldflags=$cli_flag --targets=$targets -out covergates github.com/covergates/covergates/cmd/cli
+          outputs=(covergates covergates-server)
+          archs=(darwin-10.6-386 darwin-10.6-amd64 linux-386 linux-amd64 windows-4.0-386.exe windows-4.0-amd64.exe)
+          mkdir -p dist
+          for arch in ${archs[@]};do
+            rm -rf ./dist/*
+            for output in ${outputs[@]};do
+              filename="${output}-$arch"
+              ext=$([[ "$filename" = *.* ]] && echo ".${filename##*.}" || echo '')
+              mv -f $filename "./dist/${output}${ext}"
+            done
+            cd dist && zip -r "../covergates-${GITHUB_TAG}-${arch%.*}.zip" ./ && cd ..
+          done
 
       - name: Upload Binary
         uses: actions/github-script@v2
@@ -61,9 +79,9 @@ jobs:
             });
             const release = response.data.id;
             const url = `https://uploads.github.com/repos/${repo[0]}/${repo[1]}/releases/${release}/assets{?name,label}`;
-            const files = ['covergates-server-windows-4.0-amd64'];
-            for (const file of files) {
-              const name = `${file}.zip`;
+            const archs = ['darwin-10.6-386', 'darwin-10.6-amd64', 'linux-386', 'linux-amd64', 'windows-4.0-386', 'windows-4.0-amd64'];
+            for (const arch of archs) {
+              const name = `covergates-${arch}.zip`;
               await github.repos.uploadReleaseAsset({
                 url: url,
                 headers: getHeaders(name, name),
