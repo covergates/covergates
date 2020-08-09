@@ -15,7 +15,7 @@
 - [x] Enable auto merge with previous coverage report
 
     enable webhook, need testing
-
+- [ ] Support GitLab
 - [x] Provide a way to update SCM account's authorization
 - [ ] Support ignore pattern for the repository
 - [x] Frontend page to review report for given commit
