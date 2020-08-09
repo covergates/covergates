@@ -41,10 +41,11 @@ jobs:
             rm -rf ./dist/*
             for output in ${outputs[@]};do
               filename="${output}-$arch"
-              ext=$([[ "$filename" = *.* ]] && echo ".${filename##*.}" || echo '')
+              ext=$([[ "$filename" != darwin* ]]  && [[ "$filename" = *.* ]] && echo ".${filename##*.}" || echo '')
               mv -f $filename "./dist/${output}${ext}"
             done
-            cd dist && zip -r "../covergates-${GITHUB_TAG}-${arch%.*}.zip" ./ && cd ..
+            arch=$(echo $arch | sed 's/\.exe//g')
+            cd dist && zip -r "../covergates-${GITHUB_TAG}-${arch}.zip" ./ && cd ..
           done
 
       - name: Upload Binary
