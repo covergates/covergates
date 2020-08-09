@@ -49,7 +49,7 @@ jobs:
             rm -rf ./dist/*
             for output in ${outputs[@]};do
               filename="${output}-$arch"
-              ext=$([[ "$filename" != darwin* ]]  && [[ "$filename" = *.* ]] && echo ".${filename##*.}" || echo '')
+              ext=$([[ "$filename" != *darwin* ]]  && [[ "$filename" = *.* ]] && echo ".${filename##*.}" || echo '')
               mv -f $filename "./dist/${output}${ext}"
             done
             arch=$(echo $arch | sed 's/\.exe//g')
