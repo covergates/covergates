@@ -8,23 +8,33 @@
 
 ## Purpose
 
-Managing coverage reports for private repositories should not be hard!
 **Covergates** is to make the easiest way to setup a self-hosted coverage report service.
+It's an alternative to services, such as:
+
+- [Code Climate](https://codeclimate.com/)
+- [Codecov](https://codecov.io/)
+- [Coveralls](https://coveralls.io/)
+
+The reason why this project is because managing coverage reports for private repositories should not be hard!
+It is able to link with your self-hosted Git service.
 Use it to improve coding review and quality management flow for your internal projects.
 Want to try? Visit [covergates.com](https://covergates.com) before you starting.
 
 ## Using
 
-To start service, download [covergates-server.**version**.**os**.zip](https://github.com/covergates/covergates/releases), and try:
+To get started, please download prebuilt binary [covergates-**version**-**platform**-**architecture**.zip](https://github.com/covergates/covergates/releases) and try:
 
 ```sh
-unzip covergates-server.<version>.<os>.zip
+unzip covergates-<version>-<platform>-<architecture>.zip
 ./covergates-server
 ```
 
-To upload report, download [covergates.**version**.**os**.zip](https://github.com/covergates/covergates/releases). Unzip and place it to `/path/to/bin`. Use it for example:
+Visit [http://localhost:8080](http://localhost:8080) for your **covergates** service.
+
+To upload report, run `covergate` cli:
 
 ```sh
+export API_URL=http://localhost:8080/api/v1
 covergates upload -report <report id> -type go coverage.out
 ```
 
@@ -48,6 +58,31 @@ Below is the list of variables for basic configuration:
 - `GATES_GITHUB_API_SERVER` Default `https://api.github.com`
 - `GATES_GITHUB_CLIENT_ID` Required for GitHub OAuth login
 - `GATES_GITHUB_CLIENT_SECRET` Required for GitHub OAuth login
+
+## Supported SCM and Language
+
+|SCM|Supported|
+|---|---------|
+|GitHub|:heavy_check_mark:|
+|Gitea|:heavy_check_mark:|
+|GitLab|:wrench:, ongoing|
+|Gogs|:x:|
+|Bitbucket|:x:|
+
+
+
+|Language|Supported|Tutorial|
+|--------|---------|--------|
+|Go|:heavy_check_mark:|:wrench:, ongoing|
+|Perl|:heavy_check_mark:|:wrench:, ongoing|
+|Python|:heavy_check_mark:|:wrench:, ongoing|
+|Ruby|:wrench:, ongoing|:heavy_minus_sign:|
+|C|:wrench:, ongoing|:heavy_minus_sign:|
+|Javascript|:wrench:, ongoing|:heavy_minus_sign:|
+
+**Covergates** is at an early development stage.
+Other languages and SCM support is ongoing!
+If you would like to assist with development, please refer to [Contributing Section](#contributing).
 
 ## Development
 
@@ -94,8 +129,7 @@ There are many ways in which you can participate in the project:
 2. [Submit feature requests and bugs](https://github.com/covergates/covergates/issues)
 
     Especially for the new language support.
-    **Covergates** supports `go` and `perl`.
-    It would be great if you could provide coverage report examples for other languages.
+    It would be great if you could provide coverage report examples and how to produce coverage for other languages.
 
 3. Testing, both unit testing and e2e testing are welcome.
 
