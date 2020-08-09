@@ -32,8 +32,8 @@ jobs:
           targets="windows/amd64,windows/386,darwin/amd64,darwin/386,linux/amd64,linux/386"
           server_flag="-X main.Version=$GITHUB_TAG"
           cli_flag="-X main.Version=$GITHUB_TAG -X main.CoverGatesAPI=$SERVER_API_URL"
-          xgo --branch $RELEASE_BRANCH -ldflags="$server_flag" --targets="$targets" -out covergates-server github.com/covergates/covergates/cmd/server
-          xgo --branch $RELEASE_BRANCH -ldflags="$cli_flag" --targets="$targets" -out covergates github.com/covergates/covergates/cmd/cli
+          xgo -v -x --branch $RELEASE_BRANCH -ldflags="$server_flag" --targets="$targets" -out covergates-server github.com/covergates/covergates/cmd/server
+          xgo -v -x --branch $RELEASE_BRANCH -ldflags="$cli_flag" --targets="$targets" -out covergates github.com/covergates/covergates/cmd/cli
           outputs=(covergates covergates-server)
           archs=(darwin-10.6-386 darwin-10.6-amd64 linux-386 linux-amd64 windows-4.0-386.exe windows-4.0-amd64.exe)
           mkdir -p dist
