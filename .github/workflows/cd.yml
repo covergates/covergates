@@ -26,7 +26,7 @@ jobs:
 
       - name: Build Ubuntu Binary
         run: |
-          xgo --branch v0.0.8 --targets=windows/amd64 -out covergates-server github.com/covergates/covergates/cmd/server
+          xgo --branch release-test --targets=windows/amd64 -out covergates-server github.com/covergates/covergates/cmd/server
           zip covergates-server-windows-4.0-amd64.zip covergates-server-windows-4.0-amd64.exe
 
       - name: Upload Binary
