@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: go/src/github.com/covergates/covergates
+          path: ./go/src/github.com/covergates/covergates
 
       - name: Setup Golang
         uses: actions/setup-go@v2
@@ -30,7 +30,7 @@ jobs:
       - name: Build Binary
         env:
           GOPATH: "${{ env.GITHUB_WORKSPACE }}/go"
-        working-directory: "${{ env.GITHUB_WORKSPACE }}/go/src/github.com/covergates/covergates"
+        working-directory: "./go/src/github.com/covergates/covergates"
         run: |
           # export GITHUB_TAG=$(echo $GITHUB_REF | rev | cut -d '/' -f 1| rev)
           echo $(pwd)
