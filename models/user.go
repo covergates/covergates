@@ -14,7 +14,7 @@ type User struct {
 	gorm.Model
 	Login         string `gorm:"unique_index;not null"`
 	Name          string
-	Email         string `gorm:"unique_index"`
+	Email         string `gorm:"index"`
 	Active        bool
 	Avater        string
 	GiteaLogin    string `gorm:"index"`
