@@ -23,6 +23,20 @@ func TestReport(t *testing.T) {
 	if len(report.Files) <= 0 || report.StatementCoverage <= 0 {
 		t.Fatal()
 	}
+	m := make(map[string]bool)
+	for _, file := range report.Files {
+		m[file.Name] = true
+	}
+	targets := []string{
+		"/path/to/python/project/__init__.py",
+		"/path/to/python/project/apis/qa.py",
+	}
+	for _, target := range targets {
+		if _, ok := m[target]; !ok {
+			t.Fatalf("cannot find %s", target)
+		}
+	}
+
 }
 
 func TestFind(t *testing.T) {

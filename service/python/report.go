@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/ioutil"
 	"path/filepath"
-	"strings"
 
 	"github.com/covergates/covergates/core"
 	"github.com/covergates/covergates/service/common"
@@ -49,7 +48,7 @@ func (s *CoverageService) Report(ctx context.Context, reader io.Reader) (*core.C
 	}
 	result := make([]*core.File, 0)
 	for _, pkg := range c.Packages {
-		files := pkg.toFiles(c.Sources[0])
+		files := pkg.toFiles(c.Source())
 		result = append(result, files...)
 	}
 	report := &core.CoverageReport{
@@ -70,9 +69,11 @@ func (s *CoverageService) Open(ctx context.Context, path string) (io.Reader, err
 	return common.OpenFileReader(path)
 }
 
+func (c coverage) Source() string {
+	return c.Sources[0]
+}
+
 func (p pkg) toFiles(parent string) []*core.File {
-	pkgName := strings.Trim(p.Name, "./")
-	parent = filepath.Join(parent, pkgName)
 	files := make([]*core.File, len(p.Classes))
 	for i, class := range p.Classes {
 		statementHist := make([]*core.StatementHit, len(class.Lines))
