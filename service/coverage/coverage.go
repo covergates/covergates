@@ -11,6 +11,7 @@ import (
 	"github.com/covergates/covergates/service/golang"
 	"github.com/covergates/covergates/service/perl"
 	"github.com/covergates/covergates/service/python"
+	"github.com/covergates/covergates/service/ruby"
 )
 
 var errReportTypeNotSupport = errors.New("Report type not support")
@@ -41,6 +42,8 @@ func (s *Service) service(t core.ReportType) (TypeCoverageService, error) {
 		return &golang.CoverageService{}, nil
 	case core.ReportPython:
 		return &python.CoverageService{}, nil
+	case core.ReportRuby:
+		return &ruby.CoverageService{}, nil
 	default:
 		return nil, errReportTypeNotSupport
 	}

@@ -10,6 +10,8 @@ const (
 	ReportGo ReportType = "go"
 	// ReportPython language
 	ReportPython ReportType = "python"
+	// ReportRuby language
+	ReportRuby ReportType = "ruby"
 )
 
 // SCMProvider of Git service
