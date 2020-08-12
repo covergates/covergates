@@ -77,3 +77,12 @@ jobs:
         run: |
           cd web
           npm run test:unit
+
+      - name: Jest Report
+        if: env.BUILD_TYPE == 'FRONTEND'
+        uses: covergates/github-actions@v1
+        with:
+          report-id: "bsi5dvi23akg00a0tgl0"
+          report-type: "lcov"
+          report-file: "./web/coverage/lcov.info"
+          pull-request: "true"
