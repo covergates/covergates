@@ -76,9 +76,9 @@ Below is the list of variables for basic configuration:
 |Go|:heavy_check_mark:|[go-example](https://github.com/covergates/go-example)|
 |Perl|:heavy_check_mark:|:wrench:, ongoing|
 |Python|:heavy_check_mark:|:wrench:, ongoing|
-|Ruby|:heavy_check_mark:|:heavy_minus_sign:|
-|C|:wrench:, ongoing|:heavy_minus_sign:|
-|Javascript|:wrench:, ongoing|:heavy_minus_sign:|
+|Ruby (SimpleCov: RSpec)|:heavy_check_mark:|:heavy_minus_sign:|
+|lcov (C, C++, Javascript)|:heavy_check_mark:|:heavy_minus_sign:|
+|Java (Jacoco)|:wrench:, ongoing|:heavy_minus_sign:|
 
 **Covergates** is at an early development stage.
 Other languages and SCM support is ongoing!
