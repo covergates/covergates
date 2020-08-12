@@ -76,7 +76,7 @@ Below is the list of variables for basic configuration:
 |Go|:heavy_check_mark:|[go-example](https://github.com/covergates/go-example)|
 |Perl|:heavy_check_mark:|:wrench:, ongoing|
 |Python|:heavy_check_mark:|:wrench:, ongoing|
-|Ruby|:wrench:, ongoing|:heavy_minus_sign:|
+|Ruby|:heavy_check_mark:|:heavy_minus_sign:|
 |C|:wrench:, ongoing|:heavy_minus_sign:|
 |Javascript|:wrench:, ongoing|:heavy_minus_sign:|
 
