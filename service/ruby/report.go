@@ -74,7 +74,7 @@ func (s *CoverageService) Report(ctx context.Context, reader io.Reader) (*core.C
 		file := &core.File{
 			Name:              name,
 			StatementHits:     hits,
-			StatementCoverage: statementCoverage(hits),
+			StatementCoverage: common.ComputeStatementCoverage(hits),
 		}
 		files = append(files, file)
 	}
@@ -102,17 +102,4 @@ func (s *CoverageService) Find(ctx context.Context, path string) (string, error)
 // Open reader of ruby coverage report
 func (s *CoverageService) Open(ctx context.Context, path string) (io.Reader, error) {
 	return common.OpenFileReader(path)
-}
-
-func statementCoverage(hits []*core.StatementHit) float64 {
-	if len(hits) <= 0 {
-		return 0
-	}
-	sum := 0
-	for _, hit := range hits {
-		if hit.Hits > 0 {
-			sum++
-		}
-	}
-	return float64(sum) / float64(len(hits))
 }

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/covergates/covergates/core"
 	"github.com/covergates/covergates/modules/util"
 )
 
@@ -58,4 +59,18 @@ func searchStrings(slice []string, x string) bool {
 		}
 	}
 	return false
+}
+
+// ComputeStatementCoverage from list of StatementHit
+func ComputeStatementCoverage(hits []*core.StatementHit) float64 {
+	if len(hits) <= 0 {
+		return 0
+	}
+	sum := 0
+	for _, hit := range hits {
+		if hit.Hits > 0 {
+			sum++
+		}
+	}
+	return float64(sum) / float64(len(hits))
 }
