@@ -12,6 +12,8 @@ const (
 	ReportPython ReportType = "python"
 	// ReportRuby language
 	ReportRuby ReportType = "ruby"
+	// ReportLCOV of lcov report
+	ReportLCOV ReportType = "lcov"
 )
 
 // SCMProvider of Git service
