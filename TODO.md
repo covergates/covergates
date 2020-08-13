@@ -7,11 +7,11 @@
 
     Need more testing
 
-- [ ] Support Ruby
-- [ ] Support Javascript (jest)
-- [ ] Support C [googletest](https://testing.googleblog.com/2014/07/measuring-coverage-at-google.html)
+- [x] Support Ruby
+- [x] Support Javascript (lcov)
+- [x] Support C [googletest](https://testing.googleblog.com/2014/07/measuring-coverage-at-google.html)
 - [x] Enable webhook to create comment on pull request
-- [ ] Enable multiple language coverage report
+- [x] Enable multiple language coverage report
 - [x] Enable auto merge with previous coverage report
 
     enable webhook, need testing
@@ -24,3 +24,13 @@
 - [x] Documentation (Environment setup and contribution guide)
 - [ ] Database Migration
 - [ ] Generate Social Media Card
+
+## Phase II
+
+- [ ] Add link to branch report on pull request comment
+- [ ] page to list all branches (recent build)
+- [ ] view CODE tag without login for public repository
+- [ ] Add login hint to source code page if user not login
+- [ ] make login page look better
+- [ ] Add beginner guide to new repository
+- [ ] Add more information on landing page
