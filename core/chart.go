@@ -1,12 +1,15 @@
 package core
 
-import "io"
+import (
+	"io"
+)
 
 //go:generate mockgen -package mock -destination ../mock/chart_mock.go . ChartService,Chart
 
 // ChartService provides charts
 type ChartService interface {
 	CoverageDiffTreeMap(old, new *Report) Chart
+	RepoCard(repo *Repo, report *Report) Chart
 }
 
 // Chart renders image to writer

@@ -159,6 +159,34 @@ var doc = `{
                 }
             }
         },
+        "/reports/{id}/card": {
+            "get": {
+                "produces": [
+                    "image/svg+xml"
+                ],
+                "tags": [
+                    "Report"
+                ],
+                "summary": "Get status card of the repository",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "report id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "treemap svg",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/reports/{id}/comment/{number}": {
             "post": {
                 "tags": [

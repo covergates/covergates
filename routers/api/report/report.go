@@ -223,6 +223,42 @@ func HandleGetTreeMap(
 	}
 }
 
+// HandleGetCard of the repository status
+// @Summary Get status card of the repository
+// @Tags Report
+// @Produce image/svg+xml
+// @Param id path string true "report id"
+// @Success 200 {object} string "treemap svg"
+// @Router /reports/{id}/card [get]
+func HandleGetCard(
+	repoStore core.RepoStore,
+	reportStore core.ReportStore,
+	chartService core.ChartService,
+) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		reportID := c.Param("id")
+		repo, err := repoStore.Find(&core.Repo{ReportID: reportID})
+		if err != nil {
+			c.String(404, "repository not found")
+			return
+		}
+		report, err := reportStore.Find(&core.Report{ReportID: reportID, Reference: repo.Branch})
+		if err != nil {
+			c.String(404, "report not found")
+			return
+		}
+		chart := chartService.RepoCard(repo, report)
+		buffer := bytes.NewBuffer([]byte{})
+		if err := chart.Render(buffer); err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		c.Header("Cache-Control", "max-age=600")
+		c.Data(200, "image/svg+xml", buffer.Bytes())
+		return
+	}
+}
+
 // HandleComment report summary
 // @Summary Leave a report summary comment on pull request
 // @Tags Report

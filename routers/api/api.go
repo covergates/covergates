@@ -83,6 +83,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			r.RepoStore,
 			r.ChartService,
 		))
+		g.GET("/:id/card", report.HandleGetCard(r.RepoStore, r.ReportStore, r.ChartService))
 		g.GET("/:id/badge", report.HandleGetBadge(r.ReportStore, r.RepoStore))
 	}
 	{

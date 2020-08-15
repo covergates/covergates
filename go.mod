@@ -3,10 +3,12 @@ module github.com/covergates/covergates
 go 1.14
 
 require (
+	github.com/ajstarks/svgo v0.0.0-20200725142600-7a3c8b57fecb
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/blueworrybear/svg-charts v0.0.3
 	github.com/drone/go-login v1.0.4-0.20190311170324-2a4df4f242a2
 	github.com/drone/go-scm v1.7.1-0.20200621203823-3731ec1f1136
+	github.com/dustin/go-humanize v1.0.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.6.3
@@ -32,7 +34,8 @@ require (
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
-	golang.org/x/tools v0.0.0-20190729092621-ff9f1409240a // indirect
+	golang.org/x/text v0.3.2
+	golang.org/x/tools v0.0.0-20200814230902-9882f1d1823d // indirect
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

@@ -157,6 +157,24 @@ paths:
       summary: get badge for the report id
       tags:
       - Report
+  /reports/{id}/card:
+    get:
+      parameters:
+      - description: report id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - image/svg+xml
+      responses:
+        "200":
+          description: treemap svg
+          schema:
+            type: string
+      summary: Get status card of the repository
+      tags:
+      - Report
   /reports/{id}/comment/{number}:
     post:
       parameters:

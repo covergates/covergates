@@ -48,6 +48,20 @@ func (mr *MockChartServiceMockRecorder) CoverageDiffTreeMap(arg0, arg1 interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CoverageDiffTreeMap", reflect.TypeOf((*MockChartService)(nil).CoverageDiffTreeMap), arg0, arg1)
 }
 
+// RepoCard mocks base method
+func (m *MockChartService) RepoCard(arg0 *core.Repo, arg1 *core.Report) core.Chart {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RepoCard", arg0, arg1)
+	ret0, _ := ret[0].(core.Chart)
+	return ret0
+}
+
+// RepoCard indicates an expected call of RepoCard
+func (mr *MockChartServiceMockRecorder) RepoCard(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RepoCard", reflect.TypeOf((*MockChartService)(nil).RepoCard), arg0, arg1)
+}
+
 // MockChart is a mock of Chart interface
 type MockChart struct {
 	ctrl     *gomock.Controller

@@ -16,6 +16,7 @@ import (
 
 	"github.com/covergates/covergates/core"
 	"github.com/covergates/covergates/mock"
+	"github.com/covergates/covergates/modules/charts"
 	"github.com/covergates/covergates/routers/api/request"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -392,4 +393,52 @@ func TestGetTreeMap(t *testing.T) {
 			t.Fail()
 		}
 	})
+}
+
+func TestGetCard(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepo := mock.NewMockRepoStore(ctrl)
+	mockReport := mock.NewMockReportStore(ctrl)
+	mockChart := mock.NewMockChartService(ctrl)
+
+	repo := &core.Repo{
+		Branch:   "master",
+		ReportID: "report_id",
+	}
+	report := &core.Report{
+		ReportID: "report_id",
+	}
+
+	mockRepo.EXPECT().Find(
+		gomock.Eq(&core.Repo{ReportID: repo.ReportID}),
+	).Return(repo, nil)
+	mockReport.EXPECT().Find(
+		gomock.Eq(&core.Report{ReportID: repo.ReportID, Reference: repo.Branch}),
+	).Return(report, nil)
+	mockChart.EXPECT().RepoCard(
+		gomock.Eq(repo),
+		gomock.Eq(report),
+	).Return(charts.NewRepoCard(repo, report))
+
+	r := gin.Default()
+	r.GET("/reports/:id/card", HandleGetCard(
+		mockRepo,
+		mockReport,
+		mockChart,
+	))
+
+	req, _ := http.NewRequest("GET", fmt.Sprintf(
+		"/reports/%s/card",
+		repo.ReportID,
+	), nil)
+
+	testRequest(r, req, func(w *httptest.ResponseRecorder) {
+		result := w.Result()
+		if result.StatusCode != 200 {
+			t.Fatal()
+		}
+	})
+
 }
