@@ -6,6 +6,8 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CLA assistant](https://cla-assistant.io/readme/badge/covergates/covergates)](https://cla-assistant.io/covergates/covergates)
 
+[![card](https://covergates.com/api/v1/reports/bsi5dvi23akg00a0tgl0/card)](https://covergates.com/report/github/covergates/covergates)
+
 ## Purpose
 
 **Covergates** is to make the easiest way to setup a self-hosted coverage report service.
