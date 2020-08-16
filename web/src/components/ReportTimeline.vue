@@ -2,7 +2,7 @@
   <v-card flat>
     <v-card-title class="primary white--text">Default Branch Timeline</v-card-title>
     <v-card-text>
-      <v-timeline dense clipped class="ml-5">
+      <v-timeline dense clipped>
         <v-timeline-item
           fill-dot
           color="accent"
@@ -16,14 +16,19 @@
               <v-progress-circular
                 size="48"
                 :value="coverage(report)"
+                class="d-none d-sm-flex"
                 color="accent"
               >{{coverage(report)}}</v-progress-circular>
               <v-list-item-content class="ml-5">
                 <v-list-item-title>{{shortSHA(report)}}</v-list-item-title>
+                <v-list-item-subtitle class="d-flex d-sm-none primary--text">{{coverage(report)}}%</v-list-item-subtitle>
                 <v-list-item-subtitle>{{uploadData(report)}}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-list-item-action>
-                <v-btn small color="accent" :to="reportLink(report)">Report</v-btn>
+              <v-list-item-action class="d-flex align-center justify-center">
+                <v-btn small color="accent" class="d-none d-sm-flex" :to="reportLink(report)">Report</v-btn>
+                <v-btn class="d-flex d-sm-none" fab x-small color="accent" :to="reportLink(report)">
+                  <v-icon>mdi-file-chart</v-icon>
+                </v-btn>
               </v-list-item-action>
             </v-list-item>
           </v-card>
