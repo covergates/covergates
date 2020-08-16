@@ -20,6 +20,13 @@ declare interface RepositorySetting {
   mergePR?: boolean;
 }
 
+declare interface Commit {
+  sha: string;
+  committer: string;
+  committerAvatar: string;
+  message: string;
+}
+
 declare interface StatementHit {
   LineNumber: number;
   Hits: number;

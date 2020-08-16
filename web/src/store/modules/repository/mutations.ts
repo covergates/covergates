@@ -32,3 +32,8 @@ export function setSetting(state: RepoState, setting?: RepositorySetting): void 
 export function setOwner(state: RepoState, owner: boolean): void {
   state.owner = owner;
 }
+
+export function setCommits(state: RepoState, commits: Commit[]): void {
+  state.commits.splice(0, state.commits.length);
+  state.commits.push(...commits);
+}

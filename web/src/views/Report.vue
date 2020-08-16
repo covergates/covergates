@@ -86,7 +86,7 @@ export default class ReportView extends Vue {
         }
       }
     ];
-    if (this.report && this.user) {
+    if (this.report) {
       options.push({
         key: 'Code',
         link: {

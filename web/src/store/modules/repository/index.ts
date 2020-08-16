@@ -6,7 +6,8 @@ import {
   setCurrent,
   setError,
   setSetting,
-  setOwner
+  setOwner,
+  setCommits
 } from './mutations';
 import {
   fetchRepositoryList,
@@ -14,7 +15,8 @@ import {
   updateRepositoryReportID,
   changeCurrentRepository,
   fetchRepositorySetting,
-  fetchRepositoryOwner
+  fetchRepositoryOwner,
+  fetchRepositoryCommits
 } from './actions';
 import { RootState } from '@/store';
 
@@ -25,7 +27,8 @@ export enum Mutations {
   SET_REPOSITORY_CURRENT = 'SET_REPOSITORY_CURRENT',
   SET_REPOSITORY_ERROR = 'SET_REPOSITORY_ERROR',
   SET_REPOSITORY_SETTING = 'SET_REPOSITORY_SETTING',
-  SET_REPOSITORY_OWNER = 'SET_REPOSITORY_OWNER'
+  SET_REPOSITORY_OWNER = 'SET_REPOSITORY_OWNER',
+  SET_REPOSITORY_COMMITS = 'SET_REPOSITORY_COMMITS'
 }
 
 export enum Actions {
@@ -34,12 +37,14 @@ export enum Actions {
   UPDATE_REPOSITORY_REPORT_ID = 'UPDATE_REPOSITORY_REPORT_ID',
   CHANGE_CURRENT_REPOSITORY = 'CHANGE_CURRENT_REPOSITORY',
   FETCH_REPOSITORY_SETTING = 'FETCH_REPOSITORY_SETTING',
-  FETCH_REPOSITORY_OWNER = 'FETCH_REPOSITORY_OWNER'
+  FETCH_REPOSITORY_OWNER = 'FETCH_REPOSITORY_OWNER',
+  FETCH_REPOSITORY_COMMITS = 'FETCH_REPOSITORY_COMMITS'
 }
 
 export type RepoState = {
   loading: boolean;
   current?: Repository;
+  commits: Commit[];
   owner: boolean;
   setting?: RepositorySetting;
   list: Repository[];
@@ -50,6 +55,7 @@ const module: Module<RepoState, RootState> = {
   state: {
     loading: false,
     current: undefined,
+    commits: [],
     setting: undefined,
     list: [],
     error: undefined,
@@ -62,7 +68,8 @@ const module: Module<RepoState, RootState> = {
     [Mutations.SET_REPOSITORY_CURRENT]: setCurrent,
     [Mutations.SET_REPOSITORY_ERROR]: setError,
     [Mutations.SET_REPOSITORY_SETTING]: setSetting,
-    [Mutations.SET_REPOSITORY_OWNER]: setOwner
+    [Mutations.SET_REPOSITORY_OWNER]: setOwner,
+    [Mutations.SET_REPOSITORY_COMMITS]: setCommits
   },
   actions: {
     [Actions.FETCH_REPOSITORY_LIST]: fetchRepositoryList,
@@ -70,7 +77,8 @@ const module: Module<RepoState, RootState> = {
     [Actions.UPDATE_REPOSITORY_REPORT_ID]: updateRepositoryReportID,
     [Actions.CHANGE_CURRENT_REPOSITORY]: changeCurrentRepository,
     [Actions.FETCH_REPOSITORY_SETTING]: fetchRepositorySetting,
-    [Actions.FETCH_REPOSITORY_OWNER]: fetchRepositoryOwner
+    [Actions.FETCH_REPOSITORY_OWNER]: fetchRepositoryOwner,
+    [Actions.FETCH_REPOSITORY_COMMITS]: fetchRepositoryCommits
   }
 };
 

@@ -166,3 +166,28 @@ export function fetchRepositoryOwner<S extends RepoState, R extends RootState>(
       });
   });
 }
+
+export function fetchRepositoryCommits<S extends RepoState, R extends RootState>(
+  context: ActionContext<S, R>
+): Promise<void> {
+  return new Promise(resolve => {
+    const base = context.rootState.base;
+    const repo = context.state.current;
+    if (repo === undefined) {
+      context.commit(Mutations.SET_REPOSITORY_COMMITS, []);
+      resolve();
+      return;
+    }
+    const { SCM, Name, NameSpace } = (repo as Repository);
+    Axios.get<Commit[]>(`${base}/api/v1/repos/${SCM}/${NameSpace}/${Name}/commits`)
+      .then(response => {
+        context.commit(Mutations.SET_REPOSITORY_COMMITS, response.data);
+      })
+      .catch(() => {
+        context.commit(Mutations.SET_REPOSITORY_COMMITS, []);
+      })
+      .finally(() => {
+        resolve();
+      });
+  });
+}

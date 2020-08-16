@@ -27,6 +27,7 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
             } else {
               store.commit(Mutations.SET_REPORT_HISTORY, []);
             }
+            store.dispatch(Actions.FETCH_REPOSITORY_COMMITS);
             store.dispatch(Actions.FETCH_REPOSITORY_OWNER);
           });
           store.dispatch(Actions.FETCH_REPOSITORY_SETTING);
@@ -38,7 +39,7 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
 
 export function fetchNewRepository(store: Store<RootState>): RouteHandler {
   return (to, from, next) => {
-    if (from.name !== null && to.name === 'report-overview' && to.query.ref !== from.query.ref) {
+    if (from.name !== null && to.query.ref !== from.query.ref && to.meta.checkRenew) {
       fetchCurrentRepository(store)(to, from, next);
     } else {
       next();

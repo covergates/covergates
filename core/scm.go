@@ -48,10 +48,10 @@ type PullRequest struct {
 
 // Commit object
 type Commit struct {
-	Sha             string
-	Message         string
-	Committer       string
-	CommitterAvater string
+	Sha             string `json:"sha"`
+	Message         string `json:"message"`
+	Committer       string `json:"committer"`
+	CommitterAvater string `json:"committerAvatar"`
 }
 
 // Client connects to a SCM provider

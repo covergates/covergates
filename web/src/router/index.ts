@@ -44,23 +44,25 @@ const routes: Array<RouteConfig> = [
           {
             path: '/report/:scm/:namespace/:name',
             name: 'report-overview',
+            meta: { checkRenew: true },
             component: () => import('@/components/ReportOverview.vue')
           },
           {
             path: 'history',
             name: 'report-history',
+            meta: { checkRenew: true },
             component: () => import('@/components/ReportHistory.vue')
           },
           {
             path: 'code',
             name: 'report-code',
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: false, checkRenew: true },
             component: () => import('@/components/ReportFiles.vue')
           },
           {
             path: 'code/:path+',
             name: 'report-source',
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, checkRenew: true },
             component: () => import('@/components/ReportSource.vue'),
             beforeEnter: fetchReportSource(store)
           },
