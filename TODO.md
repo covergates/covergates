@@ -28,9 +28,9 @@
 ## Phase II
 
 - [ ] Add link to branch report on pull request comment
-- [ ] page to list all branches (recent build)
-- [ ] view CODE tag without login for public repository
+- [x] page to list all branches (recent build)
+- [x] view CODE tag without login for public repository
 - [ ] Add login hint to source code page if user not login
-- [ ] make login page look better
+- [x] make login page look better
 - [ ] Add beginner guide to new repository
 - [ ] Add more information on landing page
