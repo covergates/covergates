@@ -367,6 +367,37 @@ func HandleUpdateSetting(store core.RepoStore) gin.HandlerFunc {
 	}
 }
 
+// HandleListCommits for repository recent builds
+// @Summary list recent commits
+// @Tags Repository
+// @Param scm path string true "SCM"
+// @Param namespace path string true "Namespace"
+// @Param name path string true "name"
+// @Success 200 {object} []core.Commit commits
+// @Router /repos/{scm}/{namespace}/{name}/commits [get]
+func HandleListCommits(service core.SCMService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		repo := c.MustGet(keyRepo).(*core.Repo)
+		user, ok := request.UserFrom(c)
+		if !ok {
+			c.JSON(401, []*core.Commit{})
+			return
+		}
+		client, err := service.Client(repo.SCM)
+		if err != nil {
+			c.JSON(500, []*core.Commit{})
+			return
+		}
+		ctx := c.Request.Context()
+		commits, err := client.Git().ListCommits(ctx, user, repo.FullName())
+		if err != nil {
+			c.Error(err)
+			c.JSON(500, []*core.Commit{})
+		}
+		c.JSON(200, commits)
+	}
+}
+
 func getRef(c *gin.Context, client core.Client, user *core.User) (string, error) {
 	repoName := fmt.Sprintf("%s/%s", c.Param("namespace"), c.Param("name"))
 	ref := c.Query("ref")

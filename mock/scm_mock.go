@@ -470,6 +470,21 @@ func (mr *MockGitServiceMockRecorder) GitRepository(arg0, arg1, arg2 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitRepository", reflect.TypeOf((*MockGitService)(nil).GitRepository), arg0, arg1, arg2)
 }
 
+// ListCommits mocks base method
+func (m *MockGitService) ListCommits(arg0 context.Context, arg1 *core.User, arg2 string) ([]*core.Commit, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListCommits", arg0, arg1, arg2)
+	ret0, _ := ret[0].([]*core.Commit)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListCommits indicates an expected call of ListCommits
+func (mr *MockGitServiceMockRecorder) ListCommits(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCommits", reflect.TypeOf((*MockGitService)(nil).ListCommits), arg0, arg1, arg2)
+}
+
 // MockWebhookService is a mock of WebhookService interface
 type MockWebhookService struct {
 	ctrl     *gomock.Controller

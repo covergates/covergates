@@ -433,6 +433,48 @@ var doc = `{
                 }
             }
         },
+        "/repos/{scm}/{namespace}/{name}/commits": {
+            "get": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "list recent commits",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/core.Commit"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/repos/{scm}/{namespace}/{name}/content/{path}": {
             "get": {
                 "tags": [
@@ -820,6 +862,23 @@ var doc = `{
         }
     },
     "definitions": {
+        "core.Commit": {
+            "type": "object",
+            "properties": {
+                "committer": {
+                    "type": "string"
+                },
+                "committerAvater": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "sha": {
+                    "type": "string"
+                }
+            }
+        },
         "core.Repo": {
             "type": "object",
             "properties": {

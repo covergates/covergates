@@ -101,6 +101,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			g.GET("/files", repo.HandleGetFiles(r.SCMService))
 			g.GET("/content/*path", repo.HandleGetFileContent(r.SCMService))
 			g.POST("/hook/create", repo.WithRepo(r.RepoStore), repo.HandleHookCreate(r.HookService))
+			g.GET("/commits", repo.WithRepo(r.RepoStore), repo.HandleListCommits(r.SCMService))
 		}
 	}
 	{

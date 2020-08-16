@@ -1,5 +1,16 @@
 basePath: /api/v1
 definitions:
+  core.Commit:
+    properties:
+      committer:
+        type: string
+      committerAvater:
+        type: string
+      message:
+        type: string
+      sha:
+        type: string
+    type: object
   core.Repo:
     properties:
       branch:
@@ -334,6 +345,34 @@ paths:
           schema:
             $ref: '#/definitions/core.Repo'
       summary: sync repository information with SCM
+      tags:
+      - Repository
+  /repos/{scm}/{namespace}/{name}/commits:
+    get:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/core.Commit'
+            type: array
+      summary: list recent commits
       tags:
       - Repository
   /repos/{scm}/{namespace}/{name}/content/{path}:

@@ -46,6 +46,14 @@ type PullRequest struct {
 	Target string
 }
 
+// Commit object
+type Commit struct {
+	Sha             string
+	Message         string
+	Committer       string
+	CommitterAvater string
+}
+
 // Client connects to a SCM provider
 type Client interface {
 	Repositories() RepoService
@@ -80,6 +88,7 @@ type UserService interface {
 type GitService interface {
 	GitRepository(ctx context.Context, user *User, repo string) (GitRepository, error)
 	FindCommit(ctx context.Context, user *User, repo *Repo) string
+	ListCommits(ctx context.Context, user *User, repo string) ([]*Commit, error)
 }
 
 // ContentService provides information of source codes
