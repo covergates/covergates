@@ -23,14 +23,20 @@
 - [x] Optimized upload report flow, improve performance
 - [x] Documentation (Environment setup and contribution guide)
 - [ ] Database Migration
-- [ ] Generate Social Media Card
+- [x] Generate Social Media Card
+- [ ] Add social media link copy button on setting page
 
 ## Phase II
 
-- [ ] Add link to branch report on pull request comment
+- [x] Add link to branch report on pull request comment
 - [x] page to list all branches (recent build)
 - [x] view CODE tag without login for public repository
-- [ ] Add login hint to source code page if user not login
+- [x] Add login hint to source code page if user not login
 - [x] make login page look better
 - [ ] Add beginner guide to new repository
-- [ ] Add more information on landing page
+- [x] Add more information on landing page
+
+- [ ] Default path filer, ex remove go module path by default
+- [ ] Enable admin account, which will be used to leave comment on PR or update webhook.
+- [ ] Allow multiple repository owners to update setting
+- [ ] Add more documentations on CLI usage and repository setting
