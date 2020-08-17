@@ -9,20 +9,10 @@
       </v-row>
       <v-banner class="text-center primary--text">The portal gates to coverage reports.</v-banner>
       <v-row justify="center" class="ma-10">
-        <v-col
-          cols="12"
-          lg="4"
-          class="d-flex justify-center"
-          v-for="(intro, index) in introductions"
-          :key="index"
-        >
-          <v-card flat class="d-flex flex-column justify-center align-center">
-            <v-card-title class="text-h4 font-weight-medium">{{intro.title}}</v-card-title>
-            <v-avatar size="128" tile>
-              <v-icon size="128">{{intro.icon}}</v-icon>
-            </v-avatar>
-          </v-card>
-        </v-col>
+        <intro-card v-for="(intro, index) in introductions.slice(0,2)" :key="index" :intro="intro" />
+      </v-row>
+      <v-row justify="center" class="ma-10">
+        <intro-card v-for="(intro, index) in introductions.slice(2,4)" :key="index" :intro="intro" />
       </v-row>
       <v-row class="mt-10 mb-5">
         <v-spacer />
@@ -36,24 +26,54 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
 import Vue from '@/vue';
+import IntroCard from '@/components/IntroCard.vue';
 
 type intro = {
   title: string;
   icon: string;
+  body: string;
 };
 
 @Component({
-  name: 'Home'
+  name: 'Home',
+  components: {
+    IntroCard
+  }
 })
 export default class HomeVue extends Vue {
   introductions = [
     {
       title: 'Open Source',
-      icon: 'mdi-open-source-initiative'
+      icon: 'mdi-open-source-initiative',
+      body: `
+      Covergates is open source under GPL-3.0 license.
+      It's free for self-hosted.
+      Visit our <a href="https://github.com/covergates/covergates">GitHub</a>
+      if your are interesting in this project!`
     },
     {
-      title: 'Self-Hosted',
-      icon: 'mdi-server'
+      title: 'Easy to Install',
+      icon: 'mdi-clock-fast',
+      body: `
+      <a href="https://github.com/covergates/covergates/releases">Get the pre-built binary</a>
+      for your platform. Simple run the binary and you are ready to go!
+      `
+    },
+    {
+      title: 'Simple and Clean',
+      icon: 'mdi-monitor-clean',
+      body: `
+      Review coverage reports with the clean interface. No more distractions.
+      `
+    },
+    {
+      title: 'Cross-platform',
+      icon: 'mdi-hexagon-multiple-outline',
+      body: `
+      Covergates is built with <a href="https://golang.org/">Go</a>.
+      You can run it on Windows, Linux, macOS and
+      any other <a href="https://golang.org/">Go</a> supports platform.
+      `
     }
   ] as intro[];
 }
