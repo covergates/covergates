@@ -4,11 +4,14 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"github.com/covergates/covergates/config"
 	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/mock"
+	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 )
 
-const expectMarkdown = `### Coverage: 50.0%
+const expectMarkdown = `### [Coverage: 50.0%](http://localhost/report/github/space/name?ref=commit)
 
 ||File|Coverage|
 |--|--|--------|
@@ -17,7 +20,7 @@ const expectMarkdown = `### Coverage: 50.0%
 ||C|0.50|
 `
 
-const expectMarkdownNoTarget = `### Coverage: 50.0%
+const expectMarkdownNoTarget = `### [Coverage: 50.0%](http://localhost/report/github/space/name?ref=commit)
 
 ||File|Coverage|
 |--|--|--------|
@@ -28,6 +31,8 @@ const expectMarkdownNoTarget = `### Coverage: 50.0%
 
 func TestMarkdownReport(t *testing.T) {
 	source := &core.Report{
+		ReportID: "report_id",
+		Commit:   "commit",
 		Coverages: []*core.CoverageReport{
 			{
 				StatementCoverage: 0.8,
@@ -71,7 +76,27 @@ func TestMarkdownReport(t *testing.T) {
 		},
 	}
 
-	service := &Service{}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepo := mock.NewMockRepoStore(ctrl)
+	mockRepo.EXPECT().Find(gomock.Eq(
+		&core.Repo{ReportID: source.ReportID},
+	)).AnyTimes().Return(&core.Repo{
+		Name:      "name",
+		NameSpace: "space",
+		SCM:       core.Github,
+	}, nil)
+
+	service := &Service{
+		Config: &config.Config{
+			Server: config.Server{
+				Addr: "http://localhost",
+			},
+		},
+		RepoStore: mockRepo,
+	}
+
 	reader, err := service.MarkdownReport(source, target)
 	if err != nil {
 		t.Fatal(err)

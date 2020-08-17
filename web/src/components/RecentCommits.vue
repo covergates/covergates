@@ -3,13 +3,13 @@
     <v-card-title class="primary white--text">Recent Commits</v-card-title>
     <v-divider />
     <v-card-text>
-      <v-card flat>
+      <v-card flat v-if="commits.length <= 0">
         <v-card-title>
           <v-icon size="36" class="mr-2">mdi-progress-question</v-icon>No Commits Found
         </v-card-title>
         <v-card-text class="px-5">{{hint}}</v-card-text>
       </v-card>
-      <v-list>
+      <v-list v-else>
         <v-list-item v-for="commit in commits" :key="commit.sha">
           <v-list-item-avatar color="accent">
             <v-img :src="commit.committerAvatar" v-if="commit.committerAvatar"></v-img>
