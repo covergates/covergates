@@ -36,6 +36,18 @@
             persistent-hint
           ></v-textarea>
         </v-row>
+        <v-row class="d-flex mt-5">
+          <v-text-field label="Card" :readonly="true" :value="card" outlined flat>
+            <template v-slot:append>
+              <v-img :src="card" alt="card" class="mb-3 d-none d-lg-block" />
+            </template>
+          </v-text-field>
+        </v-row>
+        <v-row class="d-flex d-lg-none justify-center">
+          <v-col cols="12" sm="8">
+            <v-img :src="card" alt="card" />
+          </v-col>
+        </v-row>
       </v-card-text>
     </v-card>
     <v-card flat>
@@ -133,6 +145,13 @@ export default class ReportSetting extends Vue {
   get badge(): string {
     if (this.repo) {
       return `${this.url}/api/v1/reports/${this.repo.ReportID}/badge`;
+    }
+    return '';
+  }
+
+  get card(): string {
+    if (this.repo) {
+      return `${this.url}/api/v1/reports/${this.repo.ReportID}/card`;
     }
     return '';
   }

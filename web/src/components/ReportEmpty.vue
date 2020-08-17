@@ -1,13 +1,17 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <v-col sm="12" md="6">
+      <v-col sm="12" md="8">
         <v-card>
-          <v-card-title>No Report Found</v-card-title>
-          <v-card-text></v-card-text>
+          <v-card-title class="justify-center accent white--text">
+            <v-icon size="32" class="mr-5" dark>mdi-party-popper</v-icon>Commit Your First Report!
+          </v-card-title>
+          <v-card-text>
+            <report-guide />
+          </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn :href="repoURL">Navigate Repository</v-btn>
+            <v-btn small color="primary" :href="repoURL">Navigate Repository</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -18,9 +22,13 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
 import Vue from '@/vue';
+import ReportGuide from '@/components/ReportGuide.vue';
 
 @Component({
-  name: 'report-empty'
+  name: 'report-empty',
+  components: {
+    ReportGuide
+  }
 })
 export default class ReportEmpty extends Vue {
   get repository(): Repository | undefined {
