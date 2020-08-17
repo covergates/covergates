@@ -135,6 +135,10 @@ There are many ways in which you can participate in the project:
 
 3. Testing, both unit testing and e2e testing are welcome.
 
+## Further Information
+
+For more information and tutorial about self-hosted Covergates server, please refer to our [documentation](https://docs.covergates.com/)
+
 ## Milestones
 
 Refer to [TODO.md](https://github.com/covergates/covergates/blob/master/TODO.md) for details.
