@@ -51,8 +51,14 @@ func provideGit() core.Git {
 	return &git.Service{}
 }
 
-func provideReportService() core.ReportService {
-	return &report.Service{}
+func provideReportService(
+	Config *config.Config,
+	RepoStore core.RepoStore,
+) core.ReportService {
+	return &report.Service{
+		Config:    Config,
+		RepoStore: RepoStore,
+	}
 }
 
 func provideHookService(

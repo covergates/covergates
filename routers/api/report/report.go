@@ -327,8 +327,7 @@ func HandleComment(
 			reportID,
 			source.Reference,
 			target.Reference,
-		),
-		)
+		))
 
 		if _, err := io.Copy(buf, r); err != nil {
 			c.String(500, err.Error())

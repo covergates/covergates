@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/covergates/covergates/config"
 	"github.com/covergates/covergates/core"
 )
 
@@ -16,7 +17,10 @@ const (
 type filesMap map[string]*core.File
 
 // Service of Report
-type Service struct{}
+type Service struct {
+	Config    *config.Config
+	RepoStore core.RepoStore
+}
 
 // DiffReports coverage differences
 func (service *Service) DiffReports(source, target *core.Report) (*core.CoverageReportDiff, error) {
@@ -55,7 +59,22 @@ func (service *Service) DiffReports(source, target *core.Report) (*core.Coverage
 // MarkdownReport generates coverage summary report in markdown format
 func (service *Service) MarkdownReport(source, target *core.Report) (io.Reader, error) {
 	buf := &bytes.Buffer{}
-	buf.WriteString(fmt.Sprintf("### Coverage: %.1f%%\n\n", source.StatementCoverage()*100))
+	repo, err := service.RepoStore.Find(&core.Repo{ReportID: source.ReportID})
+	if err != nil {
+		return nil, err
+	}
+	link := fmt.Sprintf(
+		"%s/report/%s/%s?ref=%s",
+		service.Config.Server.URL(),
+		repo.SCM,
+		repo.FullName(),
+		source.Commit,
+	)
+	buf.WriteString(fmt.Sprintf(
+		"### [Coverage: %.1f%%](%s)\n\n",
+		source.StatementCoverage()*100,
+		link,
+	))
 	buf.WriteString("||File|Coverage|\n")
 	buf.WriteString("|--|--|--------|\n")
 	diff, err := service.DiffReports(source, target)
