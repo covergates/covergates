@@ -14,10 +14,12 @@
       <v-row justify="center" class="ma-10">
         <intro-card v-for="(intro, index) in introductions.slice(2,4)" :key="index" :intro="intro" />
       </v-row>
-      <v-row class="mt-10 mb-5">
-        <v-spacer />
-        <v-btn color="primary" to="/repo" large dark>Get start!</v-btn>
-        <v-spacer />
+      <v-row class="mt-10 mb-5 justify-center">
+        <div class="d-flex flex-column flex-sm-row align-center">
+          <v-btn color="primary" to="/repo" large dark>Get start!</v-btn>
+          <span class="my-2 mx-5">Or</span>
+          <v-btn color="primary" href="https://docs.covergates.com/" large dark>Documentation</v-btn>
+        </div>
       </v-row>
     </v-container>
   </perfect-scrollbar>

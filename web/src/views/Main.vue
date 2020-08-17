@@ -20,7 +20,16 @@
       <v-divider vertical class="ma-4" />
       <v-btn text small href="https://github.com/covergates/covergates/blob/master/LICENSE">license</v-btn>
       <v-spacer />
-      <v-btn text href="https://github.com/covergates/covergates">
+      <v-btn icon href="https://docs.covergates.com/" class="d-flex d-sm-none">
+        <v-icon class="mr-1">mdi-book-open-variant</v-icon>
+      </v-btn>
+      <v-btn icon href="https://github.com/covergates/covergates" class="d-flex d-sm-none">
+        <v-icon class="mr-1">mdi-github</v-icon>
+      </v-btn>
+      <v-btn text href="https://docs.covergates.com/" class="d-none d-sm-flex">
+        <v-icon left size="32" class="mr-5">mdi-book-open-variant</v-icon>Docs
+      </v-btn>
+      <v-btn text href="https://github.com/covergates/covergates" class="d-none d-sm-flex">
         <v-icon left large class="mr-5">mdi-github</v-icon>Github
       </v-btn>
     </v-footer>
