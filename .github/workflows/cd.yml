@@ -53,7 +53,7 @@ jobs:
               mv -f $filename "./dist/${output}${ext}"
             done
             arch=$(echo $arch | sed 's/\.exe//g')
-            cd dist && zip -r "$GITHUB_WORKSPACE/covergates-${GITHUB_TAG}-${arch}.zip" ./ && cd ..
+            cd dist && tar -zcvf "$GITHUB_WORKSPACE/covergates-${GITHUB_TAG}-${arch}.tar.gz" ./ && cd ..
           done
 
       - name: Upload Binary
@@ -70,6 +70,7 @@ jobs:
               const options = {
                 'json': 'text/json',
                 'zip': 'application/zip',
+                'gz': 'application/gzip',
                 'txt': 'text/plain',
                 'ts': 'application/typescript'
               }
@@ -90,7 +91,7 @@ jobs:
             const url = `https://uploads.github.com/repos/${repo[0]}/${repo[1]}/releases/${release}/assets{?name,label}`;
             const archs = ['darwin-10.6-386', 'darwin-10.6-amd64', 'linux-386', 'linux-amd64', 'windows-4.0-386', 'windows-4.0-amd64'];
             for (const arch of archs) {
-              const name = `covergates-${tag}-${arch}.zip`;
+              const name = `covergates-${tag}-${arch}.tar.gz`;
               await github.repos.uploadReleaseAsset({
                 url: url,
                 headers: getHeaders(name, name),
