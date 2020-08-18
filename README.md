@@ -2,6 +2,7 @@
 
 [![badge](https://covergates.com/api/v1/reports/bsi5dvi23akg00a0tgl0/badge?)](https://covergates.com/report/github/covergates/covergates)
 ![CI](https://github.com/covergates/covergates/workflows/CI/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/covergates/covergates)](https://goreportcard.com/report/github.com/covergates/covergates)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/covergates/covergates)](https://pkg.go.dev/github.com/covergates/covergates)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CLA assistant](https://cla-assistant.io/readme/badge/covergates/covergates)](https://cla-assistant.io/covergates/covergates)
