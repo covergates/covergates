@@ -27,6 +27,7 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
             } else {
               store.commit(Mutations.SET_REPORT_HISTORY, []);
             }
+            // TODO: Need to find a way to list commits in other branches
             store.dispatch(Actions.FETCH_REPOSITORY_COMMITS);
             store.dispatch(Actions.FETCH_REPOSITORY_OWNER);
           });
