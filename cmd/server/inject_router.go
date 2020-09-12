@@ -27,6 +27,7 @@ func provideRouter(
 	chartService core.ChartService,
 	reportService core.ReportService,
 	hookService core.HookService,
+	oauthSerice core.OAuthService,
 	// store
 	reportStore core.ReportStore,
 	repoStore core.RepoStore,
@@ -40,6 +41,7 @@ func provideRouter(
 		ChartService:    chartService,
 		ReportService:   reportService,
 		HookService:     hookService,
+		OAuthService:    oauthSerice,
 		ReportStore:     reportStore,
 		RepoStore:       repoStore,
 	}

@@ -20,12 +20,13 @@ type Config struct {
 
 // Server setting
 type Server struct {
-	Secret     string `default:"secret" envconfig:"GATES_SERVER_SECRET"`
-	Addr       string `default:"http://localhost:8080" envconfig:"GATES_SERVER_ADDR"`
-	Base       string `envconfig:"GATES_SERVER_BASE"`
-	SkipVerity bool   `default:"true" envconfig:"GATES_SERVER_SKIP_VERIFY"`
-	ServerPort string `envconfig:"GATES_SERVER_PORT"`
-	CloudPort  string `envconfig:"PORT"`
+	Secret      string `default:"secret" envconfig:"GATES_SERVER_SECRET"`
+	Addr        string `default:"http://localhost:8080" envconfig:"GATES_SERVER_ADDR"`
+	Base        string `envconfig:"GATES_SERVER_BASE"`
+	SkipVerity  bool   `default:"true" envconfig:"GATES_SERVER_SKIP_VERIFY"`
+	ServerPort  string `envconfig:"GATES_SERVER_PORT"`
+	CloudPort   string `envconfig:"PORT"`
+	OAuthClient string `default:"client"`
 }
 
 // Database setting
