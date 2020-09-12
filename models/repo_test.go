@@ -79,6 +79,7 @@ func TestRepoAssociation(t *testing.T) {
 	defer ctrl.Finish()
 	session := db.Session()
 	user := &User{
+		Login: "test_repo",
 		Name:  "user",
 		Email: "associate@email",
 	}
