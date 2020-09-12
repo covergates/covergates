@@ -95,6 +95,16 @@ func (store *UserStore) findWithSCM(scm core.SCMProvider, user *scm.User) (*User
 	return u, nil
 }
 
+// FindByLogin name
+func (store *UserStore) FindByLogin(login string) (*core.User, error) {
+	session := store.DB.Session()
+	u := &User{}
+	if err := session.Where(&User{Login: login}).First(u).Error; err != nil {
+		return nil, err
+	}
+	return u.toCoreUser(), nil
+}
+
 // Bind a new user from another SCM to registered user
 func (store *UserStore) Bind(
 	scm core.SCMProvider,

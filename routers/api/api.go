@@ -38,6 +38,7 @@ type Router struct {
 	SCMService      core.SCMService
 	ReportService   core.ReportService
 	HookService     core.HookService
+	OAuthService    core.OAuthService
 	// store
 	ReportStore core.ReportStore
 	RepoStore   core.RepoStore
@@ -54,14 +55,15 @@ func host(addr string) string {
 // RegisterRoutes for API
 func (r *Router) RegisterRoutes(e *gin.Engine) {
 	docs.SwaggerInfo.Host = host(r.Config.Server.Addr)
+	checkLogin := request.CheckLogin(r.Session, r.OAuthService)
 	e.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	g := e.Group("/api/v1")
 	{
 		g := g.Group("/user")
-		g.GET("", request.CheckLogin(r.Session), user.HandleGet())
+		g.GET("", checkLogin, user.HandleGet())
 		g.POST("", user.HandleCreate())
-		g.GET("/scm", request.CheckLogin(r.Session), user.HandleGetSCM(r.Config))
-		g.GET("/owner/:scm/:namespace/:name", request.CheckLogin(r.Session), user.HandleGetOwner(r.RepoStore))
+		g.GET("/scm", checkLogin, user.HandleGetSCM(r.Config))
+		g.GET("/owner/:scm/:namespace/:name", checkLogin, user.HandleGetOwner(r.RepoStore))
 	}
 	{
 		g := g.Group("/reports")
@@ -88,7 +90,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 	}
 	{
 		g := g.Group("/repos")
-		g.Use(request.CheckLogin(r.Session))
+		g.Use(checkLogin)
 		g.GET("", repo.HandleListAll(r.Config, r.SCMService, r.RepoStore))
 		g.POST("", repo.HandleCreate(r.RepoStore, r.SCMService))
 		g.GET("/:scm", repo.HandleListSCM(r.SCMService, r.RepoStore))

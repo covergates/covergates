@@ -19,8 +19,18 @@ func (s *tokenStore) Create(ctx context.Context, info oauth2.TokenInfo) error {
 	if err != nil {
 		return err
 	}
+	user, ok := getUser(ctx)
+	if !ok {
+		return ErrTokenOwnerNotFound
+	}
+	name, ok := getTokenName(ctx)
+	if !ok {
+		name = user.Login
+	}
 	token := &core.OAuthToken{
-		Data: data,
+		Name:  name,
+		Owner: user,
+		Data:  data,
 	}
 	if code := info.GetCode(); code != "" {
 		token.Code = code

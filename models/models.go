@@ -38,6 +38,7 @@ func init() {
 		&Repo{},
 		&RepoSetting{},
 		&RepoHook{},
+		&OAuthToken{},
 	)
 }
 

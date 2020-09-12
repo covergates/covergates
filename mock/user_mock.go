@@ -78,6 +78,21 @@ func (mr *MockUserStoreMockRecorder) Find(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockUserStore)(nil).Find), arg0, arg1)
 }
 
+// FindByLogin mocks base method
+func (m *MockUserStore) FindByLogin(arg0 string) (*core.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByLogin", arg0)
+	ret0, _ := ret[0].(*core.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByLogin indicates an expected call of FindByLogin
+func (mr *MockUserStoreMockRecorder) FindByLogin(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByLogin", reflect.TypeOf((*MockUserStore)(nil).FindByLogin), arg0)
+}
+
 // Update mocks base method
 func (m *MockUserStore) Update(arg0 core.SCMProvider, arg1 *scm.User, arg2 *core.Token) error {
 	m.ctrl.T.Helper()
