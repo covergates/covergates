@@ -2,6 +2,7 @@ package user
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/covergates/covergates/core"
 	"github.com/covergates/covergates/routers/api/request"
@@ -10,8 +11,9 @@ import (
 
 // Token for API
 type Token struct {
-	ID   uint   `json:"id"`
-	Name string `json:"name"`
+	ID        uint      `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 // HandleCreateToken for user
@@ -61,8 +63,9 @@ func HandleListTokens(service core.OAuthService) gin.HandlerFunc {
 		result := make([]*Token, len(tokens))
 		for i, token := range tokens {
 			result[i] = &Token{
-				ID:   token.ID,
-				Name: token.Name,
+				ID:        token.ID,
+				Name:      token.Name,
+				CreatedAt: token.CreatedAt,
 			}
 		}
 		c.JSON(200, result)

@@ -68,3 +68,10 @@ export function fetchUserSCM(store: Store<RootState>): RouteHandler {
     next();
   };
 }
+
+export function fetchUserSettings(store: Store<RootState>): RouteHandler {
+  return (to, from, next) => {
+    store.dispatch(Actions.FETCH_USER_TOKENS);
+    next();
+  };
+}

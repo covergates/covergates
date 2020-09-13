@@ -107,14 +107,15 @@ func (store *OAuthStore) Delete(token *core.OAuthToken) error {
 
 func (token *OAuthToken) toCoreOAuthToken() *core.OAuthToken {
 	return &core.OAuthToken{
-		ID:      token.ID,
-		Name:    token.Name,
-		Code:    token.Code,
-		Access:  token.Access,
-		Refresh: token.Refresh,
-		Expires: token.Expires,
-		Owner:   token.Owner.toCoreUser(),
-		Data:    token.Data,
+		ID:        token.ID,
+		Name:      token.Name,
+		Code:      token.Code,
+		Access:    token.Access,
+		Refresh:   token.Refresh,
+		Expires:   token.Expires,
+		CreatedAt: token.CreatedAt,
+		Owner:     token.Owner.toCoreUser(),
+		Data:      token.Data,
 	}
 }
 

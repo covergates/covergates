@@ -4,7 +4,8 @@ import {
   fetchReportSource,
   fetchCurrentRepository,
   fetchUserSCM,
-  fetchNewRepository
+  fetchNewRepository,
+  fetchUserSettings
 } from './fetchers';
 import store from '@/store';
 
@@ -70,7 +71,8 @@ const routes: Array<RouteConfig> = [
             path: 'setting',
             name: 'report-setting',
             meta: { requiresAuth: true },
-            component: () => import('@/components/ReportSetting.vue')
+            component: () => import('@/components/ReportSetting.vue'),
+            beforeEnter: fetchUserSettings(store)
           }
         ]
       }

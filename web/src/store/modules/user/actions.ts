@@ -21,6 +21,25 @@ export function fetchUser<S extends UserState, R extends RootState>(context: Act
   });
 }
 
+export function fetchTokens<S extends UserState, R extends RootState>(context: ActionContext<S, R>): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const base = context.rootState.base;
+    context.commit(Mutations.START_USER_LOADING);
+    context.commit(Mutations.UPDATE_USER_TOKENS, []);
+    Axios.get<Token[]>(`${base}/api/v1/user/tokens`)
+      .then(response => {
+        context.commit(Mutations.UPDATE_USER_TOKENS, response.data);
+      })
+      .catch(reason => {
+        console.warn(reasonToError(reason));
+      })
+      .finally(() => {
+        context.commit(Mutations.STOP_USER_LOADING);
+        resolve();
+      });
+  });
+}
+
 export function fetchSCM<S extends UserState, R extends RootState>(context: ActionContext<S, R>): Promise<void> {
   return new Promise<void>((resolve) => {
     const base = context.rootState.base;

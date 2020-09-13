@@ -6,6 +6,12 @@ declare interface User {
   avatar?: string;
 }
 
+declare interface Token {
+  id: number;
+  name: string;
+  createdAt: string;
+}
+
 declare interface Repository {
   URL: string;
   SCM: string;

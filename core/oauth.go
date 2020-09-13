@@ -11,14 +11,15 @@ import (
 
 // OAuthToken holds OAuth2 token information
 type OAuthToken struct {
-	ID      uint
-	Name    string
-	Code    string
-	Access  string
-	Refresh string
-	Expires time.Time
-	Owner   *User
-	Data    []byte
+	ID       uint
+	Name     string
+	Code     string
+	Access   string
+	Refresh  string
+	Expires  time.Time
+	CreatedAt time.Time
+	Owner    *User
+	Data     []byte
 }
 
 // OAuthService provide OAuth2 protocol

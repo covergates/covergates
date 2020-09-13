@@ -12,7 +12,7 @@ const themes = {
     primary: colors.cyan.darken3,
     secondary: colors.grey.darken4,
     accent: colors.blueGrey.darken1,
-    error: colors.red.accent3
+    error: colors.red.darken4
   }
 };
 
