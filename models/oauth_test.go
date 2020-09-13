@@ -2,6 +2,7 @@ package models
 
 import (
 	"testing"
+	"time"
 
 	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
@@ -9,17 +10,23 @@ import (
 )
 
 func cmpTokens(token1, token2 *core.OAuthToken) string {
+	now := time.Now()
 	token1.ID = 0
+	token1.CreatedAt = now
 	token2.ID = 0
+	token2.CreatedAt = now
 	return cmp.Diff(token1, token2)
 }
 
 func cmpTokenSlice(tokens1, tokens2 []*core.OAuthToken) string {
+	now := time.Now()
 	for _, token := range tokens1 {
 		token.ID = 0
+		token.CreatedAt = now
 	}
 	for _, token := range tokens2 {
 		token.ID = 0
+		token.CreatedAt = now
 	}
 	return cmp.Diff(tokens1, tokens2)
 }
