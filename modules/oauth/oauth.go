@@ -25,6 +25,9 @@ const (
 // ErrTokenOwnerNotFound in context
 var ErrTokenOwnerNotFound = errors.New("requires token owner")
 
+// ErrPermissionDeny of an operation
+var ErrPermissionDeny = errors.New("no permission")
+
 // Service of OAuth
 type Service struct {
 	config     *config.Config
@@ -99,11 +102,18 @@ func (s *Service) CreateToken(ctx context.Context, name string) (*core.OAuthToke
 	if err != nil {
 		return nil, err
 	}
-	return s.oauthStore.Find(&core.OAuthToken{Code: token.GetCode()})
+	return s.oauthStore.Find(&core.OAuthToken{Access: token.GetAccess()})
 }
 
 // DeleteToken with access code
 func (s *Service) DeleteToken(ctx context.Context, token *core.OAuthToken) error {
+	user, ok := getUser(ctx)
+	if !ok {
+		return ErrTokenOwnerNotFound
+	}
+	if user.Login != token.Owner.Login {
+		return ErrPermissionDeny
+	}
 	return s.server.Manager.RemoveAccessToken(ctx, token.Access)
 }
 

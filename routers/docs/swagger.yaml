@@ -4,7 +4,7 @@ definitions:
     properties:
       committer:
         type: string
-      committerAvater:
+      committerAvatar:
         type: string
       message:
         type: string
@@ -61,6 +61,13 @@ definitions:
   user.Providers:
     additionalProperties:
       type: boolean
+    type: object
+  user.Token:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
     type: object
   user.User:
     properties:
@@ -629,6 +636,48 @@ paths:
           schema:
             $ref: '#/definitions/user.Providers'
       summary: Get user's SCM binding state
+      tags:
+      - User
+  /user/tokens:
+    get:
+      responses:
+        "200":
+          description: list of tokens
+          schema:
+            items:
+              $ref: '#/definitions/user.Token'
+            type: array
+      summary: list OAuth tokens
+      tags:
+      - User
+    post:
+      parameters:
+      - description: token name
+        in: formData
+        name: name
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: create OAuth token
+      tags:
+      - User
+  /user/tokens/{id}:
+    delete:
+      parameters:
+      - description: token id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: deleted token
+          schema:
+            $ref: '#/definitions/user.Token'
+      summary: delete token with id
       tags:
       - User
 swagger: "2.0"

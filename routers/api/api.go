@@ -42,6 +42,7 @@ type Router struct {
 	// store
 	ReportStore core.ReportStore
 	RepoStore   core.RepoStore
+	OAuthStore  core.OAuthStore
 }
 
 func host(addr string) string {
@@ -64,6 +65,10 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 		g.POST("", user.HandleCreate())
 		g.GET("/scm", checkLogin, user.HandleGetSCM(r.Config))
 		g.GET("/owner/:scm/:namespace/:name", checkLogin, user.HandleGetOwner(r.RepoStore))
+		// tokens
+		g.POST("/tokens", checkLogin, user.HandleCreateToken(r.OAuthService))
+		g.GET("/tokens", checkLogin, user.HandleListTokens(r.OAuthService))
+		g.DELETE("tokens/:id", checkLogin, user.HandleDeleteToken(r.OAuthService, r.OAuthStore))
 	}
 	{
 		g := g.Group("/reports")

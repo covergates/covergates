@@ -147,6 +147,20 @@ func TestDelete(t *testing.T) {
 	if _, err := service.Validate(request); err == nil {
 		t.Fatal("should return err for deleted token")
 	}
+
+	token, err = service.CreateToken(ctx, "user1_token")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	user2, err := userStore.FindByLogin("user2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx = service.WithUser(context.Background(), user2)
+	if err := service.DeleteToken(ctx, token); err == nil {
+		t.Fatal("user2 cannot delete user1's token")
+	}
 }
 
 func TestList(t *testing.T) {

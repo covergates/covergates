@@ -8,6 +8,22 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func cmpTokens(token1, token2 *core.OAuthToken) string {
+	token1.ID = 0
+	token2.ID = 0
+	return cmp.Diff(token1, token2)
+}
+
+func cmpTokenSlice(tokens1, tokens2 []*core.OAuthToken) string {
+	for _, token := range tokens1 {
+		token.ID = 0
+	}
+	for _, token := range tokens2 {
+		token.ID = 0
+	}
+	return cmp.Diff(tokens1, tokens2)
+}
+
 func TestOAuth(t *testing.T) {
 	ctrl, db := getDatabaseService(t)
 	defer ctrl.Finish()
@@ -53,7 +69,8 @@ func TestOAuth(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := cmp.Diff(tokens[0], token); diff != "" {
+
+	if diff := cmpTokens(tokens[0], token); diff != "" {
 		t.Fatal(diff)
 	}
 
@@ -61,7 +78,8 @@ func TestOAuth(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := cmp.Diff(tokens[1], token); diff != "" {
+
+	if diff := cmpTokens(tokens[1], token); diff != "" {
 		t.Fatal(diff)
 	}
 
@@ -77,7 +95,7 @@ func TestOAuth(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if diff := cmp.Diff(foundTokens, tokens); diff != "" {
+	if diff := cmpTokenSlice(foundTokens, tokens); diff != "" {
 		t.Fatal(diff)
 	}
 
@@ -103,7 +121,7 @@ func TestOAuth(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := cmp.Diff(tokens[1], token); diff != "" {
+	if diff := cmpTokens(tokens[1], token); diff != "" {
 		t.Log("delete to many tokens")
 		t.Fatal(diff)
 	}

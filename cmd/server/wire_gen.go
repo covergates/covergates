@@ -32,7 +32,7 @@ func InitializeApplication(config2 *config.Config, db *gorm.DB) (application, er
 	hookService := provideHookService(scmService, repoStore, reportStore, reportService)
 	oAuthStore := provideOAuthStore(databaseService)
 	oAuthService := provideOAuthService(config2, oAuthStore, userStore)
-	routers := provideRouter(session, config2, loginMiddleware, scmService, coverageService, chartService, reportService, hookService, oAuthService, reportStore, repoStore)
+	routers := provideRouter(session, config2, loginMiddleware, scmService, coverageService, chartService, reportService, hookService, oAuthService, reportStore, repoStore, oAuthStore)
 	mainApplication := newApplication(routers, databaseService)
 	return mainApplication, nil
 }

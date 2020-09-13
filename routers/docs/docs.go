@@ -859,6 +859,72 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/user/tokens": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "list OAuth tokens",
+                "responses": {
+                    "200": {
+                        "description": "list of tokens",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/user.Token"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "create OAuth token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token name",
+                        "name": "name",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/tokens/{id}": {
+            "delete": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "delete token with id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "token id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "deleted token",
+                        "schema": {
+                            "$ref": "#/definitions/user.Token"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -868,7 +934,7 @@ var doc = `{
                 "committer": {
                     "type": "string"
                 },
-                "committerAvater": {
+                "committerAvatar": {
                     "type": "string"
                 },
                 "message": {
@@ -955,6 +1021,17 @@ var doc = `{
             "type": "object",
             "additionalProperties": {
                 "type": "boolean"
+            }
+        },
+        "user.Token": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
             }
         },
         "user.User": {

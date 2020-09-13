@@ -50,6 +50,9 @@ func (store *OAuthStore) Create(token *core.OAuthToken) error {
 
 // Find token with seed
 func (store *OAuthStore) Find(token *core.OAuthToken) (*core.OAuthToken, error) {
+	if token.ID > 0 {
+		return store.findByID(token.ID)
+	}
 	cond := &OAuthToken{
 		Code:    token.Code,
 		Access:  token.Access,
@@ -61,6 +64,15 @@ func (store *OAuthStore) Find(token *core.OAuthToken) (*core.OAuthToken, error) 
 		return nil, err
 	}
 	return r.toCoreOAuthToken(), nil
+}
+
+func (store *OAuthStore) findByID(tokenID uint) (*core.OAuthToken, error) {
+	session := store.DB.Session()
+	token := &OAuthToken{}
+	if err := session.Preload("Owner").First(token, tokenID).Error; err != nil {
+		return nil, err
+	}
+	return token.toCoreOAuthToken(), nil
 }
 
 // List user's oauth tokens
@@ -95,6 +107,7 @@ func (store *OAuthStore) Delete(token *core.OAuthToken) error {
 
 func (token *OAuthToken) toCoreOAuthToken() *core.OAuthToken {
 	return &core.OAuthToken{
+		ID:      token.ID,
 		Name:    token.Name,
 		Code:    token.Code,
 		Access:  token.Access,

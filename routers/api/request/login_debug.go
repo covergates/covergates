@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CheckLogin(session core.Session) gin.HandlerFunc {
+func CheckLogin(session core.Session, oauth core.OAuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &core.User{
 			Login:       os.Getenv("DEBUG_LOGIN"),

@@ -11,6 +11,7 @@ import (
 
 // OAuthToken holds OAuth2 token information
 type OAuthToken struct {
+	ID      uint
 	Name    string
 	Code    string
 	Access  string
