@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
+	log "github.com/sirupsen/logrus"
 )
 
 type gitService struct {
@@ -53,12 +55,28 @@ func (service *gitService) FindCommit(ctx context.Context, user *core.User, repo
 }
 
 func (service *gitService) ListCommits(ctx context.Context, user *core.User, repo string) ([]*core.Commit, error) {
-	if service.scm == core.Gitea {
-		return service.listGiteaCommits(ctx, user, repo)
-	}
-	client := service.scmClient
 	ctx = withUser(ctx, service.scm, user)
-	commits, _, err := client.Git.ListCommits(ctx, repo, scm.CommitListOptions{Size: 20})
+	if service.scm == core.Gitea {
+		return service.listGiteaCommits(ctx, repo, "")
+	}
+	return service.listCommits(ctx, repo, "")
+}
+
+func (service *gitService) ListCommitsByRef(ctx context.Context, user *core.User, repo, ref string) ([]*core.Commit, error) {
+	ctx = withUser(ctx, service.scm, user)
+	if service.scm == core.Gitea {
+		return service.listGiteaCommits(ctx, repo, ref)
+	}
+	return service.listCommits(ctx, repo, ref)
+}
+
+func (service *gitService) listCommits(ctx context.Context, repo, ref string) ([]*core.Commit, error) {
+	client := service.scmClient
+	options := scm.CommitListOptions{Size: 20}
+	if ref != "" {
+		options.Ref = ref
+	}
+	commits, _, err := client.Git.ListCommits(ctx, repo, options)
 	if err != nil {
 		return nil, err
 	}
@@ -71,19 +89,30 @@ func (service *gitService) ListCommits(ctx context.Context, user *core.User, rep
 			CommitterAvater: commit.Committer.Avatar,
 		}
 	}
-
 	return results, nil
 }
 
-func (service *gitService) listGiteaCommits(ctx context.Context, user *core.User, repo string) ([]*core.Commit, error) {
+func mustGetGiteaCommitsQuery(repo, ref string) string {
+	u, err := url.Parse(fmt.Sprintf("api/v1/repos/%s/commits", repo))
+	if err != nil {
+		log.Fatal(err)
+	}
+	query := u.Query()
+	if ref != "" {
+		query.Set("sha", ref)
+	}
+	u.RawQuery = query.Encode()
+	return u.String()
+}
+
+func (service *gitService) listGiteaCommits(ctx context.Context, repo, ref string) ([]*core.Commit, error) {
 	client := service.scmClient
-	ctx = withUser(ctx, service.scm, user)
 	res, err := client.Do(ctx, &scm.Request{
 		Header: map[string][]string{
 			"Content-Type": {"application/json"},
 		},
 		Method: "GET",
-		Path:   fmt.Sprintf("api/v1/repos/%s/commits", repo),
+		Path:   mustGetGiteaCommitsQuery(repo, ref),
 	})
 	if err != nil {
 		return nil, err
@@ -114,6 +143,20 @@ func (service *gitService) listGiteaCommits(ctx context.Context, user *core.User
 		}
 	}
 	return results, nil
+}
+
+func (service *gitService) ListBranches(ctx context.Context, user *core.User, repo string) ([]string, error) {
+	client := service.scmClient
+	ctx = withUser(ctx, service.scm, user)
+	references, _, err := client.Git.ListBranches(ctx, repo, scm.ListOptions{})
+	if err != nil {
+		return []string{}, err
+	}
+	branches := make([]string, len(references))
+	for i, ref := range references {
+		branches[i] = ref.Name
+	}
+	return branches, nil
 }
 
 // GitRepository clone

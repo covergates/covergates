@@ -3,6 +3,7 @@ package request
 import (
 	"github.com/covergates/covergates/core"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -25,4 +26,14 @@ func UserFrom(c *gin.Context) (*core.User, bool) {
 		return nil, false
 	}
 	return user, true
+}
+
+// MustGetUserFrom current context, otherwise panic
+func MustGetUserFrom(c *gin.Context) *core.User {
+	data := c.MustGet(keyUser)
+	user, ok := data.(*core.User)
+	if !ok {
+		log.Panic("user not found in current context")
+	}
+	return user
 }

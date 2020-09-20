@@ -37,3 +37,8 @@ export function setCommits(state: RepoState, commits: Commit[]): void {
   state.commits.splice(0, state.commits.length);
   state.commits.push(...commits);
 }
+
+export function setBranches(state: RepoState, branches: string[]): void {
+  state.branches.splice(0, state.branches.length);
+  state.branches.push(...branches);
+}

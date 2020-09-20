@@ -1,6 +1,18 @@
 <template>
   <v-card>
-    <v-card-title class="primary white--text">Recent Commits</v-card-title>
+    <v-card-title class="primary white--text">
+      Recent Commits
+      <v-spacer />
+      <v-select
+        :items="branches"
+        :hide-details="true"
+        v-model="selectedBranch"
+        flat
+        dense
+        solo
+        @change="selectBranch"
+      ></v-select>
+    </v-card-title>
     <v-divider />
     <v-card-text>
       <v-card flat v-if="commits.length <= 0">
@@ -43,11 +55,36 @@
 import { Component } from 'vue-property-decorator';
 import { Location } from 'vue-router';
 import Vue from '@/vue';
+import { Actions } from '@/store';
 
 @Component
 export default class RecentCommits extends Vue {
+  selectedBranch = '';
+
+  constructor() {
+    super();
+    this.selectedBranch = this.currentBranch;
+    this.updateCommits(this.currentBranch);
+  }
+
   get commits(): Commit[] {
     return this.$store.state.repository.commits.slice(0, 20);
+  }
+
+  get repo(): Repository | undefined {
+    return this.$store.state.repository.current;
+  }
+
+  get currentBranch(): string {
+    const report = this.$store.state.report.current;
+    if (report && report.reference && report.reference !== '') {
+      return report.reference;
+    }
+    return this.repo ? this.repo.Branch : '';
+  }
+
+  get branches(): string[] {
+    return this.$store.state.repository.branches;
   }
 
   get user(): User | undefined {
@@ -74,6 +111,14 @@ export default class RecentCommits extends Vue {
         ref: commit.sha
       }
     };
+  }
+
+  selectBranch() {
+    this.updateCommits(this.selectedBranch);
+  }
+
+  updateCommits(ref = '') {
+    this.$store.dispatch(Actions.FETCH_REPOSITORY_COMMITS, ref);
   }
 }
 </script>

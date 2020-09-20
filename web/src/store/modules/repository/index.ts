@@ -7,7 +7,8 @@ import {
   setError,
   setSetting,
   setOwner,
-  setCommits
+  setCommits,
+  setBranches
 } from './mutations';
 import {
   fetchRepositoryList,
@@ -16,7 +17,8 @@ import {
   changeCurrentRepository,
   fetchRepositorySetting,
   fetchRepositoryOwner,
-  fetchRepositoryCommits
+  fetchRepositoryCommits,
+  fetchRepositoryBranches
 } from './actions';
 import { RootState } from '@/store';
 
@@ -28,7 +30,8 @@ export enum Mutations {
   SET_REPOSITORY_ERROR = 'SET_REPOSITORY_ERROR',
   SET_REPOSITORY_SETTING = 'SET_REPOSITORY_SETTING',
   SET_REPOSITORY_OWNER = 'SET_REPOSITORY_OWNER',
-  SET_REPOSITORY_COMMITS = 'SET_REPOSITORY_COMMITS'
+  SET_REPOSITORY_COMMITS = 'SET_REPOSITORY_COMMITS',
+  SET_REPOSITORY_BRANCHES = 'SET_REPOSITORY_BRANCHES'
 }
 
 export enum Actions {
@@ -38,13 +41,15 @@ export enum Actions {
   CHANGE_CURRENT_REPOSITORY = 'CHANGE_CURRENT_REPOSITORY',
   FETCH_REPOSITORY_SETTING = 'FETCH_REPOSITORY_SETTING',
   FETCH_REPOSITORY_OWNER = 'FETCH_REPOSITORY_OWNER',
-  FETCH_REPOSITORY_COMMITS = 'FETCH_REPOSITORY_COMMITS'
+  FETCH_REPOSITORY_COMMITS = 'FETCH_REPOSITORY_COMMITS',
+  FETCH_REPOSITORY_BRANCHES = 'FETCH_REPOSITORY_BRANCHES'
 }
 
 export type RepoState = {
   loading: boolean;
   current?: Repository;
   commits: Commit[];
+  branches: string[];
   owner: boolean;
   setting?: RepositorySetting;
   list: Repository[];
@@ -56,6 +61,7 @@ const module: Module<RepoState, RootState> = {
     loading: false,
     current: undefined,
     commits: [],
+    branches: [],
     setting: undefined,
     list: [],
     error: undefined,
@@ -69,7 +75,8 @@ const module: Module<RepoState, RootState> = {
     [Mutations.SET_REPOSITORY_ERROR]: setError,
     [Mutations.SET_REPOSITORY_SETTING]: setSetting,
     [Mutations.SET_REPOSITORY_OWNER]: setOwner,
-    [Mutations.SET_REPOSITORY_COMMITS]: setCommits
+    [Mutations.SET_REPOSITORY_COMMITS]: setCommits,
+    [Mutations.SET_REPOSITORY_BRANCHES]: setBranches
   },
   actions: {
     [Actions.FETCH_REPOSITORY_LIST]: fetchRepositoryList,
@@ -78,7 +85,8 @@ const module: Module<RepoState, RootState> = {
     [Actions.CHANGE_CURRENT_REPOSITORY]: changeCurrentRepository,
     [Actions.FETCH_REPOSITORY_SETTING]: fetchRepositorySetting,
     [Actions.FETCH_REPOSITORY_OWNER]: fetchRepositoryOwner,
-    [Actions.FETCH_REPOSITORY_COMMITS]: fetchRepositoryCommits
+    [Actions.FETCH_REPOSITORY_COMMITS]: fetchRepositoryCommits,
+    [Actions.FETCH_REPOSITORY_BRANCHES]: fetchRepositoryBranches
   }
 };
 

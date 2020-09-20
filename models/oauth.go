@@ -78,7 +78,6 @@ func (store *OAuthStore) findByID(tokenID uint) (*core.OAuthToken, error) {
 // List user's oauth tokens
 func (store *OAuthStore) List(user *core.User) ([]*core.OAuthToken, error) {
 	session := store.DB.Session()
-	session.LogMode(true)
 	u := &User{}
 	if err := session.Where(&User{Login: user.Login}).First(u).Error; err != nil {
 		return nil, err

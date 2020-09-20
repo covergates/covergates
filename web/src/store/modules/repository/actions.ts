@@ -168,7 +168,7 @@ export function fetchRepositoryOwner<S extends RepoState, R extends RootState>(
 }
 
 export function fetchRepositoryCommits<S extends RepoState, R extends RootState>(
-  context: ActionContext<S, R>
+  context: ActionContext<S, R>, ref = ''
 ): Promise<void> {
   return new Promise(resolve => {
     const base = context.rootState.base;
@@ -179,12 +179,39 @@ export function fetchRepositoryCommits<S extends RepoState, R extends RootState>
       return;
     }
     const { SCM, Name, NameSpace } = (repo as Repository);
-    Axios.get<Commit[]>(`${base}/api/v1/repos/${SCM}/${NameSpace}/${Name}/commits`)
+    Axios.get<Commit[]>(
+      `${base}/api/v1/repos/${SCM}/${NameSpace}/${Name}/commits`,
+      { params: { ref: ref } })
       .then(response => {
         context.commit(Mutations.SET_REPOSITORY_COMMITS, response.data);
       })
       .catch(() => {
         context.commit(Mutations.SET_REPOSITORY_COMMITS, []);
+      })
+      .finally(() => {
+        resolve();
+      });
+  });
+}
+
+export function fetchRepositoryBranches<S extends RepoState, R extends RootState>(
+  context: ActionContext<S, R>
+): Promise<void> {
+  return new Promise(resolve => {
+    const base = context.rootState.base;
+    const repo = context.state.current;
+    if (repo === undefined) {
+      context.commit(Mutations.SET_REPOSITORY_BRANCHES, []);
+      resolve();
+      return;
+    }
+    const { SCM: scm, Name: name, NameSpace: nameSpace } = (repo as Repository);
+    Axios.get<string[]>(`${base}/api/v1/repos/${scm}/${nameSpace}/${name}/branches`)
+      .then(response => {
+        context.commit(Mutations.SET_REPOSITORY_BRANCHES, response.data);
+      })
+      .catch(() => {
+        context.commit(Mutations.SET_REPOSITORY_BRANCHES, []);
       })
       .finally(() => {
         resolve();

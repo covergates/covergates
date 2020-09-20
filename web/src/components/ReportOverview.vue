@@ -7,7 +7,7 @@
       </v-banner>
       <v-row justify="space-around">
         <v-card flat>
-          <v-card-title>Default Branch</v-card-title>
+          <v-card-title>{{branchTitle}}</v-card-title>
           <v-card-text class="text-capitalize text-h6">{{branch}}</v-card-text>
         </v-card>
         <v-card flat>
@@ -69,7 +69,26 @@ export default class ReportOverview extends ((Mixins(
     return this.$store.state.report.current;
   }
 
+  get branchTitle(): string {
+    console.log(this.repo);
+    console.log(this.report);
+    if (
+      this.repo &&
+      this.report &&
+      this.report.reference &&
+      this.report.reference !== ''
+    ) {
+      return this.report.reference !== this.repo.Branch
+        ? 'Current Branch'
+        : 'Default Branch';
+    }
+    return 'Default Branch';
+  }
+
   get branch(): string {
+    if (this.report && this.report.reference && this.report.reference !== '') {
+      return this.report.reference;
+    }
     return this.repo ? this.repo.Branch : 'Master';
   }
 

@@ -5,6 +5,19 @@ import { FetchReportOption } from '@/store/modules/report/actions';
 
 type RouteHandler = (to: Route, from: Route, next: NavigationGuardNext) => void;
 
+function fetchReportHistory(store: Store<RootState>) {
+  const report = (store.state as State).report.current;
+  const repo = (store.state as State).repository.current;
+  if (report && repo) {
+    store.dispatch(Actions.FETCH_REPORT_HISTORY, {
+      ReportID: report.reportID,
+      Ref: repo.Branch
+    } as FetchReportOption);
+  } else {
+    store.commit(Mutations.SET_REPORT_HISTORY, []);
+  }
+}
+
 export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
   return (to, from, next) => {
     store.dispatch(Actions.CHANGE_CURRENT_REPOSITORY, to.params)
@@ -17,24 +30,21 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
               Ref: to.query.ref
             } as FetchReportOption
           ).then(() => {
-            const report = (store.state as State).report.current;
-            const repo = (store.state as State).repository.current;
-            if (report && repo) {
-              store.dispatch(Actions.FETCH_REPORT_HISTORY, {
-                ReportID: report.reportID,
-                Ref: repo.Branch
-              } as FetchReportOption);
-            } else {
-              store.commit(Mutations.SET_REPORT_HISTORY, []);
-            }
-            // TODO: Need to find a way to list commits in other branches
+            fetchReportHistory(store);
             store.dispatch(Actions.FETCH_REPOSITORY_COMMITS);
+            store.dispatch(Actions.FETCH_REPOSITORY_BRANCHES);
             store.dispatch(Actions.FETCH_REPOSITORY_OWNER);
+          }).finally(() => {
+            next();
           });
           store.dispatch(Actions.FETCH_REPOSITORY_SETTING);
+        } else {
+          next();
         }
+      }).catch(reason => {
+        console.warn(reason);
+        next();
       });
-    next();
   };
 }
 

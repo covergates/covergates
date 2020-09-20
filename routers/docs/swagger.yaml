@@ -64,6 +64,8 @@ definitions:
     type: object
   user.Token:
     properties:
+      createdAt:
+        type: string
       id:
         type: integer
       name:
@@ -354,6 +356,34 @@ paths:
       summary: sync repository information with SCM
       tags:
       - Repository
+  /repos/{scm}/{namespace}/{name}/branches:
+    get:
+      parameters:
+      - description: SCM
+        in: path
+        name: scm
+        required: true
+        type: string
+      - description: Namespace
+        in: path
+        name: namespace
+        required: true
+        type: string
+      - description: name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: list repository branches
+      tags:
+      - Repository
   /repos/{scm}/{namespace}/{name}/commits:
     get:
       parameters:
@@ -371,6 +401,10 @@ paths:
         in: path
         name: name
         required: true
+        type: string
+      - description: branch to list commits from
+        in: query
+        name: ref
         type: string
       responses:
         "200":

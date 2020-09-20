@@ -51,7 +51,7 @@ declare interface Coverage {
 }
 
 declare interface Report {
-  ref?: string;
+  reference?: string;
   commit: string;
   coverages: Coverage[];
   reportID: string;

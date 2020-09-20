@@ -433,6 +433,48 @@ var doc = `{
                 }
             }
         },
+        "/repos/{scm}/{namespace}/{name}/branches": {
+            "get": {
+                "tags": [
+                    "Repository"
+                ],
+                "summary": "list repository branches",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SCM",
+                        "name": "scm",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Namespace",
+                        "name": "namespace",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/repos/{scm}/{namespace}/{name}/commits": {
             "get": {
                 "tags": [
@@ -460,6 +502,12 @@ var doc = `{
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "branch to list commits from",
+                        "name": "ref",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1026,6 +1074,9 @@ var doc = `{
         "user.Token": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },

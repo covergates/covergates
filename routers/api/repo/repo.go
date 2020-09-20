@@ -373,6 +373,7 @@ func HandleUpdateSetting(store core.RepoStore) gin.HandlerFunc {
 // @Param scm path string true "SCM"
 // @Param namespace path string true "Namespace"
 // @Param name path string true "name"
+// @Param ref query string false "branch to list commits from"
 // @Success 200 {object} []core.Commit commits
 // @Router /repos/{scm}/{namespace}/{name}/commits [get]
 func HandleListCommits(service core.SCMService) gin.HandlerFunc {
@@ -389,12 +390,46 @@ func HandleListCommits(service core.SCMService) gin.HandlerFunc {
 			return
 		}
 		ctx := c.Request.Context()
-		commits, err := client.Git().ListCommits(ctx, user, repo.FullName())
+		var commits []*core.Commit
+		if c.Query("ref") == "" {
+			commits, err = client.Git().ListCommits(ctx, user, repo.FullName())
+		} else {
+			commits, err = client.Git().ListCommitsByRef(ctx, user, repo.FullName(), c.Query("ref"))
+		}
 		if err != nil {
 			c.Error(err)
 			c.JSON(500, []*core.Commit{})
 		}
 		c.JSON(200, commits)
+	}
+}
+
+// HandleListBranches for the repository
+// @Summary list repository branches
+// @Tags Repository
+// @Param scm path string true "SCM"
+// @Param namespace path string true "Namespace"
+// @Param name path string true "name"
+// @Success 200 {object} []string branch names
+// @Router /repos/{scm}/{namespace}/{name}/branches [get]
+func HandleListBranches(service core.SCMService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		repo := c.MustGet(keyRepo).(*core.Repo)
+		user := request.MustGetUserFrom(c)
+		client, err := service.Client(repo.SCM)
+		if err != nil {
+			c.Error(err)
+			c.JSON(500, []string{})
+			return
+		}
+		ctx := c.Request.Context()
+		branches, err := client.Git().ListBranches(ctx, user, repo.FullName())
+		if err != nil {
+			c.Error(err)
+			c.JSON(500, []string{})
+			return
+		}
+		c.JSON(200, branches)
 	}
 }
 

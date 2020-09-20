@@ -88,7 +88,11 @@ type UserService interface {
 type GitService interface {
 	GitRepository(ctx context.Context, user *User, repo string) (GitRepository, error)
 	FindCommit(ctx context.Context, user *User, repo *Repo) string
+	// ListCommits in the repository default branch
 	ListCommits(ctx context.Context, user *User, repo string) ([]*Commit, error)
+	// ListCommitsByRef in the repository reference. The reference could be branch name.
+	ListCommitsByRef(ctx context.Context, user *User, repo, ref string) ([]*Commit, error)
+	ListBranches(ctx context.Context, user *User, repo string) ([]string, error)
 }
 
 // ContentService provides information of source codes
