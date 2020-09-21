@@ -1031,6 +1031,9 @@ var doc = `{
                 "mergePR": {
                     "type": "boolean"
                 },
+                "protected": {
+                    "type": "boolean"
+                },
                 "updateAction": {
                     "type": "ReportUpdateAction"
                 }

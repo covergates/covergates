@@ -1,5 +1,5 @@
 <template>
-  <v-btn :loading="loading" color="accent" @click="activate">
+  <v-btn :loading="loading" color="accent" small @click="activate">
     <v-icon class="mr-1">{{icon}}</v-icon>activate
   </v-btn>
 </template>

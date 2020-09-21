@@ -30,11 +30,9 @@ import (
 // @Router /reports/{id} [post]
 func HandleUpload(
 	coverageService core.CoverageService,
-	repoStore core.RepoStore,
 	reportStore core.ReportStore,
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO: need to handle repository update action according to setting
 		if _, ok := c.GetPostForm("type"); !ok {
 			c.String(400, "must have report type")
 			return
@@ -50,19 +48,6 @@ func HandleUpload(
 		reportType := core.ReportType(c.PostForm("type"))
 		commit := c.PostForm("commit")
 		ctx := c.Request.Context()
-
-		repo, err := repoStore.Find(&core.Repo{ReportID: reportID})
-		if err != nil {
-			c.String(400, "cannot find repository related to report id")
-			return
-		}
-
-		setting, err := repoStore.Setting(repo)
-		if err != nil {
-			log.Error(err)
-			c.String(500, err.Error())
-			return
-		}
 
 		// get upload file
 		file, err := c.FormFile("file")
@@ -82,7 +67,13 @@ func HandleUpload(
 		}
 
 		reader, err := file.Open()
-		coverage, err := loadCoverageReport(ctx, coverageService, reportType, reader, setting)
+		coverage, err := loadCoverageReport(
+			ctx,
+			coverageService,
+			reportType,
+			reader,
+			MustGetSetting(c),
+		)
 		if err != nil {
 			log.Error(err)
 			c.String(500, err.Error())

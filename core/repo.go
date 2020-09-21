@@ -21,6 +21,8 @@ type RepoSetting struct {
 	Filters          FileNameFilters    `json:"filters"`
 	MergePullRequest bool               `json:"mergePR"`
 	UpdateAction     ReportUpdateAction `json:"updateAction"`
+	// Protected project from unauthorized user upload report
+	Protected bool `json:"protected"`
 }
 
 // RepoStore repository in storage

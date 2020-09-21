@@ -30,6 +30,14 @@ func testRequest(r *gin.Engine, req *http.Request, f func(w *httptest.ResponseRe
 	f(w)
 }
 
+func encodeJSON(v interface{}) string {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return ""
+	}
+	return string(data)
+}
+
 func addFormFile(w *multipart.Writer, k, name string, r io.Reader) {
 	writer, err := w.CreateFormFile(k, name)
 	if err != nil {
@@ -41,93 +49,147 @@ func addFormFile(w *multipart.Writer, k, name string, r io.Reader) {
 	}
 }
 
+func createForm(writer io.Writer, m map[string]string) *multipart.Writer {
+	w := multipart.NewWriter(writer)
+	for k, v := range m {
+		w.WriteField(k, v)
+	}
+	return w
+}
+
 func TestUpload(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockCoverageService := mock.NewMockCoverageService(ctrl)
 	mockReportStore := mock.NewMockReportStore(ctrl)
-	mockRepoStore := mock.NewMockRepoStore(ctrl)
-	coverage := &core.CoverageReport{
-		Type: core.ReportPerl,
-	}
-	repo := &core.Repo{
-		NameSpace: "org",
-		Name:      "repo",
-		SCM:       core.Github,
-		Branch:    "bear",
-	}
-	report := &core.Report{
-		ReportID: "1234",
-		Coverages: []*core.CoverageReport{
-			coverage,
-		},
-		Commit:    "abcdef",
-		Reference: "bear",
-		Files:     []string{"a"},
-	}
 
-	mockRepoStore.EXPECT().Find(
-		gomock.Eq(&core.Repo{
-			ReportID: report.ReportID,
-		}),
-	).Return(repo, nil)
-
-	mockRepoStore.EXPECT().Setting(
-		gomock.Eq(repo),
-	).Return(&core.RepoSetting{}, nil)
-
-	mockCoverageService.EXPECT().Report(
-		gomock.Any(),
-		gomock.Eq(core.ReportPerl),
-		gomock.Any(),
-	).Return(coverage, nil)
-
-	mockCoverageService.EXPECT().TrimFileNames(
-		gomock.Any(),
-		gomock.Eq(coverage),
-		gomock.Any(),
-	).Return(nil)
-
-	mockReportStore.EXPECT().Upload(
-		gomock.Eq(report),
-	).Return(nil)
-
-	r := gin.Default()
-	r.POST("/reports/:id", HandleUpload(
-		mockCoverageService,
-		mockRepoStore,
-		mockReportStore,
-	))
-
-	buffer := bytes.NewBuffer([]byte{})
-	w := multipart.NewWriter(buffer)
-	w.WriteField("commit", "abcdef")
-	w.WriteField("type", "perl")
-	files, err := json.Marshal(report.Files)
-	if err != nil {
-		t.Fatal(err)
-	}
-	w.WriteField("ref", "bear")
-	w.WriteField("files", string(files))
-	file := bytes.NewBuffer([]byte("mock"))
-	addFormFile(w, "file", "cover_db.zip", file)
-	w.Close()
-
-	req, _ := http.NewRequest("POST", "/reports/1234", buffer)
-	req.Header.Set("Content-Type", w.FormDataContentType())
-	testRequest(r, req, func(w *httptest.ResponseRecorder) {
-		rst := w.Result()
-		if rst.StatusCode != 200 {
-			t.Fail()
+	t.Run("basic", func(t *testing.T) {
+		coverage := &core.CoverageReport{
+			Type: core.ReportPerl,
 		}
+		report := &core.Report{
+			ReportID: "1234",
+			Coverages: []*core.CoverageReport{
+				coverage,
+			},
+			Commit:    "abcdef",
+			Reference: "bear",
+			Files:     []string{"a"},
+		}
+
+		mockCoverageService.EXPECT().Report(
+			gomock.Any(),
+			gomock.Eq(core.ReportPerl),
+			gomock.Any(),
+		).Return(coverage, nil)
+
+		mockCoverageService.EXPECT().TrimFileNames(
+			gomock.Any(),
+			gomock.Eq(coverage),
+			gomock.Any(),
+		).Return(nil)
+
+		mockReportStore.EXPECT().Upload(
+			gomock.Eq(report),
+		).Return(nil)
+		r := gin.Default()
+		r.Use(func(c *gin.Context) {
+			WithSetting(c, &core.RepoSetting{})
+		})
+		r.POST("/reports/:id", HandleUpload(
+			mockCoverageService,
+			mockReportStore,
+		))
+		buffer := bytes.NewBuffer([]byte{})
+		w := createForm(
+			buffer,
+			map[string]string{
+				"commit": "abcdef",
+				"type":   "perl",
+				"ref":    "bear",
+				"files":  encodeJSON(report.Files),
+			},
+		)
+		addFormFile(w, "file", "cover_db.zip", bytes.NewBuffer([]byte("mock")))
+		w.Close()
+
+		req, _ := http.NewRequest("POST", "/reports/1234", buffer)
+		req.Header.Set("Content-Type", w.FormDataContentType())
+		testRequest(r, req, func(w *httptest.ResponseRecorder) {
+			rst := w.Result()
+			if rst.StatusCode != 200 {
+				t.Fail()
+			}
+		})
 	})
-	// test empty post
-	req, _ = http.NewRequest("POST", "/reports/1234", nil)
-	testRequest(r, req, func(w *httptest.ResponseRecorder) {
-		rst := w.Result()
-		if rst.StatusCode != 400 {
-			t.Fail()
-		}
+
+	t.Run("test empty post", func(t *testing.T) {
+		r := gin.Default()
+		r.Use(func(c *gin.Context) {
+			WithSetting(c, &core.RepoSetting{})
+		})
+		r.POST("/reports/:id", HandleUpload(
+			mockCoverageService,
+			mockReportStore,
+		))
+		req, _ := http.NewRequest("POST", "/reports/1234", nil)
+		testRequest(r, req, func(w *httptest.ResponseRecorder) {
+			rst := w.Result()
+			if rst.StatusCode != 400 {
+				t.Fail()
+			}
+		})
+	})
+}
+
+func TestProtectReport(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepoStore := mock.NewMockRepoStore(ctrl)
+
+	t.Run("test protected report", func(t *testing.T) {
+		r := gin.Default()
+		r.POST("/",
+			func(c *gin.Context) {
+				WithSetting(c, &core.RepoSetting{
+					Protected: true,
+				})
+			},
+			ProtectReport(func(c *gin.Context) {
+				c.String(401, "")
+				c.Abort()
+			}, mockRepoStore),
+		)
+		request, _ := http.NewRequest("POST", "/", nil)
+		testRequest(r, request, func(w *httptest.ResponseRecorder) {
+			response := w.Result()
+			if response.StatusCode != 401 {
+				t.Fatal()
+			}
+		})
+	})
+
+	t.Run("test unprotected report", func(t *testing.T) {
+		r := gin.Default()
+		r.POST("/",
+			func(c *gin.Context) {
+				WithSetting(c, &core.RepoSetting{
+					Protected: false,
+				})
+			},
+			ProtectReport(func(c *gin.Context) {
+				c.String(401, "")
+				c.Abort()
+			}, mockRepoStore),
+		)
+		request, _ := http.NewRequest("POST", "/", nil)
+		testRequest(r, request, func(w *httptest.ResponseRecorder) {
+			response := w.Result()
+			if response.StatusCode != 200 {
+				t.Fatal()
+			}
+		})
 	})
 }
 
@@ -440,5 +502,4 @@ func TestGetCard(t *testing.T) {
 			t.Fatal()
 		}
 	})
-
 }

@@ -24,6 +24,7 @@ declare interface Repository {
 declare interface RepositorySetting {
   filters?: string[];
   mergePR?: boolean;
+  protected?: boolean;
 }
 
 declare interface Commit {

@@ -36,6 +36,8 @@ definitions:
         type: FileNameFilters
       mergePR:
         type: boolean
+      protected:
+        type: boolean
       updateAction:
         type: ReportUpdateAction
     type: object
