@@ -43,7 +43,7 @@
         Almost there! Copy your report ID:
         <v-btn x-small class="mx-1" v-clipboard:copy="reportID">{{reportID}}</v-btn>
         <br />Run:
-        <code class="mx-2">coveragtes upload --report "Report ID" --type "Report Type" "Report"</code>
+        <code class="mx-2">covergates upload --report "Report ID" --type "Report Type" "Report"</code>
       </v-card-text>
     </v-card>
   </div>

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/covergates/covergates/cmd/cli/modules"
 	"github.com/urfave/cli/v2"
 )
 
@@ -43,7 +44,7 @@ func comment(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	client := &http.Client{}
+	client := modules.GetHTTPClient(c)
 	respond, err := client.Do(req)
 	if err != nil {
 		return err

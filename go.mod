@@ -36,6 +36,7 @@ require (
 	github.com/urfave/cli/v2 v2.2.0
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73
+	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/sys v0.0.0-20200803210538-64077c9b5642 // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/tools v0.0.0-20200825202427-b303f430e36d // indirect

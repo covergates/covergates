@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/covergates/covergates/cmd/cli/modules"
 	"github.com/covergates/covergates/core"
 	"github.com/covergates/covergates/modules/git"
 	"github.com/covergates/covergates/modules/util"
@@ -99,7 +100,11 @@ func upload(c *cli.Context) error {
 
 	log.Printf("upload commit %s, %s\n", repo.HeadCommit(), c.String("type"))
 
-	respond, err := util.PostForm(url, form)
+	request, err := util.CreatePostFormRequest(url, form)
+	if err != nil {
+		return nil
+	}
+	respond, err := modules.GetHTTPClient(c).Do(request)
 	if err != nil {
 		return err
 	}

@@ -16,23 +16,29 @@ var (
 	Version = "0.0"
 )
 
+var app = &cli.App{
+	Name:    "covergate",
+	Version: Version,
+	Commands: []*cli.Command{
+		upload.Command,
+		comment.Command,
+	},
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:    "token",
+			Usage:   "provide OAuth token for API",
+			EnvVars: []string{"GATES_TOKEN"},
+		},
+		&cli.StringFlag{
+			Name:    "url",
+			Value:   CoverGatesAPI,
+			Usage:   "api service url",
+			EnvVars: []string{"API_URL"},
+		},
+	},
+}
+
 func main() {
-	app := &cli.App{
-		Name:    "covergate",
-		Version: Version,
-		Commands: []*cli.Command{
-			upload.Command,
-			comment.Command,
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "url",
-				Value:   CoverGatesAPI,
-				Usage:   "api service url",
-				EnvVars: []string{"API_URL"},
-			},
-		},
-	}
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}

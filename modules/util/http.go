@@ -17,6 +17,16 @@ type FormData map[string]interface{}
 
 // PostForm request
 func PostForm(url string, form FormData) (*http.Response, error) {
+	req, err := CreatePostFormRequest(url, form)
+	if err != nil {
+		return nil, err
+	}
+	c := client()
+	return c.Do(req)
+}
+
+// CreatePostFormRequest with form data
+func CreatePostFormRequest(url string, form FormData) (*http.Request, error) {
 	buf := new(bytes.Buffer)
 	w := multipart.NewWriter(buf)
 	for key, value := range form {
@@ -43,9 +53,7 @@ func PostForm(url string, form FormData) (*http.Response, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", w.FormDataContentType())
-
-	c := client()
-	return c.Do(req)
+	return req, nil
 }
 
 func client() *http.Client {
