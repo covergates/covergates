@@ -51,7 +51,7 @@ export default class HomeVue extends Vue {
       Covergates is open source under GPL-3.0 license.
       It's free for self-hosted.
       Visit our <a href="https://github.com/covergates/covergates">GitHub</a>
-      if your are interesting in this project!`
+      if your are interested in this project!`
     },
     {
       title: 'Easy to Install',
