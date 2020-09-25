@@ -10,9 +10,9 @@ import (
 	"github.com/golang/mock/gomock"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/jinzhu/gorm"
-	// load sqlite driver
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
@@ -20,7 +20,7 @@ var db *gorm.DB
 func getDatabaseService(t *testing.T) (*gomock.Controller, core.DatabaseService) {
 	ctrl := gomock.NewController(t)
 	mockService := mock.NewMockDatabaseService(ctrl)
-	mockService.EXPECT().Session().AnyTimes().Return(db.New())
+	mockService.EXPECT().Session().AnyTimes().Return(db.Session(&gorm.Session{}))
 	return ctrl, mockService
 }
 
@@ -32,7 +32,9 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 	tempFile.Close()
-	x, err := gorm.Open("sqlite3", tempFile.Name())
+	x, err := gorm.Open(sqlite.Open(tempFile.Name()), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,6 +44,5 @@ func TestMain(m *testing.M) {
 	}
 	exit := m.Run()
 	defer os.Exit(exit)
-	db.Close()
 	os.Remove(tempFile.Name())
 }

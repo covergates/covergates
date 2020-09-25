@@ -4,7 +4,7 @@ import (
 	"github.com/covergates/covergates/core"
 	"github.com/covergates/covergates/models"
 	"github.com/google/wire"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var storeSet = wire.NewSet(

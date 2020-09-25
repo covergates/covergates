@@ -8,13 +8,11 @@ import (
 	"github.com/covergates/covergates/core"
 	"github.com/covergates/covergates/routers"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
-
-	// load drivers
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // Version of covergates server
@@ -25,28 +23,29 @@ func connectDatabase(cfg *config.Config) *gorm.DB {
 	var err error
 	switch cfg.Database.Driver {
 	case "sqlite3":
-		x, err = gorm.Open(cfg.Database.Driver, cfg.Database.Name)
+		x, err = gorm.Open(sqlite.Open(cfg.Database.Name), &gorm.Config{})
 	case "postgres":
 		x, err = gorm.Open(
-			cfg.Database.Driver,
-			fmt.Sprintf(
-				"host=%s port=%s user=%s password=%s database=%s",
-				cfg.Database.Host,
-				cfg.Database.Port,
-				cfg.Database.User,
-				cfg.Database.Password,
-				cfg.Database.Name,
-			))
+			postgres.Open(
+				fmt.Sprintf(
+					"host=%s port=%s user=%s password=%s database=%s",
+					cfg.Database.Host,
+					cfg.Database.Port,
+					cfg.Database.User,
+					cfg.Database.Password,
+					cfg.Database.Name,
+				)), &gorm.Config{})
 	case "cloudrun":
 		x, err = gorm.Open(
-			"postgres",
-			fmt.Sprintf(
-				"user=%s password=%s database=%s host=%s/%s",
-				cfg.CloudRun.User,
-				cfg.CloudRun.Password,
-				cfg.CloudRun.Name,
-				cfg.CloudRun.Socket,
-				cfg.CloudRun.Instance))
+			postgres.Open(
+				fmt.Sprintf(
+					"user=%s password=%s database=%s host=%s/%s",
+					cfg.CloudRun.User,
+					cfg.CloudRun.Password,
+					cfg.CloudRun.Name,
+					cfg.CloudRun.Socket,
+					cfg.CloudRun.Instance,
+				)), &gorm.Config{})
 	default:
 		log.Fatal("database driver not support")
 	}

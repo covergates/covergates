@@ -14,11 +14,9 @@ import (
 	"github.com/covergates/covergates/modules/oauth"
 	"github.com/drone/go-scm/scm"
 	"github.com/google/go-cmp/cmp"
-	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
-
-	// load sqlite driver
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 var service *oauth.Service
@@ -38,7 +36,7 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 	tempFile.Close()
-	x, err := gorm.Open("sqlite3", tempFile.Name())
+	x, err := gorm.Open(sqlite.Open(tempFile.Name()), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -21,9 +21,7 @@ require (
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/google/wire v0.4.0
 	github.com/jinzhu/gorm v1.9.16
-	github.com/jinzhu/now v1.1.1 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/mattn/go-colorable v0.1.7
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/narqo/go-badge v0.0.0-20190124110329-d9415e4e1e9f
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
@@ -40,6 +38,7 @@ require (
 	golang.org/x/sys v0.0.0-20200923182605-d9f96fdee20d // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/tools v0.0.0-20200924224222-8d73f17870ce // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
-	google.golang.org/protobuf v1.25.0 // indirect
+	gorm.io/driver/postgres v1.0.1
+	gorm.io/driver/sqlite v1.1.3
+	gorm.io/gorm v1.20.1
 )

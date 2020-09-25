@@ -6,13 +6,13 @@ import (
 
 	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // User data
 type User struct {
 	gorm.Model
-	Login         string `gorm:"unique_index;not null"`
+	Login         string `gorm:"uniqueIndex;not null"`
 	Name          string
 	Email         string `gorm:"index"`
 	Active        bool

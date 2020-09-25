@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/covergates/covergates/core"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // OAuthToken information

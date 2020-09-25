@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/covergates/covergates/core"
-	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 var errReportFields = errors.New("Error Report Fields")
@@ -18,10 +18,10 @@ type reportList []*Report
 type Report struct {
 	gorm.Model
 	FileData   []byte
-	ReportID   string `gorm:"unique_index:report_record"`
+	ReportID   string `gorm:"uniqueIndex:report_record"`
 	Coverages  []*Coverage
 	References []*Reference `gorm:"many2many:report_reference"`
-	Commit     string       `gorm:"unique_index:report_record"`
+	Commit     string       `gorm:"uniqueIndex:report_record"`
 }
 
 // Coverage defines test coverage report
@@ -35,17 +35,17 @@ type Coverage struct {
 // Reference of Report, such as branch or tag name
 type Reference struct {
 	gorm.Model
-	ReportID string    `gorm:"unique_index:reference_record"`
-	Name     string    `gorm:"unique_index:reference_record"`
+	ReportID string    `gorm:"uniqueIndex:reference_record"`
+	Name     string    `gorm:"uniqueIndex:reference_record"`
 	Reports  []*Report `gorm:"many2many:report_reference"`
 }
 
 // ReportComment defines summary report comment in the pull request
 type ReportComment struct {
 	gorm.Model
-	ReportID string `gorm:"unique_index:report_comment_number"`
+	ReportID string `gorm:"uniqueIndex:report_comment_number"`
 	// Number is the PR number
-	Number  int `gorm:"unique_index:report_comment_number"`
+	Number  int `gorm:"uniqueIndex:report_comment_number"`
 	Comment int
 }
 
@@ -101,7 +101,7 @@ func (store *ReportStore) Find(r *core.Report) (*core.Report, error) {
 		ref := &Reference{ReportID: r.ReportID, Name: r.Reference}
 		session = session.Preload("Reports", func(db *gorm.DB) *gorm.DB {
 			return db.Where(query(r)).Order("created_at desc").Limit(50)
-		}).Preload("Reports.Coverages").First(ref, &ref)
+		}).Preload("Reports.Coverages").First(ref, ref)
 		if err := session.Error; err != nil {
 			return nil, err
 		}
@@ -136,7 +136,7 @@ func (store *ReportStore) Finds(r *core.Report) ([]*core.Report, error) {
 		ref := &Reference{ReportID: r.ReportID, Name: r.Reference}
 		session = session.Preload("Reports", func(db *gorm.DB) *gorm.DB {
 			return db.Where(query(r)).Order("created_at desc").Limit(100)
-		}).Preload("Reports.Coverages").First(ref, &ref)
+		}).Preload("Reports.Coverages").First(ref, ref)
 		if err := session.Error; err != nil {
 			return nil, err
 		}
@@ -172,7 +172,7 @@ func (store *ReportStore) List(reportID, ref string) ([]*core.Report, error) {
 		return db.Order(
 			"created_at desc",
 		).Limit(200)
-	}).Preload("Reports.Coverages").First(reference, &reference)
+	}).Preload("Reports.Coverages").First(reference, reference)
 	if err := session.Error; err != nil {
 		return nil, err
 	}
@@ -228,10 +228,10 @@ func (store *ReportStore) appendReference(r *Report, name string) error {
 	}
 	session := store.DB.Session()
 	ref := &Reference{Name: name, ReportID: r.ReportID}
-	if err := session.FirstOrCreate(ref, &ref).Error; err != nil {
+	if err := session.FirstOrCreate(ref, ref).Error; err != nil {
 		return err
 	}
-	return session.Model(r).Association("References").Append(ref).Error
+	return session.Model(r).Association("References").Append(ref)
 }
 
 // Files of the report
