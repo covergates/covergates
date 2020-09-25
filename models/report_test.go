@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"sort"
@@ -10,7 +11,7 @@ import (
 
 	"github.com/covergates/covergates/core"
 	"github.com/google/go-cmp/cmp"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type MockCoverReport struct {
@@ -341,6 +342,7 @@ func TestReportFind(t *testing.T) {
 		for i, query := range queries {
 			rst, err := store.Find(query)
 			if err != nil {
+				t.Log(query)
 				t.Fatal(err)
 			}
 			expect := expects[i]
@@ -352,17 +354,17 @@ func TestReportFind(t *testing.T) {
 
 	t.Run("should not found report with reference and empty report id", func(t *testing.T) {
 		rst, err := store.Find(&core.Report{Reference: "master"})
-		if err == nil || !gorm.IsRecordNotFoundError(err) {
+		if err == nil || !errors.Is(err, gorm.ErrRecordNotFound) {
 			t.Log(rst)
-			t.Fail()
+			t.Fatal(err)
 		}
 	})
 
 	t.Run("should return error for non existing reference", func(t *testing.T) {
 		rst, err := store.Find(&core.Report{ReportID: id + "2", Reference: "fake-branch"})
-		if err == nil || !gorm.IsRecordNotFoundError(err) {
+		if err == nil || !errors.Is(err, gorm.ErrRecordNotFound) {
 			t.Log(rst)
-			t.Fail()
+			t.Fatal(err)
 		}
 	})
 }

@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/covergates/covergates/core"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var errEmptyRepoFiled = errors.New("repository must have SCM and URL filed")
@@ -14,7 +14,7 @@ var errEmptyRepoFiled = errors.New("repository must have SCM and URL filed")
 // Repo defines a repository
 type Repo struct {
 	gorm.Model
-	URL       string `gorm:"unique_index;not null"`
+	URL       string `gorm:"uniqueIndex;not null"`
 	ReportID  string
 	NameSpace string `gorm:"index;not null"`
 	Name      string `gorm:"index;not null"`
@@ -27,7 +27,7 @@ type Repo struct {
 // RepoSetting defines user customization
 type RepoSetting struct {
 	gorm.Model
-	RepoID uint `gorm:"unique_index"`
+	RepoID uint `gorm:"uniqueIndex"`
 	Config []byte
 }
 
@@ -141,7 +141,7 @@ func (store *RepoStore) Finds(urls ...string) ([]*core.Repo, error) {
 func (store *RepoStore) Setting(repo *core.Repo) (*core.RepoSetting, error) {
 	session := store.DB.Session()
 	setting := &RepoSetting{RepoID: repo.ID}
-	if err := session.Where(&setting).First(&setting).Error; err != nil {
+	if err := session.Where(setting).First(setting).Error; err != nil {
 		return &core.RepoSetting{}, nil
 	}
 	coreSetting := &core.RepoSetting{}
@@ -155,7 +155,7 @@ func (store *RepoStore) Setting(repo *core.Repo) (*core.RepoSetting, error) {
 func (store *RepoStore) UpdateSetting(repo *core.Repo, setting *core.RepoSetting) error {
 	session := store.DB.Session()
 	repoSetting := &RepoSetting{RepoID: repo.ID}
-	if err := session.Where(&repoSetting).FirstOrCreate(repoSetting).Error; err != nil {
+	if err := session.Where(repoSetting).FirstOrCreate(repoSetting).Error; err != nil {
 		return err
 	}
 	if err := repoSetting.Update(setting); err != nil {

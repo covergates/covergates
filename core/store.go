@@ -1,6 +1,6 @@
 package core
 
-import "github.com/jinzhu/gorm"
+import "gorm.io/gorm"
 
 //go:generate mockgen -package mock -destination ../mock/store_mock.go . DatabaseService
 

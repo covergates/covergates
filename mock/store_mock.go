@@ -6,7 +6,7 @@ package mock
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	gorm "github.com/jinzhu/gorm"
+	gorm "gorm.io/gorm"
 	reflect "reflect"
 )
 

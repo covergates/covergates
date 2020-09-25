@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/covergates/covergates/core"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 var (
@@ -21,7 +21,7 @@ func NewDatabaseService(db *gorm.DB) core.DatabaseService {
 }
 
 func (store *databaseService) Session() *gorm.DB {
-	return store.db.New()
+	return store.db.Session(&gorm.Session{})
 }
 
 func (store *databaseService) Migrate() error {
@@ -43,5 +43,5 @@ func init() {
 }
 
 func migrate(db *gorm.DB) error {
-	return db.AutoMigrate(tables...).Error
+	return db.AutoMigrate(tables...)
 }

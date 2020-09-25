@@ -5,7 +5,7 @@ package main
 import (
 	"github.com/covergates/covergates/config"
 	"github.com/google/wire"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func InitializeApplication(config *config.Config, db *gorm.DB) (application, error) {

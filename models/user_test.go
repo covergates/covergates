@@ -1,13 +1,14 @@
 package models
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
 	"github.com/google/go-cmp/cmp"
-	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 func TestUserCreate(t *testing.T) {
@@ -66,7 +67,7 @@ func TestUserFind(t *testing.T) {
 		Email: "user2@gmail.com",
 	}
 	coreUser2, err := store.Find(core.Github, &scmUser2)
-	if err == nil || !gorm.IsRecordNotFoundError(err) {
+	if err == nil || !errors.Is(err, gorm.ErrRecordNotFound) {
 		t.Fail()
 	}
 	if coreUser2 != nil {

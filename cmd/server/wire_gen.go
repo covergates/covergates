@@ -7,12 +7,7 @@ package main
 
 import (
 	"github.com/covergates/covergates/config"
-	"github.com/jinzhu/gorm"
-)
-
-import (
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/gorm"
 )
 
 // Injectors from wire.go:
