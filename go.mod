@@ -38,6 +38,7 @@ require (
 	golang.org/x/sys v0.0.0-20200923182605-d9f96fdee20d // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/tools v0.0.0-20200924224222-8d73f17870ce // indirect
+	gorm.io/driver/mysql v1.0.1
 	gorm.io/driver/postgres v1.0.1
 	gorm.io/driver/sqlite v1.1.3
 	gorm.io/gorm v1.20.1

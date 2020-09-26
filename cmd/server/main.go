@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -35,6 +36,18 @@ func connectDatabase(cfg *config.Config) *gorm.DB {
 					cfg.Database.Password,
 					cfg.Database.Name,
 				)), &gorm.Config{})
+	case "mysql":
+		x, err = gorm.Open(
+			mysql.Open(
+				fmt.Sprintf(
+					"%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Local",
+					cfg.Database.User,
+					cfg.Database.Password,
+					cfg.Database.Host,
+					cfg.Database.Port,
+					cfg.Database.Name,
+				)), &gorm.Config{},
+		)
 	case "cloudrun":
 		x, err = gorm.Open(
 			postgres.Open(

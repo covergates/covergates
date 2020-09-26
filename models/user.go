@@ -12,7 +12,7 @@ import (
 // User data
 type User struct {
 	gorm.Model
-	Login         string `gorm:"uniqueIndex;not null"`
+	Login         string `gorm:"size:256;uniqueIndex;not null"`
 	Name          string
 	Email         string `gorm:"index"`
 	Active        bool
