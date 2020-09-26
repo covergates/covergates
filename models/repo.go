@@ -14,7 +14,7 @@ var errEmptyRepoFiled = errors.New("repository must have SCM and URL filed")
 // Repo defines a repository
 type Repo struct {
 	gorm.Model
-	URL       string `gorm:"uniqueIndex;not null"`
+	URL       string `gorm:"size:256;uniqueIndex;not null"`
 	ReportID  string
 	NameSpace string `gorm:"index;not null"`
 	Name      string `gorm:"index;not null"`

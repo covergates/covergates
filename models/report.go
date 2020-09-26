@@ -18,10 +18,10 @@ type reportList []*Report
 type Report struct {
 	gorm.Model
 	FileData   []byte
-	ReportID   string `gorm:"uniqueIndex:report_record"`
+	ReportID   string `gorm:"size:256;uniqueIndex:report_record"`
 	Coverages  []*Coverage
 	References []*Reference `gorm:"many2many:report_reference"`
-	Commit     string       `gorm:"uniqueIndex:report_record"`
+	Commit     string       `gorm:"size:256;uniqueIndex:report_record"`
 }
 
 // Coverage defines test coverage report
@@ -35,15 +35,15 @@ type Coverage struct {
 // Reference of Report, such as branch or tag name
 type Reference struct {
 	gorm.Model
-	ReportID string    `gorm:"uniqueIndex:reference_record"`
-	Name     string    `gorm:"uniqueIndex:reference_record"`
+	ReportID string    `gorm:"size:256;uniqueIndex:reference_record"`
+	Name     string    `gorm:"size:256;uniqueIndex:reference_record"`
 	Reports  []*Report `gorm:"many2many:report_reference"`
 }
 
 // ReportComment defines summary report comment in the pull request
 type ReportComment struct {
 	gorm.Model
-	ReportID string `gorm:"uniqueIndex:report_comment_number"`
+	ReportID string `gorm:"size:256;uniqueIndex:report_comment_number"`
 	// Number is the PR number
 	Number  int `gorm:"uniqueIndex:report_comment_number"`
 	Comment int
