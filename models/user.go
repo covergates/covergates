@@ -133,6 +133,7 @@ func (store *UserStore) Bind(
 	return u.toCoreUser(), nil
 }
 
+// ListRepositories for the user
 func (store *UserStore) ListRepositories(user *core.User) ([]*core.Repo, error) {
 	session := store.DB.Session()
 	u := &User{}
@@ -147,6 +148,7 @@ func (store *UserStore) ListRepositories(user *core.User) ([]*core.Repo, error) 
 	return result, nil
 }
 
+// UpdateRepositories for the user
 func (store *UserStore) UpdateRepositories(user *core.User, repositories []*core.Repo) error {
 	session := store.DB.Session()
 	u := &User{}
