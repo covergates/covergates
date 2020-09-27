@@ -24,7 +24,9 @@ func connectDatabase(cfg *config.Config) *gorm.DB {
 	var err error
 	switch cfg.Database.Driver {
 	case "sqlite3":
-		x, err = gorm.Open(sqlite.Open(cfg.Database.Name), &gorm.Config{})
+		x, err = gorm.Open(sqlite.Open(cfg.Database.Name), &gorm.Config{
+			DisableForeignKeyConstraintWhenMigrating: true,
+		})
 	case "postgres":
 		x, err = gorm.Open(
 			postgres.Open(
@@ -81,7 +83,9 @@ func Run(c *cli.Context) error {
 	}
 	if config.Database.AutoMigrate {
 		go func() {
-			app.db.Migrate()
+			if err := app.db.Migrate(); err != nil {
+				log.Panic(err)
+			}
 			log.Println("migration done")
 		}()
 	}

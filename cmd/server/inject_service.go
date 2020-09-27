@@ -7,6 +7,7 @@ import (
 	"github.com/covergates/covergates/modules/git"
 	"github.com/covergates/covergates/modules/hook"
 	"github.com/covergates/covergates/modules/oauth"
+	"github.com/covergates/covergates/modules/repo"
 	"github.com/covergates/covergates/modules/report"
 	"github.com/covergates/covergates/modules/scm"
 	"github.com/covergates/covergates/modules/session"
@@ -23,6 +24,7 @@ var serviceSet = wire.NewSet(
 	provideReportService,
 	provideHookService,
 	provideOAuthService,
+	provideRepoService,
 )
 
 func provideSCMService(
@@ -83,4 +85,14 @@ func provideOAuthService(
 	UserStore core.UserStore,
 ) core.OAuthService {
 	return oauth.NewService(Config, OAuthStore, UserStore)
+}
+
+func provideRepoService(
+	config *config.Config,
+	scmService core.SCMService,
+	userStore core.UserStore,
+	repoStore core.RepoStore,
+) core.RepoService {
+	return repo.NewService(config, scmService, userStore, repoStore)
+
 }

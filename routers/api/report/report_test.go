@@ -286,7 +286,7 @@ func TestGetPrivate(t *testing.T) {
 	repoStore := mock.NewMockRepoStore(ctrl)
 	service := mock.NewMockSCMService(ctrl)
 	client := mock.NewMockClient(ctrl)
-	repoService := mock.NewMockRepoService(ctrl)
+	repoService := mock.NewMockGitRepoService(ctrl)
 
 	repoStore.EXPECT().Find(
 		gomock.Eq(&core.Repo{ReportID: repo.ReportID}),

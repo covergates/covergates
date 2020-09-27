@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//go:generate mockgen -package mock -destination ../mock/scm_mock.go . SCMService,Client,RepoService,UserService,ContentService,GitService,WebhookService
+//go:generate mockgen -package mock -destination ../mock/scm_mock.go . SCMService,Client,GitRepoService,UserService,ContentService,GitService,WebhookService
 
 // SCMService to interact with given SCM provider
 type SCMService interface {
@@ -56,7 +56,7 @@ type Commit struct {
 
 // Client connects to a SCM provider
 type Client interface {
-	Repositories() RepoService
+	Repositories() GitRepoService
 	Users() UserService
 	Git() GitService
 	Contents() ContentService
@@ -65,8 +65,8 @@ type Client interface {
 	Token(user *User) Token
 }
 
-// RepoService provides operations with SCM
-type RepoService interface {
+// GitRepoService provides operations with SCM
+type GitRepoService interface {
 	NewReportID(repo *Repo) string
 	// List repositories from SCM context
 	List(ctx context.Context, user *User) ([]*Repo, error)
@@ -74,6 +74,7 @@ type RepoService interface {
 	CloneURL(ctx context.Context, user *User, name string) (string, error)
 	CreateHook(ctx context.Context, user *User, name string) (*Hook, error)
 	RemoveHook(ctx context.Context, user *User, name string, hook *Hook) error
+	IsAdmin(ctx context.Context, user *User, name string) bool
 }
 
 // UserService defines operations with SCM

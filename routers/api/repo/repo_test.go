@@ -34,7 +34,7 @@ func TestCreate(t *testing.T) {
 	}
 	user := &core.User{}
 	store := mock.NewMockRepoStore(ctrl)
-	store.EXPECT().Create(gomock.Eq(repo), gomock.Eq(user)).Return(nil)
+	store.EXPECT().Create(gomock.Eq(repo)).Return(nil)
 	service := mock.NewMockSCMService(ctrl)
 
 	data, err := json.Marshal(repo)
@@ -96,7 +96,7 @@ func TestListSCM(t *testing.T) {
 
 	mockService := mock.NewMockSCMService(ctrl)
 	mockClient := mock.NewMockClient(ctrl)
-	mockRepoService := mock.NewMockRepoService(ctrl)
+	mockRepoService := mock.NewMockGitRepoService(ctrl)
 	mockStore := mock.NewMockRepoStore(ctrl)
 
 	mockService.EXPECT().Client(gomock.Eq(core.Github)).Return(mockClient, nil)

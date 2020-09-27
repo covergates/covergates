@@ -18,7 +18,8 @@ import {
   fetchRepositorySetting,
   fetchRepositoryOwner,
   fetchRepositoryCommits,
-  fetchRepositoryBranches
+  fetchRepositoryBranches,
+  synchronizeRepository
 } from './actions';
 import { RootState } from '@/store';
 
@@ -36,6 +37,7 @@ export enum Mutations {
 
 export enum Actions {
   FETCH_REPOSITORY_LIST = 'FETCH_REPOSITORY_LIST',
+  SYNCHRONIZE_REPOSITORY = 'SYNCHRONIZE_REPOSITORY',
   UPDATE_REPOSITORY_CURRENT = 'UPDATE_REPOSITORY_CURRENT',
   UPDATE_REPOSITORY_REPORT_ID = 'UPDATE_REPOSITORY_REPORT_ID',
   CHANGE_CURRENT_REPOSITORY = 'CHANGE_CURRENT_REPOSITORY',
@@ -86,7 +88,8 @@ const module: Module<RepoState, RootState> = {
     [Actions.FETCH_REPOSITORY_SETTING]: fetchRepositorySetting,
     [Actions.FETCH_REPOSITORY_OWNER]: fetchRepositoryOwner,
     [Actions.FETCH_REPOSITORY_COMMITS]: fetchRepositoryCommits,
-    [Actions.FETCH_REPOSITORY_BRANCHES]: fetchRepositoryBranches
+    [Actions.FETCH_REPOSITORY_BRANCHES]: fetchRepositoryBranches,
+    [Actions.SYNCHRONIZE_REPOSITORY]: synchronizeRepository
   }
 };
 

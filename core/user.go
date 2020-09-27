@@ -33,4 +33,6 @@ type UserStore interface {
 	Update(scm SCMProvider, user *scm.User, token *Token) error
 	// Bind a new user from another SCM to registered user
 	Bind(scm SCMProvider, user *User, scmUser *scm.User, token *Token) (*User, error)
+	ListRepositories(user *User) ([]*Repo, error)
+	UpdateRepositories(user *User, repositories []*Repo) error
 }

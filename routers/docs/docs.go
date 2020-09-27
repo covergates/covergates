@@ -886,6 +886,39 @@ var doc = `{
                 }
             }
         },
+        "/user/repos": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "List user synchronized repositories",
+                "responses": {
+                    "200": {
+                        "description": "list of repositories",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/core.Repo"
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Synchronize user's repository from remote SCM",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/scm": {
             "get": {
                 "tags": [

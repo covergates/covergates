@@ -36,10 +36,12 @@ type Router struct {
 	CoverageService core.CoverageService
 	ChartService    core.ChartService
 	SCMService      core.SCMService
+	RepoService     core.RepoService
 	ReportService   core.ReportService
 	HookService     core.HookService
 	OAuthService    core.OAuthService
 	// store
+	UserStore   core.UserStore
 	ReportStore core.ReportStore
 	RepoStore   core.RepoStore
 	OAuthStore  core.OAuthStore
@@ -69,6 +71,9 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 		g.POST("/tokens", checkLogin, user.HandleCreateToken(r.OAuthService))
 		g.GET("/tokens", checkLogin, user.HandleListTokens(r.OAuthService))
 		g.DELETE("tokens/:id", checkLogin, user.HandleDeleteToken(r.OAuthService, r.OAuthStore))
+		// repo
+		g.PATCH("/repos", checkLogin, user.HandleSynchronizeRepo(r.RepoService))
+		g.GET("/repos", checkLogin, user.HandleListRepo(r.UserStore))
 	}
 	{
 		g := g.Group("/reports")

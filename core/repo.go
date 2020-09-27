@@ -1,6 +1,9 @@
 package core
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 //go:generate mockgen -package mock -destination ../mock/repo_mock.go . RepoStore
 
@@ -25,14 +28,23 @@ type RepoSetting struct {
 	Protected bool `json:"protected"`
 }
 
+// RepoService provides repository opperations
+type RepoService interface {
+	// Synchronize repositories data from remote and store to database
+	Synchronize(ctx context.Context, user *User) error
+}
+
 // RepoStore repository in storage
 type RepoStore interface {
-	Create(repo *Repo, creator *User) error
+	Create(repo *Repo) error
 	Update(repo *Repo) error
+	UpdateOrCreate(repo *Repo) error
+	BatchUpdateOrCreate(repos []*Repo) error
 	Find(repo *Repo) (*Repo, error)
 	Finds(urls ...string) ([]*Repo, error)
 	// Creator is the user activated the repository
 	Creator(repo *Repo) (*User, error)
+	UpdateCreator(repo *Repo, user *User) error
 	Setting(repo *Repo) (*RepoSetting, error)
 	UpdateSetting(repo *Repo, setting *RepoSetting) error
 	FindHook(repo *Repo) (*Hook, error)

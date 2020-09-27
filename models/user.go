@@ -27,6 +27,7 @@ type User struct {
 	GithubToken   string
 	GithubRefresh string
 	GithubExpire  int64
+	Repositories  []*Repo `gorm:"many2many:user_repositories"`
 }
 
 // UserStore user in storage
@@ -130,6 +131,37 @@ func (store *UserStore) Bind(
 		return user, err
 	}
 	return u.toCoreUser(), nil
+}
+
+func (store *UserStore) ListRepositories(user *core.User) ([]*core.Repo, error) {
+	session := store.DB.Session()
+	u := &User{}
+	if err := session.Preload("Repositories").Where(
+		&User{Login: user.Login}).First(u).Error; err != nil {
+		return nil, err
+	}
+	result := make([]*core.Repo, len(u.Repositories))
+	for i, repo := range u.Repositories {
+		result[i] = repo.ToCoreRepo()
+	}
+	return result, nil
+}
+
+func (store *UserStore) UpdateRepositories(user *core.User, repositories []*core.Repo) error {
+	session := store.DB.Session()
+	u := &User{}
+	if err := session.Where(&User{Login: user.Login}).First(u).Error; err != nil {
+		return err
+	}
+	userRepos := make([]*Repo, 0, len(repositories))
+	for _, repo := range repositories {
+		r := &Repo{}
+		if err := session.Where(&Repo{URL: repo.URL}).First(r).Error; err != nil {
+			return err
+		}
+		userRepos = append(userRepos, r)
+	}
+	return session.Model(u).Association("Repositories").Replace(userRepos)
 }
 
 func (u *User) toCoreUser() *core.User {

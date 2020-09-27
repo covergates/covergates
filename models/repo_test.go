@@ -74,6 +74,61 @@ func TestRepoFinds(t *testing.T) {
 	}
 }
 
+func TestRepoUpdateOrCreate(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &RepoStore{DB: db}
+
+	repo := &core.Repo{
+		SCM: core.Github,
+		URL: "http://testrepo/update/create/1",
+		// ReportID: "abc",
+		Private: true,
+	}
+
+	if err := store.UpdateOrCreate(repo); err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := store.Find(&core.Repo{URL: repo.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+	repo.ID = result.ID
+	if diff := cmp.Diff(repo, result); diff != "" {
+		t.Fatal(diff)
+	}
+
+	// should not update report id
+	if err := store.UpdateOrCreate(&core.Repo{SCM: repo.SCM, URL: repo.URL, Private: true}); err != nil {
+		t.Fatal()
+	}
+
+	result, err = store.Find(&core.Repo{URL: repo.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(repo, result); diff != "" {
+		t.Fatal(diff)
+	}
+
+	// should update private
+	repo.Private = false
+	if err := store.UpdateOrCreate(repo); err != nil {
+		t.Fatal()
+	}
+	result, err = store.Find(&core.Repo{URL: repo.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(repo, result); diff != "" {
+		t.Fatal(diff)
+	}
+
+}
+
 func TestRepoAssociation(t *testing.T) {
 	ctrl, db := getDatabaseService(t)
 	defer ctrl.Finish()
@@ -98,8 +153,11 @@ func TestRepoAssociation(t *testing.T) {
 		DB: db,
 	}
 
-	if err := repoStore.Create(repo.ToCoreRepo(), user.toCoreUser()); err != nil {
+	if err := repoStore.Create(repo.ToCoreRepo()); err != nil {
 		t.Error(err)
+	}
+	if err := repoStore.UpdateCreator(repo.ToCoreRepo(), user.toCoreUser()); err != nil {
+		t.Fatal(err)
 	}
 
 	u, err := repoStore.Creator(repo.ToCoreRepo())
@@ -196,7 +254,10 @@ func TestPrivateRepository(t *testing.T) {
 		SCM:       core.Gitea,
 	}
 
-	if err := store.Create(coreRepo, user); err != nil {
+	if err := store.Create(coreRepo); err != nil {
+		t.Fatal(err)
+	}
+	if err := store.UpdateCreator(coreRepo, user); err != nil {
 		t.Fatal(err)
 	}
 

@@ -163,5 +163,109 @@ func TestUserBindExist(t *testing.T) {
 	if _, err := store.Bind(core.Gitea, user1, giteaUser, &core.Token{}); err != errUserExist {
 		t.Fail()
 	}
+}
 
+func newUser(t *testing.T, store *UserStore, provider core.SCMProvider, login string) *core.User {
+	if err := store.Create(
+		provider,
+		&scm.User{Login: login},
+		&core.Token{},
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	user, err := store.FindByLogin(login)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return user
+}
+
+func newRepos(t *testing.T, db core.DatabaseService, repos []*Repo) []*core.Repo {
+	coreRepos := make([]*core.Repo, len(repos))
+	for i, repo := range repos {
+		if err := db.Session().Create(repo).Error; err != nil {
+			t.Fatal(err)
+		}
+		coreRepos[i] = repo.ToCoreRepo()
+	}
+	return coreRepos
+}
+
+func TestUserRepositories(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+
+	userStore := &UserStore{DB: db}
+
+	repos := newRepos(
+		t, db,
+		[]*Repo{
+			{
+				URL: "http://testuser/repo1",
+				SCM: string(core.Github),
+			},
+			{
+				URL: "http://testuser/repo2",
+				SCM: string(core.Github),
+			},
+		},
+	)
+
+	user := newUser(t, userStore, core.Gitea, "test_repo_user1")
+
+	// test new create
+	if err := userStore.UpdateRepositories(user, repos); err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := userStore.ListRepositories(user)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(repos, result); diff != "" {
+		t.Fatal(diff)
+	}
+
+	// test update, remove repository
+	if err := userStore.UpdateRepositories(user, repos[0:1]); err != nil {
+		t.Fatal()
+	}
+
+	result, err = userStore.ListRepositories(user)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(repos[0:1], result); diff != "" {
+		t.Fatal(diff)
+	}
+
+	// test add inexistent repository
+	if err := userStore.UpdateRepositories(user, append(repos, &core.Repo{URL: "fake"})); err == nil {
+		t.Fatal()
+	}
+
+	// test second user
+	user2 := newUser(t, userStore, core.Github, "test_repo_user2")
+	repos2 := newRepos(t, db, []*Repo{
+		{
+			URL: "http://testuser/github/repo1",
+			SCM: string(core.Github),
+		},
+		{
+			URL: "http://testuser/github/repo2",
+			SCM: string(core.Github),
+		},
+	})
+	if err := userStore.UpdateRepositories(user2, repos2); err != nil {
+		t.Fatal(err)
+	}
+	result, err = userStore.ListRepositories(user2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(repos2, result); diff != "" {
+		t.Fatal(diff)
+	}
 }

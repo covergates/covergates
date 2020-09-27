@@ -62,7 +62,7 @@ function routes(this: Server<Registry<Models, {}>>): void {
   this.get('/repos/:scm', schema => {
     return schema.all('repository').models;
   });
-  this.get('/repos', schema => {
+  this.get('/user/repos', schema => {
     return schema.all('repository').models;
   });
   this.get('/repos/:scm/:namespace/:name/files', () => {
