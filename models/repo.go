@@ -98,14 +98,14 @@ func (store *RepoStore) Update(repo *core.Repo) error {
 // UpdateOrCreate repository, notice that only below fields will be affected:
 // Name, NameSpace, URL, SCM, Branch, Private
 func (store *RepoStore) UpdateOrCreate(repo *core.Repo) error {
-	if repo.URL == "" {
-		return errEmptyRepoFiled
-	}
 	session := store.DB.Session()
 	return store.updateOrCreate(session, repo)
 }
 
 func (store *RepoStore) updateOrCreate(session *gorm.DB, repo *core.Repo) error {
+	if repo.URL == "" {
+		return errEmptyRepoFiled
+	}
 	r := &Repo{
 		URL:       repo.URL,
 		NameSpace: repo.NameSpace,
