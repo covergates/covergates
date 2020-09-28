@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-//go:generate mockgen -package mock -destination ../mock/repo_mock.go . RepoStore
+//go:generate mockgen -package mock -destination ../mock/repo_mock.go . RepoStore,RepoService
 
 // Repo defined a repository structure
 type Repo struct {

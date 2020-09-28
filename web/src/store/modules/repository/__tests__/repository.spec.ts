@@ -1,8 +1,8 @@
 import { mock } from 'jest-mock-extended';
 import { ActionContext } from 'vuex';
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { RepoState, Mutations } from '..';
-import { fetchRepositoryList, changeCurrentRepository, fetchRepositorySetting } from '@/store/modules/repository/actions';
+import { RepoState, Mutations, Actions } from '..';
+import { fetchRepositoryList, changeCurrentRepository, fetchRepositorySetting, synchronizeRepository } from '@/store/modules/repository/actions';
 import { makeServer, MockServer } from '@/server';
 import { RootState } from '@/store';
 
@@ -25,6 +25,28 @@ describe('store.module.repository', () => {
     expect(calls[0][0]).toEqual(Mutations.START_REPOSITORY_LOADING);
     expect(calls[1][0]).toEqual(Mutations.UPDATE_REPOSITORY_LIST);
     expect(calls[calls.length - 1][0]).toEqual(Mutations.STOP_REPOSITORY_LOADING);
+  });
+
+  it('fetch repository from /user/repos', async () => {
+    const context = mock<ActionContext<RepoState, RootState>>();
+    context.rootState.base = '';
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'get');
+    spy.mockResolvedValueOnce({
+      data: []
+    });
+    await fetchRepositoryList(context);
+    expect(spy).toHaveBeenCalledWith('/api/v1/user/repos');
+  });
+
+  it('fetch repository after synchronize', async () => {
+    const context = mock<ActionContext<RepoState, RootState>>();
+    context.rootState.base = '';
+    jest.mock('axios');
+    const spy = jest.spyOn(axios, 'patch');
+    spy.mockResolvedValueOnce({});
+    await synchronizeRepository(context);
+    expect(context.dispatch).toHaveBeenCalledWith(Actions.FETCH_REPOSITORY_LIST);
   });
 
   it('update current when change repository successfully', async () => {
