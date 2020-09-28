@@ -1,6 +1,6 @@
 import { ActionContext } from 'vuex';
 import Axios from 'axios';
-import { RepoState, Mutations } from '.';
+import { RepoState, Mutations, Actions } from '.';
 import { RootState } from '@/store';
 import { reasonToError } from '@/plugins/http';
 
@@ -8,7 +8,7 @@ const errUndefinedCurrentRepo = new Error('current repository is undefined');
 
 function fetchRepositories(context: ActionContext<RepoState, RootState>): Promise<void> {
   return new Promise((resolve) => {
-    Axios.get<Repository[]>(`${context.rootState.base}/api/v1/repos`)
+    Axios.get<Repository[]>(`${context.rootState.base}/api/v1/user/repos`)
       .then((response) => {
         context.commit(Mutations.UPDATE_REPOSITORY_LIST, response.data);
       }).catch((error) => {
@@ -48,6 +48,19 @@ export function fetchRepositoryList<S extends RepoState, R extends RootState>(co
   context.commit(Mutations.START_REPOSITORY_LOADING);
   return fetchRepositories(context).then(() => {
     context.commit(Mutations.STOP_REPOSITORY_LOADING);
+  });
+}
+
+export function synchronizeRepository(context: ActionContext<RepoState, RootState>): Promise<void> {
+  return new Promise(resolve => {
+    Axios.patch(`${context.rootState.base}/api/v1/user/repos`)
+      .then(() => {
+        context.dispatch(Actions.FETCH_REPOSITORY_LIST);
+      }).catch(reason => {
+        console.warn(reasonToError(reason));
+      }).finally(() => {
+        resolve();
+      });
   });
 }
 

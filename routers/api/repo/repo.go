@@ -43,7 +43,7 @@ func HandleCreate(store core.RepoStore, service core.SCMService) gin.HandlerFunc
 			repo.Branch = scmRepo.Branch
 		}
 
-		if err := store.Create(repo, user); err != nil {
+		if err := store.Create(repo); err != nil {
 			c.String(400, err.Error())
 			return
 		}
@@ -61,6 +61,7 @@ func HandleCreate(store core.RepoStore, service core.SCMService) gin.HandlerFunc
 // @Router /repos/{scm}/{namespace}/{name}/report [patch]
 func HandleReportIDRenew(store core.RepoStore, service core.SCMService) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		user := request.MustGetUserFrom(c)
 		scm := core.SCMProvider(c.Param("scm"))
 		repo, err := store.Find(&core.Repo{
 			Name:      c.Param("name"),
@@ -73,10 +74,18 @@ func HandleReportIDRenew(store core.RepoStore, service core.SCMService) gin.Hand
 		}
 		client, err := service.Client(scm)
 		if err != nil {
+			c.Error(err)
 			c.String(500, err.Error())
+			return
 		}
 		repo.ReportID = client.Repositories().NewReportID(repo)
 		if err := store.Update(repo); err != nil {
+			c.Error(err)
+			c.String(500, err.Error())
+			return
+		}
+		if err := store.UpdateCreator(repo, user); err != nil {
+			c.Error(err)
 			c.String(500, err.Error())
 			return
 		}
@@ -160,7 +169,8 @@ func HandleSync(service core.SCMService, store core.RepoStore) gin.HandlerFunc {
 	}
 }
 
-// HandleListAll repositories
+// HandleListAll repositories from remote SCM.
+// To list repository for user, using API /user/repos instead for fatser response.
 // @Summary List repositories for all available SCM providers
 // @Tags Repository
 // @Success 200 {object} []core.Repo "repositories"

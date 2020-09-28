@@ -93,6 +93,21 @@ func (mr *MockUserStoreMockRecorder) FindByLogin(arg0 interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByLogin", reflect.TypeOf((*MockUserStore)(nil).FindByLogin), arg0)
 }
 
+// ListRepositories mocks base method
+func (m *MockUserStore) ListRepositories(arg0 *core.User) ([]*core.Repo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListRepositories", arg0)
+	ret0, _ := ret[0].([]*core.Repo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListRepositories indicates an expected call of ListRepositories
+func (mr *MockUserStoreMockRecorder) ListRepositories(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRepositories", reflect.TypeOf((*MockUserStore)(nil).ListRepositories), arg0)
+}
+
 // Update mocks base method
 func (m *MockUserStore) Update(arg0 core.SCMProvider, arg1 *scm.User, arg2 *core.Token) error {
 	m.ctrl.T.Helper()
@@ -105,4 +120,18 @@ func (m *MockUserStore) Update(arg0 core.SCMProvider, arg1 *scm.User, arg2 *core
 func (mr *MockUserStoreMockRecorder) Update(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUserStore)(nil).Update), arg0, arg1, arg2)
+}
+
+// UpdateRepositories mocks base method
+func (m *MockUserStore) UpdateRepositories(arg0 *core.User, arg1 []*core.Repo) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateRepositories", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateRepositories indicates an expected call of UpdateRepositories
+func (mr *MockUserStoreMockRecorder) UpdateRepositories(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRepositories", reflect.TypeOf((*MockUserStore)(nil).UpdateRepositories), arg0, arg1)
 }

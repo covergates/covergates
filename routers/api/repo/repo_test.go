@@ -34,7 +34,7 @@ func TestCreate(t *testing.T) {
 	}
 	user := &core.User{}
 	store := mock.NewMockRepoStore(ctrl)
-	store.EXPECT().Create(gomock.Eq(repo), gomock.Eq(user)).Return(nil)
+	store.EXPECT().Create(gomock.Eq(repo)).Return(nil)
 	service := mock.NewMockSCMService(ctrl)
 
 	data, err := json.Marshal(repo)
@@ -96,7 +96,7 @@ func TestListSCM(t *testing.T) {
 
 	mockService := mock.NewMockSCMService(ctrl)
 	mockClient := mock.NewMockClient(ctrl)
-	mockRepoService := mock.NewMockRepoService(ctrl)
+	mockRepoService := mock.NewMockGitRepoService(ctrl)
 	mockStore := mock.NewMockRepoStore(ctrl)
 
 	mockService.EXPECT().Client(gomock.Eq(core.Github)).Return(mockClient, nil)
@@ -129,6 +129,51 @@ func TestListSCM(t *testing.T) {
 		}
 		if repos[1].ReportID != "report_id" {
 			t.Fail()
+		}
+	})
+}
+
+func TestReportIDRenew(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// data
+	user := &core.User{}
+
+	repo := &core.Repo{
+		Name:      "repo",
+		NameSpace: "github",
+		SCM:       core.Github,
+	}
+
+	// mock
+	mockStore := mock.NewMockRepoStore(ctrl)
+	mockStore.EXPECT().Find(gomock.Eq(repo)).Return(repo, nil)
+	mockStore.EXPECT().Update(gomock.Eq(&core.Repo{
+		Name:      repo.Name,
+		NameSpace: repo.NameSpace,
+		SCM:       repo.SCM,
+		ReportID:  "123",
+	})).Return(nil)
+	mockStore.EXPECT().UpdateCreator(gomock.Any(), gomock.Eq(user)).Return(nil)
+	mockService := mock.NewMockSCMService(ctrl)
+	mockClient := mock.NewMockClient(ctrl)
+	mockRepositories := mock.NewMockGitRepoService(ctrl)
+	mockService.EXPECT().Client(gomock.Eq(core.Github)).Return(mockClient, nil)
+	mockClient.EXPECT().Repositories().Return(mockRepositories)
+	mockRepositories.EXPECT().NewReportID(gomock.Eq(repo)).Return("123")
+
+	r := gin.Default()
+	r.Use(func(c *gin.Context) {
+		request.WithUser(c, user)
+	})
+	r.PATCH("/repos/:scm/:namespace/:name/report", HandleReportIDRenew(mockStore, mockService))
+
+	req, _ := http.NewRequest("PATCH", "/repos/github/github/repo/report", nil)
+	testRequest(r, req, func(h *httptest.ResponseRecorder) {
+		result := h.Result()
+		if result.StatusCode != 200 {
+			t.Fatal()
 		}
 	})
 }

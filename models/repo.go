@@ -68,7 +68,7 @@ func (setting *RepoSetting) Update(newSetting *core.RepoSetting) error {
 }
 
 // Create a new repository
-func (store *RepoStore) Create(repo *core.Repo, user *core.User) error {
+func (store *RepoStore) Create(repo *core.Repo) error {
 	if repo.SCM == "" || repo.URL == "" {
 		return errEmptyRepoFiled
 	}
@@ -79,7 +79,6 @@ func (store *RepoStore) Create(repo *core.Repo, user *core.User) error {
 		Name:      repo.Name,
 		SCM:       string(repo.SCM),
 		Branch:    repo.Branch,
-		Creator:   user.Login,
 		Private:   repo.Private,
 	}
 	return session.Create(r).Error
@@ -94,6 +93,54 @@ func (store *RepoStore) Update(repo *core.Repo) error {
 	}
 	copyRepo(r, repo)
 	return session.Save(r).Error
+}
+
+// UpdateOrCreate repository, notice that only below fields will be affected:
+// Name, NameSpace, URL, SCM, Branch, Private
+func (store *RepoStore) UpdateOrCreate(repo *core.Repo) error {
+	session := store.DB.Session()
+	return store.updateOrCreate(session, repo)
+}
+
+func (store *RepoStore) updateOrCreate(session *gorm.DB, repo *core.Repo) error {
+	if repo.URL == "" {
+		return errEmptyRepoFiled
+	}
+	r := &Repo{
+		URL:       repo.URL,
+		NameSpace: repo.NameSpace,
+		Name:      repo.Name,
+		SCM:       string(repo.SCM),
+		Branch:    repo.Branch,
+		Private:   repo.Private,
+	}
+	if err := session.FirstOrCreate(r, r).Error; err != nil {
+		return err
+	}
+	copyRepo(r, repo)
+	return session.Model(r).Select(
+		"URL",
+		"Name",
+		"NameSpace",
+		"SCM",
+		"Branch",
+		"Private",
+	).Updates(r).Error
+}
+
+// BatchUpdateOrCreate repositories
+func (store *RepoStore) BatchUpdateOrCreate(repos []*core.Repo) error {
+	session := store.DB.Session()
+	var err error
+	session.Transaction(func(tx *gorm.DB) error {
+		for _, repo := range repos {
+			if err = store.updateOrCreate(tx, repo); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	return err
 }
 
 // Find Repo with seed. The non-empty filed of input will use as where condition
@@ -120,6 +167,17 @@ func (store *RepoStore) Creator(repo *core.Repo) (*core.User, error) {
 		return nil, err
 	}
 	return user.toCoreUser(), nil
+}
+
+// UpdateCreator of the repository
+func (store *RepoStore) UpdateCreator(repo *core.Repo, user *core.User) error {
+	session := store.DB.Session()
+	r := &Repo{}
+	if err := session.Where(repo).First(r).Error; err != nil {
+		return err
+	}
+	r.Creator = user.Login
+	return session.Save(r).Error
 }
 
 // Finds all repositories with URLs

@@ -6,7 +6,16 @@ import (
 
 	"github.com/covergates/covergates/core"
 	"github.com/google/go-cmp/cmp"
+	"gorm.io/gorm"
 )
+
+func toCoreRepoSlice(repos []*Repo) []*core.Repo {
+	result := make([]*core.Repo, len(repos))
+	for i, repo := range repos {
+		result[i] = repo.ToCoreRepo()
+	}
+	return result
+}
 
 func TestRepoFind(t *testing.T) {
 	ctrl, db := getDatabaseService(t)
@@ -74,6 +83,113 @@ func TestRepoFinds(t *testing.T) {
 	}
 }
 
+func TestRepoUpdateOrCreate(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &RepoStore{DB: db}
+
+	repo := &core.Repo{
+		SCM:     core.Github,
+		URL:     "http://testrepo/update/create/1",
+		Private: true,
+	}
+
+	if err := store.UpdateOrCreate(repo); err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := store.Find(&core.Repo{URL: repo.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+	repo.ID = result.ID
+	if diff := cmp.Diff(repo, result); diff != "" {
+		t.Fatal(diff)
+	}
+
+	// should not update report id
+	if err := store.UpdateOrCreate(&core.Repo{SCM: repo.SCM, URL: repo.URL, Private: true}); err != nil {
+		t.Fatal()
+	}
+
+	result, err = store.Find(&core.Repo{URL: repo.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(repo, result); diff != "" {
+		t.Fatal(diff)
+	}
+
+	// should update private
+	repo.Private = false
+	if err := store.UpdateOrCreate(repo); err != nil {
+		t.Fatal()
+	}
+	result, err = store.Find(&core.Repo{URL: repo.URL})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(repo, result); diff != "" {
+		t.Fatal(diff)
+	}
+}
+
+func TestBatchUpdateOrCreate(t *testing.T) {
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &RepoStore{DB: db}
+
+	repos := []*core.Repo{
+		{
+			SCM: core.Github,
+			URL: "http://test/batch/update1",
+		},
+		{
+			SCM: core.Github,
+			URL: "http://test/batch/update2",
+		},
+	}
+
+	if err := store.BatchUpdateOrCreate(repos); err != nil {
+		t.Fatal(err)
+	}
+	urls := make([]string, len(repos))
+	for i, repo := range repos {
+		urls[i] = repo.URL
+	}
+
+	var result []*Repo
+	if err := db.Session().Where("url IN ?", urls).Find(&result).Error; err != nil {
+		t.Fatal()
+	}
+	for _, repo := range result {
+		repo.ID = 0
+	}
+	if diff := cmp.Diff(toCoreRepoSlice(result), repos); diff != "" {
+		t.Fatal(diff)
+	}
+
+	repos = []*core.Repo{
+		{
+			SCM: core.Github,
+			URL: "http://test/batch/update3",
+		},
+		{
+			URL: "",
+		},
+	}
+
+	if err := store.BatchUpdateOrCreate(repos); err == nil {
+		t.Fatal("should encounter error")
+	}
+
+	if err := db.Session().Where(&Repo{URL: repos[0].URL}).First(&Repo{}).Error; err != gorm.ErrRecordNotFound {
+		t.Fatal()
+	}
+}
+
 func TestRepoAssociation(t *testing.T) {
 	ctrl, db := getDatabaseService(t)
 	defer ctrl.Finish()
@@ -98,8 +214,11 @@ func TestRepoAssociation(t *testing.T) {
 		DB: db,
 	}
 
-	if err := repoStore.Create(repo.ToCoreRepo(), user.toCoreUser()); err != nil {
+	if err := repoStore.Create(repo.ToCoreRepo()); err != nil {
 		t.Error(err)
+	}
+	if err := repoStore.UpdateCreator(repo.ToCoreRepo(), user.toCoreUser()); err != nil {
+		t.Fatal(err)
 	}
 
 	u, err := repoStore.Creator(repo.ToCoreRepo())
@@ -196,7 +315,10 @@ func TestPrivateRepository(t *testing.T) {
 		SCM:       core.Gitea,
 	}
 
-	if err := store.Create(coreRepo, user); err != nil {
+	if err := store.Create(coreRepo); err != nil {
+		t.Fatal(err)
+	}
+	if err := store.UpdateCreator(coreRepo, user); err != nil {
 		t.Fatal(err)
 	}
 

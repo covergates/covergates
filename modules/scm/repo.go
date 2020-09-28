@@ -122,3 +122,12 @@ func (service *repoService) RemoveHook(ctx context.Context, user *core.User, nam
 	_, err := service.client.Repositories.DeleteHook(ctx, name, hook.ID)
 	return err
 }
+
+func (service *repoService) IsAdmin(ctx context.Context, user *core.User, name string) bool {
+	ctx = withUser(ctx, service.scm, user)
+	perm, _, err := service.client.Repositories.FindPerms(ctx, name)
+	if err != nil {
+		return false
+	}
+	return perm.Admin
+}

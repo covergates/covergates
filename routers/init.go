@@ -21,10 +21,12 @@ type Routers struct {
 	SCMService      core.SCMService
 	CoverageService core.CoverageService
 	ChartService    core.ChartService
+	RepoService     core.RepoService
 	ReportService   core.ReportService
 	HookService     core.HookService
 	OAuthService    core.OAuthService
 	// store
+	UserStore   core.UserStore
 	ReportStore core.ReportStore
 	RepoStore   core.RepoStore
 	OAuthStore  core.OAuthStore
@@ -48,9 +50,11 @@ func (r *Routers) RegisterRoutes(e *gin.Engine) {
 		CoverageService: r.CoverageService,
 		ChartService:    r.ChartService,
 		SCMService:      r.SCMService,
+		RepoService:     r.RepoService,
 		ReportService:   r.ReportService,
 		HookService:     r.HookService,
 		OAuthService:    r.OAuthService,
+		UserStore:       r.UserStore,
 		ReportStore:     r.ReportStore,
 		RepoStore:       r.RepoStore,
 		OAuthStore:      r.OAuthStore,

@@ -660,6 +660,27 @@ paths:
       summary: Get repository's owner
       tags:
       - User
+  /user/repos:
+    get:
+      responses:
+        "200":
+          description: list of repositories
+          schema:
+            items:
+              $ref: '#/definitions/core.Repo'
+            type: array
+      summary: List user synchronized repositories
+      tags:
+      - User
+    patch:
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Synchronize user's repository from remote SCM
+      tags:
+      - User
   /user/scm:
     get:
       responses:

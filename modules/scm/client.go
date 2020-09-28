@@ -14,7 +14,7 @@ type client struct {
 	userStore core.UserStore
 }
 
-func (c *client) Repositories() core.RepoService {
+func (c *client) Repositories() core.GitRepoService {
 	return &repoService{
 		config: c.config,
 		client: c.scmClient,
