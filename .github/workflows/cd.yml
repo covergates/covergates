@@ -43,7 +43,7 @@ jobs:
           xgo -ldflags="$server_flag" --targets="$targets" -out covergates-server ./cmd/server
           xgo -ldflags="$cli_flag" --targets="$targets" -out covergates ./cmd/cli
           outputs=(covergates covergates-server)
-          archs=(darwin-10.6-386 darwin-10.6-amd64 linux-386 linux-amd64 linux-arm linux-arm64 windows-4.0-386.exe windows-4.0-amd64.exe)
+          archs=(darwin-10.6-386 darwin-10.6-amd64 linux-386 linux-amd64 linux-arm-5 linux-arm64 windows-4.0-386.exe windows-4.0-amd64.exe)
           mkdir -p dist
           for arch in ${archs[@]};do
             rm -rf ./dist/*
