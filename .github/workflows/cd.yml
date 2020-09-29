@@ -89,7 +89,7 @@ jobs:
             });
             const release = response.data.id;
             const url = `https://uploads.github.com/repos/${repo[0]}/${repo[1]}/releases/${release}/assets{?name,label}`;
-            const archs = ['darwin-10.6-386', 'darwin-10.6-amd64', 'linux-386', 'linux-amd64', 'linux-arm', 'linux-arm64', 'windows-4.0-386', 'windows-4.0-amd64'];
+            const archs = ['darwin-10.6-386', 'darwin-10.6-amd64', 'linux-386', 'linux-amd64', 'linux-arm-5', 'linux-arm64', 'windows-4.0-386', 'windows-4.0-amd64'];
             for (const arch of archs) {
               const name = `covergates-${tag}-${arch}.tar.gz`;
               await github.repos.uploadReleaseAsset({
