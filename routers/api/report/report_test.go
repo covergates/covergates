@@ -147,6 +147,7 @@ func TestProtectReport(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepoStore := mock.NewMockRepoStore(ctrl)
+	mockSCMService := mock.NewMockSCMService(ctrl)
 
 	t.Run("test protected report", func(t *testing.T) {
 		r := gin.Default()
@@ -159,7 +160,7 @@ func TestProtectReport(t *testing.T) {
 			ProtectReport(func(c *gin.Context) {
 				c.String(401, "")
 				c.Abort()
-			}, mockRepoStore),
+			}, mockRepoStore, mockSCMService),
 		)
 		request, _ := http.NewRequest("POST", "/", nil)
 		testRequest(r, request, func(w *httptest.ResponseRecorder) {
@@ -181,7 +182,7 @@ func TestProtectReport(t *testing.T) {
 			ProtectReport(func(c *gin.Context) {
 				c.String(401, "")
 				c.Abort()
-			}, mockRepoStore),
+			}, mockRepoStore, mockSCMService),
 		)
 		request, _ := http.NewRequest("POST", "/", nil)
 		testRequest(r, request, func(w *httptest.ResponseRecorder) {

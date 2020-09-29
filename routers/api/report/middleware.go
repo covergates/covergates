@@ -7,7 +7,7 @@ import (
 )
 
 // ProtectReport from modifying by unauthorized users
-func ProtectReport(checkLogin gin.HandlerFunc, repoStore core.RepoStore) gin.HandlerFunc {
+func ProtectReport(checkLogin gin.HandlerFunc, repoStore core.RepoStore, service core.SCMService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		setting := MustGetSetting(c)
 		if !setting.Protected {
@@ -17,15 +17,22 @@ func ProtectReport(checkLogin gin.HandlerFunc, repoStore core.RepoStore) gin.Han
 		if c.IsAborted() {
 			return
 		}
+		ctx := c.Request.Context()
 		user := request.MustGetUserFrom(c)
 		repo := MustGetRepo(c)
+		client, err := service.Client(repo.SCM)
+		if err != nil {
+			c.String(500, err.Error())
+			c.Abort()
+			return
+		}
 		creator, err := repoStore.Creator(repo)
 		if err != nil {
 			c.String(500, err.Error())
 			c.Abort()
 			return
 		}
-		if user.Login != creator.Login {
+		if !client.Repositories().IsAdmin(ctx, user, repo.FullName()) && user.Login != creator.Login {
 			c.String(401, "permission denied")
 			c.Abort()
 			return

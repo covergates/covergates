@@ -86,12 +86,13 @@ func HandleGetSCM(config *config.Config) gin.HandlerFunc {
 // @Param name path string true "name"
 // @Success 200 {object} User "owner"
 // @Router /user/owner/{scm}/{namespace}/{name} [get]
-func HandleGetOwner(store core.RepoStore) gin.HandlerFunc {
+func HandleGetOwner(store core.RepoStore, service core.SCMService) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		provider := core.SCMProvider(c.Param("scm"))
 		repo, err := store.Find(&core.Repo{
 			NameSpace: c.Param("namespace"),
 			Name:      c.Param("name"),
-			SCM:       core.SCMProvider(c.Param("scm")),
+			SCM:       provider,
 		})
 		if err != nil {
 			c.JSON(404, &User{})
@@ -102,6 +103,23 @@ func HandleGetOwner(store core.RepoStore) gin.HandlerFunc {
 			c.JSON(401, &User{})
 			return
 		}
+
+		client, err := service.Client(provider)
+		if err != nil {
+			c.Error(err)
+			c.JSON(500, &User{})
+			return
+		}
+
+		if client.Repositories().IsAdmin(c.Request.Context(), user, repo.FullName()) {
+			c.JSON(200, &User{
+				Avatar: user.Avatar,
+				Email:  user.Email,
+				Login:  user.Login,
+			})
+			return
+		}
+
 		owner, err := store.Creator(repo)
 		if err != nil {
 			c.JSON(404, &User{})
