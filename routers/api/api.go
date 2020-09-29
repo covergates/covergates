@@ -66,7 +66,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 		g.GET("", checkLogin, user.HandleGet())
 		g.POST("", user.HandleCreate())
 		g.GET("/scm", checkLogin, user.HandleGetSCM(r.Config))
-		g.GET("/owner/:scm/:namespace/:name", checkLogin, user.HandleGetOwner(r.RepoStore))
+		g.GET("/owner/:scm/:namespace/:name", checkLogin, user.HandleGetOwner(r.RepoStore, r.SCMService))
 		// tokens
 		g.POST("/tokens", checkLogin, user.HandleCreateToken(r.OAuthService))
 		g.GET("/tokens", checkLogin, user.HandleListTokens(r.OAuthService))
@@ -82,6 +82,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			report.ProtectReport(
 				checkLogin,
 				r.RepoStore,
+				r.SCMService,
 			),
 			report.HandleUpload(
 				r.CoverageService,
@@ -113,7 +114,7 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 			g := g.Group("/:scm/:namespace/:name")
 			g.PATCH("", repo.HandleSync(r.SCMService, r.RepoStore))
 			g.GET("/setting", repo.HandleGetSetting(r.RepoStore))
-			g.POST("/setting", repo.WithRepo(r.RepoStore), repo.HandleUpdateSetting(r.RepoStore))
+			g.POST("/setting", repo.WithRepo(r.RepoStore), repo.HandleUpdateSetting(r.RepoStore, r.SCMService))
 			g.PATCH("/report", repo.HandleReportIDRenew(r.RepoStore, r.SCMService))
 			g.GET("/files", repo.HandleGetFiles(r.SCMService))
 			g.GET("/content/*path", repo.HandleGetFileContent(r.SCMService))

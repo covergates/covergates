@@ -347,8 +347,9 @@ func HandleGetSetting(store core.RepoStore) gin.HandlerFunc {
 // @Param setting body core.RepoSetting true "repository setting"
 // @Success 200 {object} core.RepoSetting repository setting
 // @Router /repos/{scm}/{namespace}/{name}/setting [post]
-func HandleUpdateSetting(store core.RepoStore) gin.HandlerFunc {
+func HandleUpdateSetting(store core.RepoStore, service core.SCMService) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := c.Request.Context()
 		repo := c.MustGet(keyRepo).(*core.Repo)
 		setting := &core.RepoSetting{}
 		user, ok := request.UserFrom(c)
@@ -361,7 +362,11 @@ func HandleUpdateSetting(store core.RepoStore) gin.HandlerFunc {
 			c.JSON(500, setting)
 			return
 		}
-		if user.Login != creator.Login {
+		client, err := service.Client(repo.SCM)
+		if err != nil {
+			c.JSON(500, setting)
+		}
+		if !client.Repositories().IsAdmin(ctx, user, repo.FullName()) && user.Login != creator.Login {
 			c.JSON(401, setting)
 			return
 		}
