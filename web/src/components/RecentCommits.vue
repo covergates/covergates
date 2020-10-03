@@ -25,7 +25,7 @@
         </v-card>
         <v-list v-else>
           <v-list-item v-for="commit in commits" :key="commit.sha">
-            <v-list-item-avatar color="accent">
+            <v-list-item-avatar class="elevation-4">
               <v-img :src="commit.committerAvatar" v-if="commit.committerAvatar"></v-img>
               <v-icon dark v-else>mdi-account</v-icon>
             </v-list-item-avatar>
