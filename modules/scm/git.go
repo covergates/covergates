@@ -8,9 +8,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/github"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -24,6 +26,22 @@ type giteaCommit struct {
 	Sha       string           `json:"sha"`
 	Commit    *giteaRepoCommit `json:"commit"`
 	Committer *giteaUser       `json:"committer"`
+}
+
+type githubCommit struct {
+	SHA    string `json:"sha"`
+	Commit struct {
+		Committer struct {
+			Name  string    `json:"name"`
+			Email string    `json:"email"`
+			Date  time.Time `json:"date"`
+		} `json:"committer"`
+		Message string `json:"message"`
+	} `json:"commit"`
+	Committer struct {
+		AvatarURL string `json:"avatar_url"`
+		Login     string `json:"login"`
+	} `json:"committer"`
 }
 
 type giteaRepoCommit struct {
@@ -64,10 +82,14 @@ func (service *gitService) ListCommits(ctx context.Context, user *core.User, rep
 
 func (service *gitService) ListCommitsByRef(ctx context.Context, user *core.User, repo, ref string) ([]*core.Commit, error) {
 	ctx = withUser(ctx, service.scm, user)
-	if service.scm == core.Gitea {
+	switch service.scm {
+	case core.Gitea:
 		return service.listGiteaCommits(ctx, repo, ref)
+	case core.Github:
+		return service.listGithubCommits(ctx, repo, ref)
+	default:
+		return service.listCommits(ctx, repo, ref)
 	}
-	return service.listCommits(ctx, repo, ref)
 }
 
 func (service *gitService) listCommits(ctx context.Context, repo, ref string) ([]*core.Commit, error) {
@@ -143,6 +165,38 @@ func (service *gitService) listGiteaCommits(ctx context.Context, repo, ref strin
 		}
 	}
 	return results, nil
+}
+
+func (service *gitService) listGithubCommits(ctx context.Context, repo, ref string) ([]*core.Commit, error) {
+	params := url.Values{}
+	params.Add("sha", ref)
+	params.Add("per_page", "25")
+
+	res, err := service.scmClient.Do(ctx, &scm.Request{
+		Method: "GET",
+		Path:   fmt.Sprintf("repos/%s/commits?%s", repo, params.Encode()),
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	if res.Status > 300 {
+		var err *github.Error
+		json.NewDecoder(res.Body).Decode(err)
+		return nil, err
+	}
+	var commits []*githubCommit
+	json.NewDecoder(res.Body).Decode(&commits)
+	result := make([]*core.Commit, len(commits))
+	for i, commit := range commits {
+		result[i] = &core.Commit{
+			Committer:       commit.Commit.Committer.Name,
+			CommitterAvater: commit.Committer.AvatarURL,
+			Message:         commit.Commit.Message,
+			Sha:             commit.SHA,
+		}
+	}
+	return result, nil
 }
 
 func (service *gitService) ListBranches(ctx context.Context, user *core.User, repo string) ([]string, error) {
