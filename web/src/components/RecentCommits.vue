@@ -1,11 +1,12 @@
 <template>
   <v-card>
-    <v-card-title class="primary white--text">
-      Recent Commits
+    <v-card-title class="primary white--text flex-lg-nowrap">
+      <span class="title">Recent Commits</span>
       <v-spacer />
       <v-select
         :items="branches"
         :hide-details="true"
+        :disabled="loading"
         v-model="selectedBranch"
         flat
         dense
@@ -14,40 +15,42 @@
       ></v-select>
     </v-card-title>
     <v-divider />
-    <v-card-text>
-      <v-card flat v-if="commits.length <= 0">
-        <v-card-title>
-          <v-icon size="36" class="mr-2">mdi-progress-question</v-icon>No Commits Found
-        </v-card-title>
-        <v-card-text class="px-5">{{hint}}</v-card-text>
-      </v-card>
-      <v-list v-else>
-        <v-list-item v-for="commit in commits" :key="commit.sha">
-          <v-list-item-avatar color="accent">
-            <v-img :src="commit.committerAvatar" v-if="commit.committerAvatar"></v-img>
-            <v-icon dark v-else>mdi-account</v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>{{commit.message}}</v-list-item-title>
-            <v-list-item-subtitle>
-              {{commit.committer}}
-              <v-chip
-                color="accent"
-                class="ml-5 px-1"
-                outlined
-                label
-                pill
-                x-small
-                dark
-              >{{shortSHA(commit.sha)}}</v-chip>
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-btn small color="accent" :to="commitLink(commit)">Report</v-btn>
-          </v-list-item-action>
-        </v-list-item>
-      </v-list>
-    </v-card-text>
+    <v-skeleton-loader :loading="loading" type="list-item-avatar-two-line">
+      <v-card-text>
+        <v-card flat v-if="commits.length <= 0">
+          <v-card-title>
+            <v-icon size="36" class="mr-2">mdi-progress-question</v-icon>No Commits Found
+          </v-card-title>
+          <v-card-text class="px-5">{{hint}}</v-card-text>
+        </v-card>
+        <v-list v-else>
+          <v-list-item v-for="commit in commits" :key="commit.sha">
+            <v-list-item-avatar color="accent">
+              <v-img :src="commit.committerAvatar" v-if="commit.committerAvatar"></v-img>
+              <v-icon dark v-else>mdi-account</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>{{commit.message}}</v-list-item-title>
+              <v-list-item-subtitle>
+                {{commit.committer}}
+                <v-chip
+                  color="accent"
+                  class="ml-5 px-1"
+                  outlined
+                  label
+                  pill
+                  x-small
+                  dark
+                >{{shortSHA(commit.sha)}}</v-chip>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn small color="accent" :to="commitLink(commit)">Report</v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-card-text>
+    </v-skeleton-loader>
   </v-card>
 </template>
 
@@ -60,6 +63,7 @@ import { Actions } from '@/store';
 @Component
 export default class RecentCommits extends Vue {
   selectedBranch = '';
+  loadingCommits = false;
 
   constructor() {
     super();
@@ -73,6 +77,10 @@ export default class RecentCommits extends Vue {
 
   get repo(): Repository | undefined {
     return this.$store.state.repository.current;
+  }
+
+  get loading(): boolean {
+    return this.$store.state.repository.loading || this.loadingCommits;
   }
 
   get currentBranch(): string {
@@ -118,7 +126,16 @@ export default class RecentCommits extends Vue {
   }
 
   updateCommits(ref = '') {
-    this.$store.dispatch(Actions.FETCH_REPOSITORY_COMMITS, ref);
+    this.loadingCommits = true;
+    this.$store.dispatch(Actions.FETCH_REPOSITORY_COMMITS, ref).finally(() => {
+      this.loadingCommits = false;
+    });
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.title {
+  min-width: 250px;
+}
+</style>
