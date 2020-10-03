@@ -194,6 +194,63 @@ func TestReportStoreUpload(t *testing.T) {
 	}
 }
 
+func TestReportUploadOverwrite(t *testing.T) {
+	const reportID = "testReportUploadOverwrite"
+	ctrl, db := getDatabaseService(t)
+	defer ctrl.Finish()
+	store := &ReportStore{DB: db}
+
+	reports := reportSlice{
+		{
+			ReportID: reportID,
+			Commit:   "commit",
+			Coverages: []*core.CoverageReport{
+				{
+					Type: core.ReportGo,
+					Files: []*core.File{
+						{
+							Name:              "test.go",
+							StatementCoverage: 0.4,
+						},
+					},
+					StatementCoverage: 0.4,
+				},
+			},
+		},
+		{
+			ReportID: reportID,
+			Commit:   "commit",
+			Coverages: []*core.CoverageReport{
+				{
+					Type: core.ReportGo,
+					Files: []*core.File{
+						{
+							Name:              "test.go",
+							StatementCoverage: 0.5,
+						},
+					},
+					StatementCoverage: 0.5,
+				},
+			},
+		},
+	}
+
+	for _, report := range reports {
+		if err := store.Upload(report); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	report, err := store.Find(&core.Report{ReportID: reportID, Commit: "commit"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	report.CreatedAt = reports[1].CreatedAt
+	if diff := cmp.Diff(reports[1], report); diff != "" {
+		t.Fatal(diff)
+	}
+}
+
 func TestReportUploadReference(t *testing.T) {
 	const reportID = "TestReportUploadReference"
 	ctrl, db := getDatabaseService(t)

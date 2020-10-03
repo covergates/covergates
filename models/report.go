@@ -218,6 +218,8 @@ func (store *ReportStore) updateCoverage(r *Report, cov *core.CoverageReport) er
 	}
 	if !ok {
 		r.Coverages = append(r.Coverages, c)
+	} else if c.ID > 0 {
+		store.DB.Session().Save(c)
 	}
 	return nil
 }
