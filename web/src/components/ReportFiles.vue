@@ -1,22 +1,34 @@
 <template>
   <v-container>
-    <v-data-table
-      class="rounded-t"
-      :items="fileInfos"
-      item-key="name"
-      :headers="headers"
-      :header-props="{
-        sortIcon: 'mdi-chevron-up'
-      }"
-      :fixed-header="true"
-      sort-by="coverage"
-      :sort-desc="true"
-    >
-      <template v-slot:item.name="{ item }">
-        <span class="file-icon fiv-viv mr-5" :class="[fileIcon(item.name)]"></span>
-        <router-link :append="true" :to="fileLink(item)">{{item.name}}</router-link>
-      </template>
-    </v-data-table>
+    <v-sheet>
+      <v-text-field
+        v-model="searchText"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        outlined
+        dense
+        :rounded="false"
+        color="accent"
+        hide-details
+      ></v-text-field>
+      <v-data-table
+        class="rounded-t"
+        :items="fileInfos"
+        item-key="name"
+        :headers="headers"
+        :header-props="{sortIcon: 'mdi-chevron-up'}"
+        :fixed-header="true"
+        sort-by="coverage"
+        :sort-desc="true"
+        :search="searchText"
+      >
+        <template v-slot:item.name="{ item }">
+          <span class="file-icon fiv-viv mr-5" :class="[fileIcon(item.name)]"></span>
+          <router-link :append="true" :to="fileLink(item)">{{item.name}}</router-link>
+        </template>
+      </v-data-table>
+    </v-sheet>
   </v-container>
 </template>
 
@@ -59,6 +71,8 @@ export default class ReportFiles extends ((Mixins(ReportMixin) as typeof Vue) &&
       class: this.headerClass
     }
   ];
+
+  searchText = '';
 
   get report(): Report | undefined {
     return this.$store.state.report.current;
