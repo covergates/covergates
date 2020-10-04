@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/covergates/covergates/core"
+	"github.com/covergates/covergates/service/clover"
 	"github.com/covergates/covergates/service/golang"
 	"github.com/covergates/covergates/service/lcov"
 	"github.com/covergates/covergates/service/perl"
@@ -47,6 +48,8 @@ func (s *Service) service(t core.ReportType) (TypeCoverageService, error) {
 		return &ruby.CoverageService{}, nil
 	case core.ReportLCOV:
 		return &lcov.CoverageService{}, nil
+	case core.ReportClover:
+		return &clover.CoverageService{}, nil
 	default:
 		return nil, errReportTypeNotSupport
 	}
