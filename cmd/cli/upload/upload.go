@@ -86,6 +86,7 @@ func upload(c *cli.Context) error {
 		"commit": repo.HeadCommit(),
 		"ref":    branch,
 		"files":  string(filesData),
+		"root":   repo.Root(),
 		"file": util.FormFile{
 			Name: "report",
 			Data: data,
