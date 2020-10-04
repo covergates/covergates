@@ -14,6 +14,8 @@ const (
 	ReportRuby ReportType = "ruby"
 	// ReportLCOV of lcov report
 	ReportLCOV ReportType = "lcov"
+	// ReportClover of clover report
+	ReportClover ReportType = "clover"
 )
 
 // SCMProvider of Git service
