@@ -61,3 +61,11 @@ func (repo *repository) Branch() string {
 	}
 	return ""
 }
+
+func (repo *repository) Root() string {
+	tree, err := repo.gitRepository.Worktree()
+	if err != nil {
+		return ""
+	}
+	return tree.Filesystem.Root()
+}

@@ -89,6 +89,12 @@ func TestUpload(t *testing.T) {
 			gomock.Any(),
 		).Return(nil)
 
+		mockCoverageService.EXPECT().TrimFileNamePrefix(
+			gomock.Any(),
+			gomock.Eq(coverage),
+			gomock.Any(),
+		).Return(nil)
+
 		mockReportStore.EXPECT().Upload(
 			gomock.Eq(report),
 		).Return(nil)
