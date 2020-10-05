@@ -40,6 +40,13 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 				r.Session,
 			),
 		)
+		g.Any("/gitlab",
+			MiddlewareLogin(core.GitLab, r.LoginMiddleware),
+			HandleLogin(
+				r.Config,
+				core.GitLab,
+				r.SCMService,
+				r.Session))
 	}
 	e.Any("/logoff", HandleLogout(r.Config, r.Session))
 	h := gin.WrapH(http.FileServer(web.New()))

@@ -12,6 +12,7 @@ import (
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/gitea"
 	"github.com/drone/go-scm/scm/driver/github"
+	"github.com/drone/go-scm/scm/driver/gitlab"
 	"github.com/drone/go-scm/scm/transport/oauth2"
 	log "github.com/sirupsen/logrus"
 )
@@ -52,6 +53,12 @@ func userToken(s core.SCMProvider, usr *core.User) *scm.Token {
 			Token:   usr.GiteaToken,
 			Refresh: usr.GiteaRefresh,
 			Expires: usr.GiteaExpire,
+		}
+	case core.GitLab:
+		token = &scm.Token{
+			Token:   usr.GitLabToken,
+			Refresh: usr.GitLabRefresh,
+			Expires: usr.GitLabExpire,
 		}
 	default:
 		log.Warningf("%s is not supported", s)
@@ -104,6 +111,19 @@ func scmClient(s core.SCMProvider, config *config.Config) (*scm.Client, error) {
 					ClientSecret: config.Gitea.ClientSecret,
 					Endpoint:     strings.TrimPrefix(config.Gitea.Server, "/") + "/login/oauth/access_token",
 					Source:       oauth2.ContextTokenSource(),
+				},
+			},
+		}
+	case core.GitLab:
+		client, err = gitlab.New(config.GitLab.Server)
+		client.Client = &http.Client{
+			Transport: &oauth2.Transport{
+				Source: oauth2.ContextTokenSource(),
+				Base: &http.Transport{
+					Proxy: http.ProxyFromEnvironment,
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: config.GitLab.SkipVerity,
+					},
 				},
 			},
 		}

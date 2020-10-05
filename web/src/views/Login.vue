@@ -51,14 +51,19 @@ interface LoginSCM {
 export default class Login extends Vue {
   private logins: LoginSCM[] = [
     {
+      name: 'Gitea',
+      icon: '$gitea',
+      url: `${this.$store.state.base}/login/gitea`
+    },
+    {
       name: 'Github',
       icon: 'mdi-github',
       url: `${this.$store.state.base}/login/github`
     },
     {
-      name: 'Gitea',
-      icon: '$gitea',
-      url: `${this.$store.state.base}/login/gitea`
+      name: 'GitLab',
+      icon: 'mdi-gitlab',
+      url: `${this.$store.state.base}/login/gitlab`
     }
   ];
 
