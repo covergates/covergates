@@ -21,6 +21,9 @@ func CheckLogin(session core.Session, oauth core.OAuthService) gin.HandlerFunc {
 			GiteaLogin:  os.Getenv("DEBUG_GITEA_LOGIN"),
 			GiteaEmail:  os.Getenv("DEBUG_EMAIL"),
 			GiteaToken:  os.Getenv("DEBUG_GITEA_TOKEN"),
+			GitLabLogin: os.Getenv("DEBUG_GITLAB_LOGIN"),
+			GitLabEmail: os.Getenv("DEBUG_EMAIL"),
+			GitLabToken: os.Getenv("DEBUG_GITLAB_TOKEN"),
 		}
 		WithUser(c, user)
 	}

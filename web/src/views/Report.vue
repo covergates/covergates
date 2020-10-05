@@ -128,6 +128,9 @@ export default class ReportView extends Vue {
       case 'gitea': {
         return '$vuetify.icons.gitea';
       }
+      case 'gitlab': {
+        return 'mdi-gitlab';
+      }
       default: {
         return 'mdi-source-repository';
       }

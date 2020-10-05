@@ -14,6 +14,7 @@ type Config struct {
 	Server   Server
 	Gitea    Gitea
 	Github   Github
+	GitLab   GitLab
 	Database Database
 	CloudRun CloudRun
 }
@@ -68,6 +69,15 @@ type Github struct {
 	Scope        []string `default:"repo,repo:status,user:email,read:org" envconfig:"GATES_GITHUB_SCOPE"`
 }
 
+// GitLab connection setting
+type GitLab struct {
+	Server       string   `default:"https://gitlab.com" envconfig:"GATES_GITLAB_SERVER"`
+	ClientID     string   `envconfig:"GATES_GITLAB_CLIENT_ID"`
+	ClientSecret string   `envconfig:"GATES_GITLAB_CLIENT_SECRET"`
+	SkipVerity   bool     `envconfig:"GATES_GITLAB_SKIP_VERIFY"`
+	Scope        []string `default:"api,read_user,read_api,read_repository,profile,email" envconfig:"GATES_GITLAB_SCOPE"`
+}
+
 // Environ setup configure from environment variables
 func Environ() (*Config, error) {
 	cfg := &Config{}
@@ -83,6 +93,9 @@ func (c *Config) Providers() []core.SCMProvider {
 	}
 	if c.Github.Server != "" {
 		providers = append(providers, core.Github)
+	}
+	if c.GitLab.Server != "" {
+		providers = append(providers, core.GitLab)
 	}
 	return providers
 }

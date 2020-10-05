@@ -69,6 +69,8 @@ func HandleGetSCM(config *config.Config) gin.HandlerFunc {
 				login = user.GiteaLogin
 			case core.Github:
 				login = user.GithubLogin
+			case core.GitLab:
+				login = user.GitLabLogin
 			default:
 				login = ""
 			}

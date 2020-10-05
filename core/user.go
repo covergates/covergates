@@ -10,14 +10,22 @@ import (
 
 // User is a user of the service
 type User struct {
-	Login         string
-	Email         string
-	Avatar        string
-	GiteaLogin    string
-	GiteaEmail    string
-	GiteaToken    string
-	GiteaRefresh  string
-	GiteaExpire   time.Time
+	Login  string
+	Email  string
+	Avatar string
+	// Gitea
+	GiteaLogin   string
+	GiteaEmail   string
+	GiteaToken   string
+	GiteaRefresh string
+	GiteaExpire  time.Time
+	// GitLab
+	GitLabLogin   string
+	GitLabEmail   string
+	GitLabToken   string
+	GitLabRefresh string
+	GitLabExpire  time.Time
+	// Github
 	GithubLogin   string
 	GithubEmail   string
 	GithubToken   string

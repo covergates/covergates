@@ -12,16 +12,24 @@ import (
 // User data
 type User struct {
 	gorm.Model
-	Login         string `gorm:"size:256;uniqueIndex;not null"`
-	Name          string
-	Email         string `gorm:"index"`
-	Active        bool
-	Avater        string
-	GiteaLogin    string `gorm:"index"`
-	GiteaEmail    string `gorm:"index"`
-	GiteaToken    string
-	GiteaRefresh  string
-	GiteaExpire   int64
+	Login  string `gorm:"size:256;uniqueIndex;not null"`
+	Name   string
+	Email  string `gorm:"index"`
+	Active bool
+	Avater string
+	// Gitea
+	GiteaLogin   string `gorm:"index"`
+	GiteaEmail   string `gorm:"index"`
+	GiteaToken   string
+	GiteaRefresh string
+	GiteaExpire  int64
+	// GitLab
+	GitLabLogin   string `gorm:"index"`
+	GitLabEmail   string `gorm:"index"`
+	GitLabToken   string
+	GitLabRefresh string
+	GitLabExpire  int64
+	// Github
 	GithubLogin   string `gorm:"index"`
 	GithubEmail   string `gorm:"index"`
 	GithubToken   string
@@ -85,6 +93,11 @@ func (store *UserStore) findWithSCM(scm core.SCMProvider, user *scm.User) (*User
 		condition = &User{
 			GiteaLogin: user.Login,
 			GiteaEmail: user.Email,
+		}
+	case core.GitLab:
+		condition = &User{
+			GitLabLogin: user.Login,
+			GitLabEmail: user.Email,
 		}
 	default:
 		return nil, &errNotSupportedSCM{scm: scm}
@@ -168,14 +181,22 @@ func (store *UserStore) UpdateRepositories(user *core.User, repositories []*core
 
 func (u *User) toCoreUser() *core.User {
 	return &core.User{
-		Login:         u.Login,
-		Avatar:        u.Avater,
-		Email:         u.Email,
-		GiteaLogin:    u.GiteaLogin,
-		GiteaEmail:    u.GiteaEmail,
-		GiteaToken:    u.GiteaToken,
-		GiteaExpire:   time.Unix(u.GiteaExpire, 0),
-		GiteaRefresh:  u.GiteaRefresh,
+		Login:  u.Login,
+		Avatar: u.Avater,
+		Email:  u.Email,
+		// Gitea
+		GiteaLogin:   u.GiteaLogin,
+		GiteaEmail:   u.GiteaEmail,
+		GiteaToken:   u.GiteaToken,
+		GiteaExpire:  time.Unix(u.GiteaExpire, 0),
+		GiteaRefresh: u.GiteaRefresh,
+		// GitLab
+		GitLabLogin:   u.GitLabLogin,
+		GitLabEmail:   u.GitLabEmail,
+		GitLabToken:   u.GitLabToken,
+		GitLabExpire:  time.Unix(u.GitLabExpire, 0),
+		GitLabRefresh: u.GitLabRefresh,
+		// Github
 		GithubLogin:   u.GithubLogin,
 		GithubEmail:   u.GithubEmail,
 		GithubToken:   u.GithubToken,
@@ -198,6 +219,12 @@ func (u *User) updateWithSCM(scm core.SCMProvider, user *scm.User, token *core.T
 		u.GiteaToken = token.Token
 		u.GiteaRefresh = token.Refresh
 		u.GiteaExpire = token.Expires.Unix()
+	case core.GitLab:
+		u.GitLabEmail = user.Email
+		u.GitLabLogin = user.Login
+		u.GitLabToken = token.Token
+		u.GitLabRefresh = token.Refresh
+		u.GitLabExpire = token.Expires.Unix()
 	default:
 		return &errNotSupportedSCM{scm}
 	}

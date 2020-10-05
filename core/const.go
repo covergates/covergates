@@ -26,6 +26,8 @@ const (
 	Gitea SCMProvider = "gitea"
 	// Github SCM
 	Github SCMProvider = "github"
+	// GitLab SCM
+	GitLab SCMProvider = "gitlab"
 )
 
 // ReportUpdateAction action type when new report update
