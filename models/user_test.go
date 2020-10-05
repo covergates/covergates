@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
@@ -124,7 +125,12 @@ func TestUserBind(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if diff := cmp.Diff(newUser, expectUser); diff != "" {
+	trans := cmp.Transformer("", func(in *core.User) *core.User {
+		in.GitLabExpire = time.Unix(0, 0)
+		return in
+	})
+
+	if diff := cmp.Diff(newUser, expectUser, trans); diff != "" {
 		t.Log(diff)
 		t.Fail()
 	}
