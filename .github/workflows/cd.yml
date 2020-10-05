@@ -152,6 +152,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: covergates/covergates
           tags: latest
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
 
       - name: Build Action
         uses: docker/build-push-action@v1
