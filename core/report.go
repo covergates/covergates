@@ -48,6 +48,7 @@ type CoverageService interface {
 	Open(ctx context.Context, t ReportType, path string) (io.Reader, error)
 	// TrimFileNames in the coverage report
 	TrimFileNames(ctx context.Context, report *CoverageReport, filters FileNameFilters) error
+	TrimFileNamePrefix(ctx context.Context, report *CoverageReport, prefixes ...string) error
 }
 
 // ReportStore the report in storage

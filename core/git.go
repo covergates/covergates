@@ -11,6 +11,7 @@ type GitRepository interface {
 	Commit(commit string) (GitCommit, error)
 	HeadCommit() string
 	Branch() string
+	Root() string
 }
 
 // GitCommit object

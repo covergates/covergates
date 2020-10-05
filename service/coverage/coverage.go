@@ -94,6 +94,17 @@ func (s *Service) TrimFileNames(ctx context.Context, report *core.CoverageReport
 	return nil
 }
 
+// TrimFileNamePrefix for all files in coverage report
+func (s *Service) TrimFileNamePrefix(ctx context.Context, report *core.CoverageReport, prefixes ...string) error {
+	for _, file := range report.Files {
+		for _, prefix := range prefixes {
+			file.Name = strings.TrimPrefix(file.Name, prefix)
+		}
+		file.Name = strings.Trim(file.Name, "/")
+	}
+	return nil
+}
+
 func toRegexps(slice []string) []*regexp.Regexp {
 	regex := make([]*regexp.Regexp, 0, len(slice))
 	for _, expr := range slice {

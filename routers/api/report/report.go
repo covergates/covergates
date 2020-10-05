@@ -24,6 +24,7 @@ import (
 // @Param commit formData string true "Git commit SHA"
 // @Param type formData string true "report type"
 // @Param ref formData string false "ref"
+// @Param root formData string false "git worktree root path"
 // @Param files formData string false "files list of the repository"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "error message"
@@ -47,6 +48,8 @@ func HandleUpload(
 		ref := c.PostForm("ref")
 		reportType := core.ReportType(c.PostForm("type"))
 		commit := c.PostForm("commit")
+		root := c.PostForm("root")
+
 		ctx := c.Request.Context()
 
 		// get upload file
@@ -72,6 +75,7 @@ func HandleUpload(
 			coverageService,
 			reportType,
 			reader,
+			root,
 			MustGetSetting(c),
 		)
 		if err != nil {
@@ -419,10 +423,14 @@ func loadCoverageReport(
 	service core.CoverageService,
 	reportType core.ReportType,
 	data io.Reader,
+	root string,
 	setting *core.RepoSetting,
 ) (*core.CoverageReport, error) {
 	coverage, err := service.Report(ctx, reportType, data)
 	if err != nil {
+		return nil, err
+	}
+	if err := service.TrimFileNamePrefix(ctx, coverage, root); err != nil {
 		return nil, err
 	}
 	if err := service.TrimFileNames(ctx, coverage, setting.Filters); err != nil {

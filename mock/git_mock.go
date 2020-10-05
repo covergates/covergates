@@ -92,6 +92,20 @@ func (mr *MockGitRepositoryMockRecorder) ListAllFiles(arg0 interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllFiles", reflect.TypeOf((*MockGitRepository)(nil).ListAllFiles), arg0)
 }
 
+// Root mocks base method
+func (m *MockGitRepository) Root() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Root")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// Root indicates an expected call of Root
+func (mr *MockGitRepositoryMockRecorder) Root() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Root", reflect.TypeOf((*MockGitRepository)(nil).Root))
+}
+
 // MockGit is a mock of Git interface
 type MockGit struct {
 	ctrl     *gomock.Controller
