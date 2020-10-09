@@ -27,8 +27,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: "1.14"
-
-      - run: go get github.com/karalabe/xgo
+      - run: go get github.com/mitchellh/gox
 
       - name: Build Binary
         working-directory: "./go/src/github.com/covergates/covergates"
@@ -37,13 +36,13 @@ jobs:
           export GITHUB_TAG=$(echo $GITHUB_REF | rev | cut -d '/' -f 1| rev)
           go mod vendor
           zip -r "$GITHUB_WORKSPACE/covergates.$GITHUB_TAG.src.zip" ./ -x "*.git*" -x "*.zip" -x "*node_modules*"
-          targets="windows/amd64,windows/386,darwin/amd64,darwin/386,linux/amd64,linux/386,linux/arm,linux/arm64"
+          targets="windows/amd64 windows/386 darwin/amd64 darwin/386 linux/amd64 linux/386 linux/arm linux/arm64"
           server_flag="-X main.Version=$GITHUB_TAG"
           cli_flag="-X main.Version=$GITHUB_TAG -X main.CoverGatesAPI=$SERVER_API_URL"
-          xgo -ldflags="$server_flag" --targets="$targets" -out covergates-server ./cmd/server
-          xgo -ldflags="$cli_flag" --targets="$targets" -out covergates ./cmd/cli
+          gox -ldflags="$server_flag" -osarch="$targets" -output "covergates-server-{{.OS}}-{{.Arch}}" ./cmd/server
+          gox -ldflags="$cli_flag" -osarch="$targets" -output "covergates-{{.OS}}-{{.Arch}}" ./cmd/cli
           outputs=(covergates covergates-server)
-          archs=(darwin-10.6-386 darwin-10.6-amd64 linux-386 linux-amd64 linux-arm-5 linux-arm64 windows-4.0-386.exe windows-4.0-amd64.exe)
+          archs=(darwin-386 darwin-amd64 linux-386 linux-amd64 linux-arm linux-arm64 windows-386.exe windows-amd64.exe)
           mkdir -p dist
           for arch in ${archs[@]};do
             rm -rf ./dist/*
