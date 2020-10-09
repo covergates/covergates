@@ -5,7 +5,7 @@
 - [x] Support Go
 - [x] Support Python
 
-    Need more testing
+  Need more testing
 
 - [x] Support Ruby
 - [x] Support Javascript (lcov)
@@ -14,17 +14,18 @@
 - [x] Enable multiple language coverage report
 - [x] Enable auto merge with previous coverage report
 
-    enable webhook, need testing
-- [ ] Support GitLab
+  enable webhook, need testing
+
+- [x] Support GitLab
 - [x] Provide a way to update SCM account's authorization
 - [ ] Support ignore pattern for the repository
 - [x] Frontend page to review report for given commit
-- [ ] Report upload authorization check
+- [x] Report upload authorization check
 - [x] Optimized upload report flow, improve performance
 - [x] Documentation (Environment setup and contribution guide)
 - [ ] Database Migration
 - [x] Generate Social Media Card
-- [ ] Add social media link copy button on setting page
+- [x] Add social media link copy button on setting page
 
 ## Phase II
 
@@ -33,10 +34,10 @@
 - [x] view CODE tag without login for public repository
 - [x] Add login hint to source code page if user not login
 - [x] make login page look better
-- [ ] Add beginner guide to new repository
+- [x] Add beginner guide to new repository
 - [x] Add more information on landing page
 
 - [ ] Default path filer, ex remove go module path by default
 - [ ] Enable admin account, which will be used to leave comment on PR or update webhook.
-- [ ] Allow multiple repository owners to update setting
+- [x] Allow multiple repository owners to update setting
 - [ ] Add more documentations on CLI usage and repository setting

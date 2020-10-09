@@ -6,6 +6,7 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/covergates/covergates)](https://pkg.go.dev/github.com/covergates/covergates)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CLA assistant](https://cla-assistant.io/readme/badge/covergates/covergates)](https://cla-assistant.io/covergates/covergates)
+[![Twitter Follow](https://img.shields.io/twitter/follow/covergates_tw.svg?style=social)](https://twitter.com/covergates_tw)
 
 [![card](https://covergates.com/api/v1/reports/bsi5dvi23akg00a0tgl0/card)](https://covergates.com/report/github/covergates/covergates)
 
@@ -64,24 +65,23 @@ Below is the list of variables for basic configuration:
 
 ## Supported SCM and Language
 
-|SCM|Supported|
-|---|---------|
-|GitHub|:heavy_check_mark:|
-|Gitea|:heavy_check_mark:|
-|GitLab|:wrench:, ongoing|
-|Gogs|:x:|
-|Bitbucket|:x:|
+| SCM       | Supported          |
+| --------- | ------------------ |
+| GitHub    | :heavy_check_mark: |
+| Gitea     | :heavy_check_mark: |
+| GitLab    | :heavy_check_mark: |
+| Gogs      | :x:                |
+| Bitbucket | :x:                |
 
-
-
-|Language|Supported|Tutorial|
-|--------|---------|--------|
-|Go|:heavy_check_mark:|[go-example](https://github.com/covergates/go-example)|
-|Perl|:heavy_check_mark:|:wrench:, ongoing|
-|Python|:heavy_check_mark:|:wrench:, ongoing|
-|Ruby (SimpleCov: RSpec)|:heavy_check_mark:|:heavy_minus_sign:|
-|lcov (C, C++, Javascript)|:heavy_check_mark:|:heavy_minus_sign:|
-|Java (Jacoco)|:wrench:, ongoing|:heavy_minus_sign:|
+| Language                  | Supported          | Tutorial                                               |
+| ------------------------- | ------------------ | ------------------------------------------------------ |
+| Go                        | :heavy_check_mark: | [go-example](https://github.com/covergates/go-example) |
+| Perl                      | :heavy_check_mark: | :wrench:, ongoing                                      |
+| Python                    | :heavy_check_mark: | :wrench:, ongoing                                      |
+| Ruby (SimpleCov: RSpec)   | :heavy_check_mark: | :heavy_minus_sign:                                     |
+| lcov (C, C++, Javascript) | :heavy_check_mark: | :heavy_minus_sign:                                     |
+| Clover (PHP)              | :heavy_check_mark: | :heavy_minus_sign:                                     |
+| Java (Jacoco)             | :wrench:, ongoing  | :heavy_minus_sign:                                     |
 
 **Covergates** is at an early development stage.
 Other languages and SCM support is ongoing!
@@ -126,13 +126,13 @@ There are many ways in which you can participate in the project:
 
 1. Contributing directly to the code base
 
-    The expected workflow is [GitHub flow](https://guides.github.com/introduction/flow/).
-    Read [CONTRIBUTING.md](https://github.com/covergates/covergates/blob/master/CONTRIBUTING.md) before getting start.
+   The expected workflow is [GitHub flow](https://guides.github.com/introduction/flow/).
+   Read [CONTRIBUTING.md](https://github.com/covergates/covergates/blob/master/CONTRIBUTING.md) before getting start.
 
 2. [Submit feature requests and bugs](https://github.com/covergates/covergates/issues)
 
-    Especially for the new language support.
-    It would be great if you could provide coverage report examples and how to produce coverage for other languages.
+   Especially for the new language support.
+   It would be great if you could provide coverage report examples and how to produce coverage for other languages.
 
 3. Testing, both unit testing and e2e testing are welcome.
 
@@ -152,9 +152,7 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 
 ![report](https://raw.githubusercontent.com/covergates/brand/master/screenshots/covergates.png)
 
-
 ![files](https://raw.githubusercontent.com/covergates/brand/master/screenshots/covergates_code.png)
-
 
 ![setting](https://raw.githubusercontent.com/covergates/brand/master/screenshots/covergates_setting.png)
 
