@@ -3,6 +3,7 @@ package repo
 import (
 	"github.com/covergates/covergates/core"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 // HandleHookCreate for the repository
@@ -44,13 +45,14 @@ func HandleHook(SCM core.SCMService, service core.HookService) gin.HandlerFunc {
 		}
 		hook, err := client.Webhooks().Parse(c.Request)
 		if err != nil && client.Webhooks().IsWebhookNotSupport(err) {
-			c.String(200, "ok")
+			c.String(200, "webhook not support")
 			return
 		} else if err != nil {
 			c.String(500, err.Error())
 			return
 		}
 		if err := service.Resolve(ctx, repo, hook); err != nil {
+			log.Error(err)
 			c.String(500, err.Error())
 			return
 		}
