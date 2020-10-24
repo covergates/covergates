@@ -28,6 +28,8 @@ const (
 	Github SCMProvider = "github"
 	// GitLab SCM
 	GitLab SCMProvider = "gitlab"
+	// Bitbucket SCM
+	Bitbucket SCMProvider = "bitbucket"
 )
 
 // ReportUpdateAction action type when new report update

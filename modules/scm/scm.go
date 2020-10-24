@@ -10,6 +10,7 @@ import (
 	"github.com/covergates/covergates/config"
 	"github.com/covergates/covergates/core"
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/bitbucket"
 	"github.com/drone/go-scm/scm/driver/gitea"
 	"github.com/drone/go-scm/scm/driver/github"
 	"github.com/drone/go-scm/scm/driver/gitlab"
@@ -59,6 +60,12 @@ func userToken(s core.SCMProvider, usr *core.User) *scm.Token {
 			Token:   usr.GitLabToken,
 			Refresh: usr.GitLabRefresh,
 			Expires: usr.GitLabExpire,
+		}
+	case core.Bitbucket:
+		token = &scm.Token{
+			Token:   usr.BitbucketToken,
+			Refresh: usr.BitbucketRefresh,
+			Expires: usr.BitbucketExpire,
 		}
 	default:
 		log.Warningf("%s is not supported", s)
@@ -123,6 +130,19 @@ func scmClient(s core.SCMProvider, config *config.Config) (*scm.Client, error) {
 					Proxy: http.ProxyFromEnvironment,
 					TLSClientConfig: &tls.Config{
 						InsecureSkipVerify: config.GitLab.SkipVerity,
+					},
+				},
+			},
+		}
+	case core.Bitbucket:
+		client, err = bitbucket.New(config.Bitbucket.Server)
+		client.Client = &http.Client{
+			Transport: &oauth2.Transport{
+				Source: oauth2.ContextTokenSource(),
+				Base: &http.Transport{
+					Proxy: http.ProxyFromEnvironment,
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: config.Bitbucket.SkipVerity,
 					},
 				},
 			},

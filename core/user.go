@@ -31,6 +31,12 @@ type User struct {
 	GithubToken   string
 	GithubRefresh string
 	GithubExpire  time.Time
+	// Bitbucket
+	BitbucketLogin   string
+	BitbucketEmail   string
+	BitbucketToken   string
+	BitbucketRefresh string
+	BitbucketExpire  time.Time
 }
 
 // UserStore the user data to storage

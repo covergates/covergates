@@ -89,6 +89,9 @@ export default class UserClass extends Vue {
       case 'gitlab': {
         return 'mdi-gitlab';
       }
+      case 'bitbucket': {
+        return 'mdi-bitbucket';
+      }
       default: {
         return 'mdi-source-repository';
       }

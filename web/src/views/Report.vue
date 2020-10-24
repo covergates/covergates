@@ -131,6 +131,9 @@ export default class ReportView extends Vue {
       case 'gitlab': {
         return 'mdi-gitlab';
       }
+      case 'bitbucket': {
+        return 'mdi-bitbucket';
+      }
       default: {
         return 'mdi-source-repository';
       }

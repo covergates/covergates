@@ -35,7 +35,13 @@ type User struct {
 	GithubToken   string
 	GithubRefresh string
 	GithubExpire  int64
-	Repositories  []*Repo `gorm:"many2many:user_repositories"`
+	// Bitbucket
+	BitbucketLogin   string `gorm:"index"`
+	BitbucketEmail   string `gorm:"index"`
+	BitbucketToken   string
+	BitbucketRefresh string
+	BitbucketExpire  int64
+	Repositories     []*Repo `gorm:"many2many:user_repositories"`
 }
 
 // UserStore user in storage
@@ -98,6 +104,11 @@ func (store *UserStore) findWithSCM(scm core.SCMProvider, user *scm.User) (*User
 		condition = &User{
 			GitLabLogin: user.Login,
 			GitLabEmail: user.Email,
+		}
+	case core.Bitbucket:
+		condition = &User{
+			BitbucketLogin: user.Login,
+			BitbucketEmail: user.Email,
 		}
 	default:
 		return nil, &errNotSupportedSCM{scm: scm}
@@ -202,6 +213,12 @@ func (u *User) toCoreUser() *core.User {
 		GithubToken:   u.GithubToken,
 		GithubExpire:  time.Unix(u.GithubExpire, 0),
 		GithubRefresh: u.GithubRefresh,
+		// Bitbucket
+		BitbucketLogin:   u.BitbucketLogin,
+		BitbucketEmail:   u.BitbucketEmail,
+		BitbucketToken:   u.BitbucketToken,
+		BitbucketExpire:  time.Unix(u.BitbucketExpire, 0),
+		BitbucketRefresh: u.BitbucketRefresh,
 	}
 }
 
@@ -225,6 +242,12 @@ func (u *User) updateWithSCM(scm core.SCMProvider, user *scm.User, token *core.T
 		u.GitLabToken = token.Token
 		u.GitLabRefresh = token.Refresh
 		u.GitLabExpire = token.Expires.Unix()
+	case core.Bitbucket:
+		u.BitbucketEmail = user.Email
+		u.BitbucketLogin = user.Login
+		u.BitbucketToken = token.Token
+		u.BitbucketRefresh = token.Refresh
+		u.BitbucketExpire = token.Expires.Unix()
 	default:
 		return &errNotSupportedSCM{scm}
 	}

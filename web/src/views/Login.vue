@@ -64,6 +64,11 @@ export default class Login extends Vue {
       name: 'GitLab',
       icon: 'mdi-gitlab',
       url: `${this.$store.state.base}/login/gitlab`
+    },
+    {
+      name: 'Bitbucket',
+      icon: 'mdi-bitbucket',
+      url: `${this.$store.state.base}/login/bitbucket`
     }
   ];
 

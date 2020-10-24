@@ -49,6 +49,15 @@ func (m *middleware) Handler(scm core.SCMProvider) login.Middleware {
 			Client:       BasicClient(m.config.GitLab.SkipVerity),
 			Scope:        m.config.GitLab.Scope,
 		}
+	case core.Bitbucket:
+		middleware = &gitlab.Config{
+			ClientID:     m.config.Bitbucket.ClientID,
+			ClientSecret: m.config.Bitbucket.ClientSecret,
+			RedirectURL:  m.config.Server.URL() + "/login/bitbucket",
+			Server:       m.config.GitLab.Server,
+			Client:       BasicClient(m.config.GitLab.SkipVerity),
+			Scope:        m.config.GitLab.Scope,
+		}
 	}
 	return middleware
 }

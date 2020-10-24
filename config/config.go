@@ -11,12 +11,13 @@ import (
 
 // Config of application
 type Config struct {
-	Server   Server
-	Gitea    Gitea
-	Github   Github
-	GitLab   GitLab
-	Database Database
-	CloudRun CloudRun
+	Server    Server
+	Gitea     Gitea
+	Github    Github
+	GitLab    GitLab
+	Bitbucket Bitbucket
+	Database  Database
+	CloudRun  CloudRun
 }
 
 // Server setting
@@ -69,6 +70,15 @@ type Github struct {
 	Scope        []string `default:"repo,repo:status,user:email,read:org" envconfig:"GATES_GITHUB_SCOPE"`
 }
 
+// Bitbucket connection settings
+type Bitbucket struct {
+	Server       string   `default:"https://bitbucket.com" envconfig:"GATES_BITBUCKET_SERVER"`
+	ClientID     string   `envconfig:"GATES_BITBUCKET_CLIENT_ID"`
+	ClientSecret string   `envconfig:"GATES_BITBUCKET_CLIENT_SECRET"`
+	SkipVerity   bool     `envconfig:"GATES_GITLAB_SKIP_VERIFY"`
+	Scope        []string `default:"pullrequest:write,account" envconfig:"GATES_BITBUCKET_SCOPE"`
+}
+
 // GitLab connection setting
 type GitLab struct {
 	Server       string   `default:"https://gitlab.com" envconfig:"GATES_GITLAB_SERVER"`
@@ -96,6 +106,9 @@ func (c *Config) Providers() []core.SCMProvider {
 	}
 	if c.GitLab.Server != "" {
 		providers = append(providers, core.GitLab)
+	}
+	if c.Bitbucket.Server != "" {
+		providers = append(providers, core.Bitbucket)
 	}
 	return providers
 }

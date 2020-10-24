@@ -47,6 +47,13 @@ func (r *Router) RegisterRoutes(e *gin.Engine) {
 				core.GitLab,
 				r.SCMService,
 				r.Session))
+		g.Any("/bitbucket",
+			MiddlewareLogin(core.Bitbucket, r.LoginMiddleware),
+			HandleLogin(
+				r.Config,
+				core.Bitbucket,
+				r.SCMService,
+				r.Session))
 	}
 	e.Any("/logoff", HandleLogout(r.Config, r.Session))
 	h := gin.WrapH(http.FileServer(web.New()))
