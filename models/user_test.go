@@ -127,6 +127,7 @@ func TestUserBind(t *testing.T) {
 
 	trans := cmp.Transformer("", func(in *core.User) *core.User {
 		in.GitLabExpire = time.Unix(0, 0)
+		in.BitbucketExpire = time.Unix(0, 0)
 		return in
 	})
 
