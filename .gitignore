@@ -1,4 +1,6 @@
 # Binaries for programs and plugins
+*~
+*.bak
 *.exe
 *.exe~
 *.dll
@@ -26,3 +28,9 @@ core.db
 *.zip
 !**/testdata/*.zip
 test.log
+
+# Binaires
+/cmd/server/server
+/cmd/cli/cli
+/covergates
+/covergates-server
