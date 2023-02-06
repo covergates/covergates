@@ -31,7 +31,7 @@ require (
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
-	github.com/tidwall/gjson v1.6.1 // indirect
+	github.com/tidwall/gjson v1.9.3 // indirect
 	github.com/urfave/cli/v2 v2.2.0
 	golang.org/x/image v0.0.0-20200924062109-4578eab98f00 // indirect
 	golang.org/x/net v0.0.0-20200925080053-05aa5d4ee321
