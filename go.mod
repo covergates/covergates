@@ -11,11 +11,10 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.3
-	github.com/gin-gonic/gin v1.6.3
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-git/go-billy/v5 v5.0.0
 	github.com/go-git/go-git/v5 v5.1.0
 	github.com/go-oauth2/oauth2/v4 v4.1.2
-	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/mock v1.4.4
 	github.com/google/go-cmp v0.5.2
