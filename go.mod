@@ -11,14 +11,13 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.3
-	github.com/gin-gonic/gin v1.6.3
+	github.com/gin-gonic/gin v1.9.0
 	github.com/go-git/go-billy/v5 v5.0.0
 	github.com/go-git/go-git/v5 v5.1.0
 	github.com/go-oauth2/oauth2/v4 v4.1.2
-	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/mock v1.4.4
-	github.com/google/go-cmp v0.5.2
+	github.com/google/go-cmp v0.5.5
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/google/wire v0.4.0
 	github.com/jinzhu/gorm v1.9.16
@@ -34,11 +33,9 @@ require (
 	github.com/tidwall/gjson v1.6.1 // indirect
 	github.com/urfave/cli/v2 v2.2.0
 	golang.org/x/image v0.0.0-20200924062109-4578eab98f00 // indirect
-	golang.org/x/net v0.0.0-20200925080053-05aa5d4ee321
+	golang.org/x/net v0.7.0
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	golang.org/x/sys v0.0.0-20200923182605-d9f96fdee20d // indirect
-	golang.org/x/text v0.3.3
-	golang.org/x/tools v0.0.0-20200924224222-8d73f17870ce // indirect
+	golang.org/x/text v0.7.0
 	gorm.io/driver/mysql v1.0.1
 	gorm.io/driver/postgres v1.0.1
 	gorm.io/driver/sqlite v1.1.3
